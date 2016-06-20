@@ -10,7 +10,7 @@ class SanityCheck(unittest.TestCase):
 
     def testRequiredToolsAreInstalled(self):
         """test if all required tools are installed"""
-        required_commands = ["mn", "python", "ovs-testcontroller", "ovs-docker", "docker"]
+        required_commands = ["mn", "python", "ovs-testcontroller", "ovs-docker", "docker", "mitmdump"]
         for cmd in required_commands:
             self.assertTrue(find_executable(cmd) or find_executable(cmd + ".exe"), "%s is not installed." % cmd)
 

@@ -2,9 +2,9 @@
 import random
 import time
 from mininet.net import Mininet
-from mininet.topo import Topo
 
-from BotnetComponents import *
+from api.BotnetComponents import Bot, Proxy, CnCServer
+from api.LayeredTopology import InternalTopology
 
 
 class GameoverTopology:
@@ -24,6 +24,7 @@ class GameoverTopology:
         self.net = Mininet(self.mntopo)
 
     def start(self):
+        """"""
         self.build()
         self.net.start()
 
@@ -33,7 +34,7 @@ class GameoverTopology:
         self.net.stop()
 
     def build(self):
-        """A layered topology consisting of a CnC-Layer, a Proxy-Layer and a Bot-Layer"""
+        """A layered topology consisting of a CnC-LayerDescription, a Proxy-LayerDescription and a Bot-LayerDescription"""
         # TODO: Nicht mehr die Namen der Nodes verwenden um sie anzusprechen
 
         for i in range(self.num_cncservers):
@@ -52,24 +53,8 @@ class GameoverTopology:
             name = "bot%s" % i
             self.botdict[name] = Bot(self.net.getNodeByName(name))
             self.botdict[name].peerlist.append(random.choice(self.proxydict.values()))
-            self.botdict[name].start()
+            self.botdict[name].build()
 
         time.sleep(5)  # Wait until all services have been started
 
 
-class InternalTopology(Topo):
-    """Internal class that actually implements the Topology. Should not be used outside this file."""
-
-    def __init__(self, switchnames, hostnames):
-        self.switchnames = switchnames
-        self.hostnames = hostnames
-        Topo.__init__(self)
-
-    def build(self):
-        """Builds the topology"""
-        # print "#Proxies: %s" %GameoverTopology.num_proxies
-        for name in self.switchnames:
-            self.addSwitch(name)
-        for name in self.hostnames:
-            self.addHost(name)
-            self.addLink(name, self.switchnames[0])  # TODO: Keine direkte Referenz auf einen Switch mehr

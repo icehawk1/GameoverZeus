@@ -1,38 +1,26 @@
 #!/usr/bin/env python2.7
-import random
+# coding=UTF-8
 import time
 import unittest
 
 from api.BotnetComponents import CnCServer, Proxy, Bot
-from api.LayeredTopology import LayerDescription, LayeredTopology
+from api.LayeredTopology import *
+
 
 class GameoverTopologyTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        descs = [LayerDescription("CnC", 2), LayerDescription("Proxy", 5),
-                 LayerDescription("Bot", 10)]
-        cls.topology = LayeredTopology(descs)
+        factory = LayeredTopologyFactory([("CnC", 2, {}), ("Proxy", 5, {}), ("Bot", 10, {})])
+        factory.buildLayer("CnC", 2, lambda nodename, net: CnCServer(net.getNodeByName(nodename)))
+        factory.buildLayer("Proxy", 5, lambda nodename, net: Proxy(net.getNodeByName(nodename),
+                                                                   random.choice(factory.layers[
+                                                                                     "CnC"].botdict.values())))  # TODO: Stattdessen in die Peerliste einfügen
+        factory.buildLayer("Bot", 10, lambda nodename, net: Bot(net.getNodeByName(nodename)))
 
-        for name in descs[0].getNamesOfBots():
-            currentbot = CnCServer(cls.topology.net.getNodeByName(name))
-            currentbot.start()
-            # cls.topology.layers["CnC"] = descs[0]
-            cls.topology.layers["CnC"].botdict[name] = currentbot
+        for bot in factory.layers["Bot"].botdict.values():
+            bot.peerlist.append(random.choice(factory.layers["Proxy"].botdict.values()))
 
-        for name in descs[1].getNamesOfBots():
-            currentbot = Proxy(cls.topology.net.getNodeByName(name),
-                               random.choice(cls.topology.layers["CnC"].botdict.values()))
-            currentbot.start()
-            # cls.topology.layers["Proxy"] = descs[1]
-            cls.topology.layers["Proxy"].botdict[name] = currentbot
-
-        for name in descs[2].getNamesOfBots():
-            currentbot = Bot(cls.topology.net.getNodeByName(name))
-            currentbot.peerlist.append(random.choice(cls.topology.layers["Proxy"].botdict.values()))
-            currentbot.start()
-            # cls.topology.layers["Proxy"] = descs[2]
-            cls.topology.layers["Bot"].botdict[name] = currentbot
-
+        cls.topology = factory.createTopology()
         time.sleep(6)
 
     @classmethod

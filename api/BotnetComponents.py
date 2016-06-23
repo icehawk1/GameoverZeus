@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=UTF-8
 from abc import ABCMeta, abstractmethod
 from mininet.node import Host
 

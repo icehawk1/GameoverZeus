@@ -1,24 +1,26 @@
 #!/usr/bin/python
+# coding=UTF-8
 import collections
+import random
 from mininet.net import Mininet
 from mininet.topo import Topo
 
+from BotnetComponents import BotnetComponent
+
 
 class LayeredTopology:
-    def __init__(self, layerdescriptions):
-        """:type layerdescriptions: Collection of LayerDescription"""
-        assert isinstance(layerdescriptions, collections.Iterable)
-        self.layers = dict()
-        (self.mntopo, self.net) = self.startMininet(layerdescriptions)
-        for desc in layerdescriptions:
-            self.layers[desc.name] = desc
+    def __init__(self, layers, mntopo, net):
+        """:type layers: dict of all the layers in this topology with their names as keys"""
+        assert isinstance(layers, dict)
+        self.layers = layers
+        self.mntopo = mntopo
+        self.net = net
+        self.startMininet(layers)
 
-    @staticmethod
-    def startMininet(layerdescriptions):
-        mntopo = InternalTopology(layerdescriptions)
-        net = Mininet(mntopo)
-        net.start()
-        return mntopo, net
+    def startMininet(self, layerdescriptions):
+        for layer in self.layers.values():
+            for bot in layer.botdict.values():
+                bot.start()
 
     def stop(self):
         for layer in self.layers.values():
@@ -27,7 +29,41 @@ class LayeredTopology:
         self.net.stop()
 
 
-class LayerDescription:
+class LayeredTopologyFactory:
+    def __init__(self, descs):
+        """:type descs: A list of 2-tuples that contain the name and the number of bots in each layer. This is needed to initialise mininet."""
+        self.layers = dict()
+        self.mntopo = InternalTopology(descs)
+        self.net = Mininet(self.mntopo)
+        self.net.start()
+
+    def buildLayer(self, name, numbots, instanceBuilder, **opts):
+        """
+        :type name: str
+        :type instanceBuilder: function or lambda that takes name as an argument and returns a subclass of BotnetComponent
+        :type numbots: integer
+        :type opts: dict
+        """
+        assert isinstance(numbots, int)
+        assert isinstance(name, str)
+        self.layers[name] = Layer(name, numbots, opts=opts)
+        botdict = dict()
+
+        for connected_bots in self.mntopo.botconnections.values():
+            for botname in connected_bots:
+                currentbot = instanceBuilder(botname, self.net)
+                assert isinstance(currentbot, BotnetComponent)
+                currentbot.start()
+                botdict[botname] = currentbot
+
+        self.layers[name].botdict = botdict
+        self.net.getNodeByName()
+
+    def createTopology(self):
+        return LayeredTopology(self.layers, self.mntopo, self.net)
+
+
+class Layer:
     """This class describes how a layer should look like when it is build.
     It does not represent an actual layer but is used by InternalTopology.build() to build a Layer"""
 
@@ -40,42 +76,52 @@ class LayerDescription:
         self.numbots = numbots
         self.opts = opts
         self.botdict = dict()
+        self.switch = None
 
     def getNameOfSwitch(self):
-        return "sw-%s" % self.name
+        assert self.switch is not None
+        return self.switch.name
 
     def getNamesOfBots(self):
-        return ["bot%s-%s" % (i, self.name) for i in range(self.numbots)]
+        return [bot.name for bot in self.botdict.values()]
 
 
-class Layer(LayerDescription):
-    def __init__(self, name, numbots, **opts):
-        LayerDescription.__init__(self, name, numbots, opts=opts)
-        self.botdict = dict()
+def constructNameOfSwitch(layername):
+    """Constructs the name of a bot from the name of the layer it is in"""
+    # Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-
+    return "sw%s-%s" % (random.randint(1, 1000), layername[:4])
 
+
+def constructNameOfBot(layername):
+    """Constructs the name of a bot from the name of the layer it is in"""
+    # Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-
+    return "b%s-%s" % (random.randint(1, 1000), layername[:5])
 
 class InternalTopology(Topo):
     """Internal class that actually implements the Topology. Is used by Mininet for callbacks. Should not be used outside this file."""
+    botconnections = dict()  # Saves which Hosts are connected to which switch
 
-    def __init__(self, desclist):
-        """:type desclist: Iterable collection of layer descriptions that instructs build on the layers it should build"""
+    def build(self, desclist=[]):
+        """Builds the topology.
+        :type desclist: Iterable collection of layer descriptions that instructs build on the layers it should build"""
         assert isinstance(desclist, collections.Iterable)
-        self.desclist = desclist
-        Topo.__init__(self)
 
-    def build(self):
-        """Builds the topology"""
-        for layer in self.desclist:
-            assert isinstance(layer.opts, dict)
-            if layer.opts is not None:
-                self.addSwitch(layer.getNameOfSwitch(), opts=layer.opts)
-            else:
-                self.addSwitch(layer.getNameOfSwitch())
+        for layer in desclist:
+            assert isinstance(layer[0], str)
+            assert isinstance(layer[1], int)
+            assert isinstance(layer[2], dict)
 
-        for i in range(1, len(self.desclist)):
-            self.addLink(self.desclist[i - 1].getNameOfSwitch(), self.desclist[i].getNameOfSwitch())
+        switches = []
+        for layer in desclist:
+            switchname = self.addSwitch(constructNameOfSwitch(layer[0]), opts=layer[2])
+            switches.append(switchname)
+            self.botconnections[switchname] = set()
 
-        for layer in self.desclist:
-            for botname in layer.getNamesOfBots():
+            for i in range(layer[1]):
+                botname = constructNameOfBot(layer[0])
                 self.addHost(botname)
-                self.addLink(botname, layer.getNameOfSwitch())
+                self.addLink(botname, switchname)
+                self.botconnections[switchname].add(botname)
+
+        for i in range(1, len(switches)):
+            self.addLink(switches[i - 1], switches[i])

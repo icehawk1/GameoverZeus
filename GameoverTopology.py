@@ -34,7 +34,7 @@ class GameoverTopology:
         self.net.stop()
 
     def build(self):
-        """A layered topology consisting of a CnC-LayerDescription, a Proxy-LayerDescription and a Bot-LayerDescription"""
+        """A layered topology consisting of a CnC-Layer, a Proxy-Layer and a Bot-Layer"""
         # TODO: Nicht mehr die Namen der Nodes verwenden um sie anzusprechen
 
         for i in range(self.num_cncservers):

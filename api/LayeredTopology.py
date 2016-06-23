@@ -1,41 +1,49 @@
 #!/usr/bin/python
 # coding=UTF-8
 import collections
+import logging
 import random
+import time
 from mininet.net import Mininet
 from mininet.topo import Topo
 
 from BotnetComponents import BotnetComponent
 
+mntopo = None
+net = None
 
 class LayeredTopology:
-    def __init__(self, layers, mntopo, net):
+    def __init__(self, layers):
         """:type layers: dict of all the layers in this topology with their names as keys"""
         assert isinstance(layers, dict)
         self.layers = layers
-        self.mntopo = mntopo
-        self.net = net
-        self.startMininet(layers)
+        self.startMininet()
 
-    def startMininet(self, layerdescriptions):
+    def startMininet(self):
         for layer in self.layers.values():
             for bot in layer.botdict.values():
                 bot.start()
+        time.sleep(5)
 
     def stop(self):
+        assert net is not None
         for layer in self.layers.values():
             for bot in layer.botdict.values():
                 bot.stop()
-        self.net.stop()
+        net.stop()
 
+    def pingAll(self):
+        return net.pingAll()
 
 class LayeredTopologyFactory:
     def __init__(self, descs):
         """:type descs: A list of 2-tuples that contain the name and the number of bots in each layer. This is needed to initialise mininet."""
         self.layers = dict()
-        self.mntopo = InternalTopology(descs)
-        self.net = Mininet(self.mntopo)
-        self.net.start()
+        global mntopo, net
+        mntopo = InternalTopology(descs)
+        net = Mininet(mntopo)
+        net.start()
+        logging.info("Mininet started")
 
     def buildLayer(self, name, numbots, instanceBuilder, **opts):
         """
@@ -49,18 +57,18 @@ class LayeredTopologyFactory:
         self.layers[name] = Layer(name, numbots, opts=opts)
         botdict = dict()
 
-        for connected_bots in self.mntopo.botconnections.values():
+        for connected_bots in mntopo.botconnections.values():
             for botname in connected_bots:
-                currentbot = instanceBuilder(botname, self.net)
+                currentbot = instanceBuilder(botname, net)
                 assert isinstance(currentbot, BotnetComponent)
                 currentbot.start()
                 botdict[botname] = currentbot
 
         self.layers[name].botdict = botdict
-        self.net.getNodeByName()
+        net.getNodeByName()
 
     def createTopology(self):
-        return LayeredTopology(self.layers, self.mntopo, self.net)
+        return LayeredTopology(self.layers)
 
 
 class Layer:

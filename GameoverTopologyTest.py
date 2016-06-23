@@ -1,10 +1,10 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import time
+import random
 import unittest
 
 from api.BotnetComponents import CnCServer, Proxy, Bot
-from api.LayeredTopology import *
+from api.LayeredTopology import LayeredTopologyFactory
 
 
 class GameoverTopologyTest(unittest.TestCase):
@@ -21,7 +21,6 @@ class GameoverTopologyTest(unittest.TestCase):
             bot.peerlist.append(random.choice(factory.layers["Proxy"].botdict.values()))
 
         cls.topology = factory.createTopology()
-        time.sleep(6)
 
     @classmethod
     def tearDownClass(cls):
@@ -30,7 +29,7 @@ class GameoverTopologyTest(unittest.TestCase):
     #@unittest.skip("Takes long if it fails")
     def testPingAll(self):
         """test if pingAll succeeds without packet loss"""
-        packet_loss = self.topology.net.pingAll()
+        packet_loss = self.topology.pingAll()
         self.assertEquals(0, packet_loss)
 
     def testCommunicationFromBotToCnCServer(self):

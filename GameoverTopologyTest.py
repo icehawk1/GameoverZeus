@@ -12,13 +12,13 @@ class GameoverTopologyTest(unittest.TestCase):
     def setUpClass(cls):
         factory = LayeredTopologyFactory([("CnC", 2, {}), ("Proxy", 5, {}), ("Bot", 10, {})])
         factory.buildLayer("CnC", 2, lambda nodename, net: CnCServer(net.getNodeByName(nodename)))
-        factory.buildLayer("Proxy", 5, lambda nodename, net: Proxy(net.getNodeByName(nodename),
-                                                                   random.choice(factory.layers[
-                                                                                     "CnC"].botdict.values())))  # TODO: Stattdessen in die Peerliste einfügen
+        factory.buildLayer("Proxy", 5, lambda nodename, net: Proxy(net.getNodeByName(nodename)))
         factory.buildLayer("Bot", 10, lambda nodename, net: Bot(net.getNodeByName(nodename)))
 
         for bot in factory.layers["Bot"].botdict.values():
             bot.peerlist.append(random.choice(factory.layers["Proxy"].botdict.values()))
+        for proxy in factory.layers["Proxy"].botdict.values():
+            proxy.peerlist.append(random.choice(factory.layers["CnC"].botdict.values()))
 
         cls.topology = factory.createTopology()
 

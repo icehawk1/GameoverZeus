@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding=UTF-8
+import random
 from abc import ABCMeta, abstractmethod
 from mininet.node import Host
 
@@ -33,30 +34,27 @@ class Bot(BotnetComponent):
         pass
 
 
-class Proxy(BotnetComponent):
-    def __init__(self, hostinstance, cncserver):
+class Proxy(Bot):
+    def __init__(self, hostinstance):
         """
         :type hostinstance: Host
-        :type cncserver: CnCServer
         """
-        assert isinstance(hostinstance, Host)
-        assert isinstance(cncserver, CnCServer)
-        self.hostinstance = hostinstance
-        self.cncserver = cncserver
+        Bot.__init__(self, hostinstance)
 
     def start(self):
+        assert len(self.peerlist) > 0
+        cncserver = random.choice(self.peerlist)
         self.hostinstance.cmd(
-            'mitmdump -p 8000 -q --anticache -R "http://%s:8000" &' % self.cncserver.hostinstance.IP())
+            'mitmdump -p 8000 -q --anticache -R "http://%s:8000" &' % cncserver.hostinstance.IP())
 
     def stop(self):
         self.hostinstance.cmd("kill %mitmdump")
 
 
-class CnCServer(BotnetComponent):
+class CnCServer(Bot):
     def __init__(self, hostinstance):
         """:type hostinstance: Host"""
-        assert isinstance(hostinstance, Host)
-        self.hostinstance = hostinstance
+        Bot.__init__(self, hostinstance)
 
     def start(self):
         self.hostinstance.cmd('python -m SimpleHTTPServer 8000 &')

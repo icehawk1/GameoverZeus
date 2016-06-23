@@ -32,7 +32,8 @@ class LayeredTopology:
                 bot.stop()
         net.stop()
 
-    def pingAll(self):
+    @staticmethod
+    def pingAll():
         return net.pingAll()
 
 class LayeredTopologyFactory:
@@ -61,7 +62,6 @@ class LayeredTopologyFactory:
             for botname in connected_bots:
                 currentbot = instanceBuilder(botname, net)
                 assert isinstance(currentbot, BotnetComponent)
-                currentbot.start()
                 botdict[botname] = currentbot
 
         self.layers[name].botdict = botdict

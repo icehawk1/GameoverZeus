@@ -70,5 +70,5 @@ class CnCServer(Runnable):
 
 if __name__ == "__main__":
     cncserver = CnCServer("cnc1")
-    thread = Thread(name="Runnable mycnc1", target=cncserver.start, args=(8081,))
+    thread = Thread(name="Runnable mycnc1", target=cncserver.start)
     thread.start()

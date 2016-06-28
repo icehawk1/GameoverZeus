@@ -1,135 +1,99 @@
 #!/usr/bin/python
 # coding=UTF-8
-import collections, logging, random, time
-from mininet.net import Mininet
-from mininet.topo import Topo
-from threading import Thread
-from actors.AbstractBot import Runnable
+"""This file defines a layered Topology. See class LayeredTopology for details."""
 
-mntopo = None
-net = None
+import logging, random, time
+from mininet.net import Mininet, Controller
 
-class LayeredTopology:
-    def __init__(self, layers):
-        """:type layers: dict of all the layers in this topology with their names as keys"""
-        assert isinstance(layers, dict)
-        self.layers = layers
-        self.startMininet()
+from AbstractTopology import AbstractTopology
 
-    def startMininet(self):
+
+class LayeredTopology(AbstractTopology):
+    """This class defines a base Topology where the botnet is separated into layers. Each layer has its own switch and the
+    switches are connected serially from the first to the last layer. Therefore all traffic from a layer n host to a
+    layer n+k host has to go to all the switches for the inbetween layers.
+    The Topology allows an arbitrary number of named layers with an arbitrary number of bots each.
+    It will also run some command on all hosts in each layer. All hosts of one layer will run the same command but it may
+     differ between layers.
+
+    To use the class, first add a few layers and then call start(). Not the other way around."""
+
+    def __init__(self, mininet=Mininet(controller=Controller)):
+        """
+        Initialises the LayeredTopology, so that layers can be added.
+        :type mininet: Mininet
+        """
+        AbstractTopology.__init__(self, mininet)
+        self.layers = dict()
+        self.started = False
+
+    def addLayer(self, layername, num_bots=0, command=None, opts={}):
+        """Adds a layer to the topology.
+        :param layername: The name of this layer. Used to give the mininet hosts some meaningful names. Should not be long.
+        :param num_bots: The number of bots in this layer.
+        :param command: The command to run on each bot in this layer
+        :param opts: Some additional options to give to Mininet.addHost() and Mininet.addSwitch()
+
+        :type command: str
+        :type opts: dict"""
+        assert not self.started, "You can't add new layers after the network has been started"
+
+        current_layer = _Layer(layername, num_bots, command)
+        self.layers[layername] = current_layer
+        switch = self.mininet.addSwitch(current_layer.switchname, opts=opts)
+
+        for i in range(num_bots):
+            botname = _constructNameOfBot(current_layer.name)
+            self.mininet.addHost(botname, opts=opts)
+            self.mininet.addLink(botname, switch)
+            self.layers[layername].botlist.append(self.mininet.getNodeByName(botname))
+
+    def _connectSwitches(self):
+        """Connects the switches in the different layers with each other, so that bots on different switches can talk to each other."""
+        switchnames = [layer.switchname for layer in self.layers.values()]
+        # Important: The switches should NOT be connected in a ring. Mininet doesn't like that!
+        for i in range(1, len(switchnames)):
+            self.mininet.addLink(switchnames[i - 1], switchnames[i])
+
+    def start(self):
+        """Starts operation of the defined Topology. It will also start the command for each of the layers."""
+        self.started = True
+        self._connectSwitches()
+
+        self.mininet.start()
         for layer in self.layers.values():
-            for bot in layer.botdict.values():
-                thread = Thread(name="Runnable cnc1", target=bot.start, args=(8081,))
-                thread.start()
+            for bot in layer.botlist:
+                bot.cmd("%s &" % layer.command)
         time.sleep(5)
 
     def stop(self):
-        assert net is not None
-        for layer in self.layers.values():
-            for bot in layer.botdict.values():
-                bot.stop()
-        time.sleep(1)
-        net.stop()
-
-    @staticmethod
-    def pingAll():
-        return net.pingAll()
-
-class LayeredTopologyFactory:
-    def __init__(self, descs):
-        """:type descs: A list of 2-tuples that contain the name and the number of bots in each layer. This is needed to initialise mininet."""
-        self.layers = dict()
-        global mntopo, net
-        self.layerdescriptions = descs
-        mntopo = InternalTopology(descs)
-        net = Mininet(mntopo)
-        net.start()
-        logging.info("Mininet started")
-
-    def buildLayer(self, name, numbots, instanceBuilder, **opts):
-        """
-        :type name: str
-        :type instanceBuilder: function or lambda that takes name as an argument and returns a subclass of BotnetComponent
-        :type opts: dict
-        :type numbots: int
-        """
-        #        assert self.layerdescriptions.has_key(name)
-        self.layers[name] = Layer(name, numbots, opts=opts)
-        botdict = dict()
-
-        for connected_bots in mntopo.botconnections.values():
-            for botname in connected_bots:
-                currentbot = instanceBuilder(botname, net)
-                assert isinstance(currentbot, Runnable)
-                # botdict[botname] = Thread(name="cnc_comm_thread", target=currentbot.start, args=(currentbot,))
-                botdict[botname] = currentbot
-
-        self.layers[name].botdict = botdict
-        net.getNodeByName()
-
-    def createTopology(self):
-        return LayeredTopology(self.layers)
+        self.mininet.stop()
 
 
-class Layer:
-    """This class describes how a layer should look like when it is build.
-    It does not represent an actual layer but is used by InternalTopology.build() to build a Layer"""
+class _Layer(object):
+    """Base class for value objects that each describe one _Layer in the layered topology."""
 
-    def __init__(self, name, numbots, **opts):
-        """:type numbots: integer"""
-        assert isinstance(numbots, int)
-        assert isinstance(name, str)
+    def __init__(self, name, num_bots=0, command=None, opts={}):
         self.name = name
-        self.prefix = name[0:10]
-        self.numbots = numbots
+        self.num_bots = num_bots
+        if command is not None:
+            self.command = command
+        else:
+            self.command = "echo %s" % self.name
         self.opts = opts
-        self.botdict = dict()
-        self.switch = None
 
-    def getNameOfSwitch(self):
-        assert self.switch is not None
-        return self.switch.name
-
-    def getNamesOfBots(self):
-        return [bot.name for bot in self.botdict.values()]
+        self.botlist = []
+        self.switchname = _constructNameOfSwitch(name)
 
 
-def constructNameOfSwitch(layername):
-    """Constructs the name of a bot from the name of the layer it is in"""
+def _constructNameOfSwitch(layername):
+    """Constructs the name of a bot from the name of the layer it is in."""
     # Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-
-    return "sw%s-%s" % (random.randint(1, 1000), layername[:4])
+    return "sw%s" % layername[:8]
 
 
-def constructNameOfBot(layername):
-    """Constructs the name of a bot from the name of the layer it is in"""
+def _constructNameOfBot(layername):
+    """Constructs the name of a bot from the name of the layer it is in.
+    Note: This function will generate a different name each time it is run."""
     # Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-
     return "b%s-%s" % (random.randint(1, 999), layername[:5])
-
-class InternalTopology(Topo):
-    """Internal class that actually implements the Topology. Is used by Mininet for callbacks. Should not be used outside this file."""
-    botconnections = dict()  # Saves which Hosts are connected to which switch
-
-    def build(self, desclist=[]):
-        """Builds the topology.
-        :type desclist: Iterable collection of layer descriptions that instructs build on the layers it should build"""
-        assert isinstance(desclist, collections.Iterable)
-
-        for layer in desclist:
-            assert isinstance(layer[0], str)
-            assert isinstance(layer[1], int)
-            assert isinstance(layer[2], dict)
-
-        switches = []
-        for layer in desclist:
-            switchname = self.addSwitch(constructNameOfSwitch(layer[0]), opts=layer[2])
-            switches.append(switchname)
-            self.botconnections[switchname] = set()
-
-            for i in range(layer[1]):
-                botname = constructNameOfBot(layer[0])
-                self.addHost(botname)
-                self.addLink(botname, switchname)
-                self.botconnections[switchname].add(botname)
-
-        for i in range(1, len(switches)):
-            self.addLink(switches[i - 1], switches[i])

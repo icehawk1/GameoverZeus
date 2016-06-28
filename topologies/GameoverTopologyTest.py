@@ -1,46 +1,39 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import random, unittest, logging
+import random, unittest, logging, time
 
-from topologies.LayeredTopology import LayeredTopologyFactory
+import emu_config
+from LayeredTopology import LayeredTopology
 from actors.CnCServer import CnCServer
 from actors.Bot import Bot
 
 class GameoverTopologyTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        factory = LayeredTopologyFactory([("CnC", 2, {}), ("Proxy", 5, {}), ("Bot", 10, {})])
-        factory.buildLayer("CnC", 2, lambda nodename, net: CnCServer(name=nodename))
-        factory.buildLayer("Proxy", 5,
-                           lambda nodename, net: Bot(name=nodename))  # TODO: Durch richtige Proxies ersetzen
-        factory.buildLayer("Bot", 10, lambda nodename, net: Bot(name=nodename))
-
-        for bot in factory.layers["Bot"].botdict.values():
-            assert isinstance(bot.peerlist, list), "type(bot.peerlist): %s" % type(bot.peerlist)
-            bot.peerlist.append(random.choice(factory.layers["CnC"].botdict.values()))
-        for proxy in factory.layers["Proxy"].botdict.values():
-            proxy.peerlist.append(random.choice(factory.layers["CnC"].botdict.values()))
-
-        cls.topology = factory.createTopology()
+        cls.zeustopo = LayeredTopology()
+        cls.zeustopo.addLayer("CnC", 2, emu_config.basedir + "/actors/CnCServer.py")
+        cls.zeustopo.addLayer("Bot", 6, emu_config.basedir + "/actors/Bot.py")
+        cls.zeustopo.addLayer("DNS", 1, emu_config.basedir + "/actors/nameserver.py")
+        cls.zeustopo.start()
 
     @classmethod
     def tearDownClass(cls):
-        cls.topology.stop()
+        cls.zeustopo.stop()
 
-    #@unittest.skip("Takes long if it fails")
+    # @unittest.skip("Takes long if it fails")
     def testPingAll(self):
         """test if pingAll succeeds without packet loss"""
-        packet_loss = self.topology.pingAll()
+        packet_loss = self.zeustopo.mininet.pingAll()
         self.assertEquals(0, packet_loss)
 
     def testCommunicationFromBotToCnCServer(self):
-        bot = random.choice(self.topology.layers["Bot"].botdict.values())
-        proxy = random.choice(bot.peerlist)
-        print proxy, proxy.hostinstance.IP()
-        wgetoutput = bot.hostinstance.cmd("wget -O - %s:8000" % proxy.hostinstance.IP())
-        print "wgetoutput: " + wgetoutput
-        self.assertTrue("200 OK" in wgetoutput)
-        self.assertTrue("Directory listing for /" in wgetoutput)
+        bot = random.choice(self.zeustopo.layers["Bot"].botlist)
+        cncserver = random.choice(self.zeustopo.layers["CnC"].botlist)
+        self.assertTrue("python2.7" in cncserver.cmd("ps"))
+
+        wgetoutput = bot.cmd("wget -O - %s:8080" % cncserver.IP())
+        self.assertTrue("200 OK" in wgetoutput, "wget: %s" % wgetoutput)
+        self.assertTrue("I am a CnC server" in wgetoutput, "wget: %s" % wgetoutput)
 
     def testMeasureStealthyness(self):
         pass

@@ -3,7 +3,7 @@
 import unittest, subprocess, time, logging
 import dns.resolver
 from tornado.httpclient import HTTPClient
-
+import emu_config
 
 class GameoverTopologyTest(unittest.TestCase):
     @classmethod
@@ -15,7 +15,7 @@ class GameoverTopologyTest(unittest.TestCase):
         cls.http_client = HTTPClient()
 
     def setUp(self):
-        self.nameserver_proc = subprocess.Popen(["python", "nameserver.py"])
+        self.nameserver_proc = subprocess.Popen(["python", emu_config.basedir + "/actors/nameserver.py"])
         time.sleep(3)
 
     def tearDown(self):

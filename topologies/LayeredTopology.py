@@ -1,13 +1,10 @@
 #!/usr/bin/python
 # coding=UTF-8
-import collections
-import logging
-import random
-import time
+import collections, logging, random, time
 from mininet.net import Mininet
 from mininet.topo import Topo
-
-from BotnetComponents import BotnetComponent
+from threading import Thread
+from actors.AbstractBot import Runnable
 
 mntopo = None
 net = None
@@ -22,7 +19,8 @@ class LayeredTopology:
     def startMininet(self):
         for layer in self.layers.values():
             for bot in layer.botdict.values():
-                bot.start()
+                thread = Thread(name="Runnable cnc1", target=bot.start, args=(8081,))
+                thread.start()
         time.sleep(5)
 
     def stop(self):
@@ -30,6 +28,7 @@ class LayeredTopology:
         for layer in self.layers.values():
             for bot in layer.botdict.values():
                 bot.stop()
+        time.sleep(1)
         net.stop()
 
     @staticmethod
@@ -41,6 +40,7 @@ class LayeredTopologyFactory:
         """:type descs: A list of 2-tuples that contain the name and the number of bots in each layer. This is needed to initialise mininet."""
         self.layers = dict()
         global mntopo, net
+        self.layerdescriptions = descs
         mntopo = InternalTopology(descs)
         net = Mininet(mntopo)
         net.start()
@@ -50,18 +50,18 @@ class LayeredTopologyFactory:
         """
         :type name: str
         :type instanceBuilder: function or lambda that takes name as an argument and returns a subclass of BotnetComponent
-        :type numbots: integer
         :type opts: dict
+        :type numbots: int
         """
-        assert isinstance(numbots, int)
-        assert isinstance(name, str)
+        #        assert self.layerdescriptions.has_key(name)
         self.layers[name] = Layer(name, numbots, opts=opts)
         botdict = dict()
 
         for connected_bots in mntopo.botconnections.values():
             for botname in connected_bots:
                 currentbot = instanceBuilder(botname, net)
-                assert isinstance(currentbot, BotnetComponent)
+                assert isinstance(currentbot, Runnable)
+                # botdict[botname] = Thread(name="cnc_comm_thread", target=currentbot.start, args=(currentbot,))
                 botdict[botname] = currentbot
 
         self.layers[name].botdict = botdict
@@ -103,7 +103,7 @@ def constructNameOfSwitch(layername):
 def constructNameOfBot(layername):
     """Constructs the name of a bot from the name of the layer it is in"""
     # Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-
-    return "b%s-%s" % (random.randint(1, 1000), layername[:5])
+    return "b%s-%s" % (random.randint(1, 999), layername[:5])
 
 class InternalTopology(Topo):
     """Internal class that actually implements the Topology. Is used by Mininet for callbacks. Should not be used outside this file."""

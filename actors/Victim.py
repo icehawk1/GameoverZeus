@@ -1,10 +1,13 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
 import logging, os, random, time
-import tornado.ioloop
+from tornado.ioloop import IOLoop
 from blinker import signal
 from threading import Thread
-from tornado.web import RequestHandler
+import tornado.web
+
+from AbstractBot import Runnable
+import emu_config
 
 probability_of_infection = 0.5
 victimid = random.randint(1, 1000)
@@ -18,12 +21,12 @@ def make_app():
     ], autoreload=True)
 
 
-class MainHandler(RequestHandler):
+class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("I am a victim")
 
 
-class InfectionHandler(RequestHandler):
+class InfectionHandler(tornado.web.RequestHandler):
     registered_bots = dict()
 
     def get(self):
@@ -43,13 +46,27 @@ class InfectionHandler(RequestHandler):
 
 def replace_with_bot(args):
     time.sleep(2)
-    os.execv("./Bot.py", args)
+    os.execv(emu_config.basedir + "/actors/Bot.py", args)
+
+
+class Victim(Runnable):
+    def __init__(self, name=""):
+        Runnable.__init__(self, name)
+
+    def start(self, port=8080):
+        """Implements start() from the superclass."""
+        print type(self)
+        app = make_app()
+        app.listen(port)
+        IOLoop.current().start()
+
+    def stop(self):
+        """Implements stop() from the superclass."""
+        IOLoop.current().stop()
 
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-    logging.info("Victim started")
-
-    app = make_app()
-    app.listen(8081)
-    tornado.ioloop.IOLoop.current().start()
+    victim = Victim("victim1")
+    thread = Thread(name="Runnable victim1", target=victim.start, args=(8081,))
+    thread.start()

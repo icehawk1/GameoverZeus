@@ -1,9 +1,10 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
 import logging, time, string, json
-import tornado.ioloop
-from tornado.web import RequestHandler
-
+import tornado.web
+from tornado.ioloop import IOLoop
+from AbstractBot import Runnable
+from threading import Thread
 
 def make_app():
     return tornado.web.Application([
@@ -19,12 +20,12 @@ class BotInformation(object):
         self.botid = botid
 
 
-class MainHandler(RequestHandler):
+class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("I am a CnC server")
 
 
-class CurrentCommandHandler(RequestHandler):
+class CurrentCommandHandler(tornado.web.RequestHandler):
     def get(self):
         if "json" in string.lower(self.request.headers.get("Accept")):
             self.set_header("Content-Type", "application/json")
@@ -34,7 +35,7 @@ class CurrentCommandHandler(RequestHandler):
             self.write("Command: hello there")
 
 
-class RegisterHandler(RequestHandler):
+class RegisterHandler(tornado.web.RequestHandler):
     registered_bots = dict()
 
     def get(self):
@@ -52,8 +53,22 @@ class RegisterHandler(RequestHandler):
         logging.info("Bot %s has registered itself with the server" % botid)
 
 
+class CnCServer(Runnable):
+    def __init__(self, name=""):
+        Runnable.__init__(self, name)
+
+    def start(self, port=8080):
+        """Implements start() from the superclass."""
+        app = make_app()
+        app.listen(port)
+        IOLoop.current().start()
+
+    def stop(self):
+        """Implements stop() from the superclass."""
+        IOLoop.current().stop()
+
+
 if __name__ == "__main__":
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-    app = make_app()
-    app.listen(8080)
-    tornado.ioloop.IOLoop.current().start()
+    cncserver = CnCServer("cnc1")
+    thread = Thread(name="Runnable mycnc1", target=cncserver.start, args=(8081,))
+    thread.start()

@@ -1,7 +1,5 @@
 #!/usr/bin/env python2.7
-import os
-import subprocess
-import unittest
+import os, importlib, subprocess, unittest
 from distutils.spawn import find_executable
 
 
@@ -13,6 +11,15 @@ class SanityCheck(unittest.TestCase):
         required_commands = ["mn", "python", "ovs-testcontroller", "ovs-docker", "docker", "mitmdump", "maradns"]
         for cmd in required_commands:
             self.assertTrue(find_executable(cmd) or find_executable(cmd + ".exe"), "%s is not installed." % cmd)
+
+    def testRequiredPythonModulesAreInstalled(self):
+        """test if all required python modules are installed"""
+        required_modules = ["blinker", "tornado", "mininet", "twisted.names"]
+        for module in required_modules:
+            try:
+                importlib.import_module(module)
+            except ImportError, e:
+                self.fail("Module %s is not installed" % module)
 
     def testDefaultOpenflowControllerExists(self):
         """Checks whether a default Openflow Controller is defined"""

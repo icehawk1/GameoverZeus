@@ -29,13 +29,29 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 class CurrentCommandHandler(tornado.web.RequestHandler):
+    current_command = {}
+
     def get(self):
         if "json" in string.lower(self.request.headers.get("Accept")):
             self.set_header("Content-Type", "application/json")
-            self.write(json.dumps({"command": "printParams", "kwargs": {"hallo": "welt", "hello": "world"}}))
+            self.write(json.dumps(self.current_command))
         else:
             self.set_header("Content-Type", "text/plain")
             self.write("Command: hello there")
+
+    def post(self):
+        old_command = self.current_command
+        # noinspection PyBroadException
+        try:
+            self.current_command["command"] = self.get_body_argument("command")
+            self.current_command["kwargs"] = json.loads(self.get_body_argument("kwargs"))
+            logging.debug("The CnC-Server has received a new command: " % self.current_command)
+        except:
+            # rolls the change back
+            self.current_command = old_command
+
+        self.set_header("Content-Type", "text/plain")
+        self.write("OK")
 
 
 class RegisterHandler(tornado.web.RequestHandler):

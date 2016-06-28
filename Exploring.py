@@ -1,9 +1,11 @@
 #!/usr/bin/env python2.7
-from utils.NetworkUtils import NetworkAddress
-import pickle
+from actors import Bot_Commands
 
-orig = NetworkAddress("blub", 1111)
-dump = "" + pickle.dumps(orig)
-copy = pickle.loads(dump)
-assert copy.host == "blub"
-assert copy.port == 1111
+
+def urg(x):
+    print "x^2 == %d" % (x ** 2)
+
+
+Bot_Commands.pengbumm = urg
+
+Bot_Commands.pengbumm(3)

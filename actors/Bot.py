@@ -20,9 +20,10 @@ class Bot(AbstractBot):
             try:
                 tmp = requests.get("http://%s:%s/current_command" % (random.choice(self.peerlist), emu_config.PORT),
                                    headers={"Accept": "application/json"})
+                print "tmp.text: ", tmp.text
                 response = json.loads(tmp.text)
 
-                if isinstance(response, dict) and response.has_key("command"):
+                if isinstance(response, dict) and response.has_key("command") and response["command"] != "":
                     methodToCall = getattr(Bot_Commands, response["command"])
                     try:
                         methodToCall(**response["kwargs"])

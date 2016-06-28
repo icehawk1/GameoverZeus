@@ -4,8 +4,6 @@ import random, unittest, logging, time
 
 import emu_config
 from LayeredTopology import LayeredTopology
-from actors.CnCServer import CnCServer
-from actors.Bot import Bot
 
 class GameoverTopologyTest(unittest.TestCase):
     @classmethod
@@ -29,7 +27,6 @@ class GameoverTopologyTest(unittest.TestCase):
     def testCommunicationFromBotToCnCServer(self):
         bot = random.choice(self.zeustopo.layers["Bot"].botlist)
         cncserver = random.choice(self.zeustopo.layers["CnC"].botlist)
-        self.assertTrue("python2.7" in cncserver.cmd("ps"))
 
         wgetoutput = bot.cmd("wget -O - %s:8080" % cncserver.IP())
         self.assertTrue("200 OK" in wgetoutput, "wget: %s" % wgetoutput)

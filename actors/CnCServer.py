@@ -1,10 +1,13 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import logging, time, string, json
+import logging, time, string, json, sys
 import tornado.web
 from tornado.ioloop import IOLoop
-from AbstractBot import Runnable
 from threading import Thread
+
+from AbstractBot import Runnable
+import emu_config
+from utils.NetworkUtils import NetworkAddressSchema
 
 def make_app():
     return tornado.web.Application([
@@ -39,8 +42,12 @@ class RegisterHandler(tornado.web.RequestHandler):
     registered_bots = dict()
 
     def get(self):
-        self.set_header("Content-Type", "text/plain")
-        self.write("Total number of known clients: %d" % len(self.registered_bots))
+        if "json" in string.lower(self.request.headers.get("Accept")):
+            self.set_header("Content-Type", "application/json")
+            self.write(json.dumps({"num_clients": len(self.registered_bots)}))
+        else:
+            self.set_header("Content-Type", "text/plain")
+            self.write("Total number of known clients: %d" % len(self.registered_bots))
 
     def post(self):
         self.set_header("Content-Type", "text/plain")
@@ -50,14 +57,14 @@ class RegisterHandler(tornado.web.RequestHandler):
         else:
             self.registered_bots[botid] = BotInformation(botid)
         self.write("OK")
-        logging.info("Bot %s has registered itself with the server" % botid)
+        logging.debug("Bot %s has registered itself with the server" % botid)
 
 
 class CnCServer(Runnable):
     def __init__(self, name=""):
         Runnable.__init__(self, name)
 
-    def start(self, port=8080):
+    def start(self, port=emu_config.PORT):
         """Implements start() from the superclass."""
         app = make_app()
         app.listen(port)
@@ -70,5 +77,13 @@ class CnCServer(Runnable):
 
 if __name__ == "__main__":
     cncserver = CnCServer("cnc1")
-    thread = Thread(name="Runnable mycnc1", target=cncserver.start)
+
+    schema = NetworkAddressSchema()
+    if len(sys.argv) >= 2:
+        cncaddress = schema.loads(sys.argv[1]).data
+        target_arguments = (cncaddress.port,)
+    else:
+        target_arguments = ()
+
+    thread = Thread(name="Runnable mycnc1", target=cncserver.start, args=target_arguments)
     thread.start()

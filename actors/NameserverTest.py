@@ -8,7 +8,7 @@ import emu_config
 class GameoverTopologyTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.dnsresolver = dns.resolver.Resolver()
+        cls.dnsresolver = dns.resolver.Resolver(configure=False)
         cls.dnsresolver.nameservers = ['127.0.0.1']
         cls.dnsresolver.port = 10053
 
@@ -24,6 +24,7 @@ class GameoverTopologyTest(unittest.TestCase):
 
     def testResolveName(self):
         response = self.dnsresolver.query("lokaler_horst", "A")
+
         self.assertEquals(len(response), 1)
         self.assertEquals("127.0.0.1", response[0].to_text())
 
@@ -41,5 +42,5 @@ class GameoverTopologyTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
+    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.DEBUG)
     unittest.main()

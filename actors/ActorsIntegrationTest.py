@@ -31,7 +31,6 @@ class ActorsIntegrationTest(unittest.TestCase):
         self.botProcess1.kill()
         self.botProcess2.kill()
 
-    @unittest.skip("Temporary skip to save time")
     def testHasBotRegistered(self):
         na = NetworkAddress()
         cnc_url = "http://%s:%s/register" % (na.host, na.port)
@@ -58,3 +57,4 @@ class ActorsIntegrationTest(unittest.TestCase):
             line = read_from.readline()
             print "line: ", line
             self.assertEquals(16, int(line))
+

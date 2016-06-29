@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import logging, random, time, json, string
+import logging, random, time, json
 import blinker
 from threading import Thread
 import requests
@@ -8,7 +8,7 @@ import sys
 
 from AbstractBot import AbstractBot, executeBot
 import Bot_Commands, emu_config
-from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
+from utils.NetworkUtils import NetworkAddressSchema
 
 class Bot(AbstractBot):
     def __init__(self, peerlist=[], name=""):

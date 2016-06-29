@@ -1,7 +1,8 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import os, logging, sys, pickle
-from blinker import signal
+import os, logging, sys
+
+assert os.environ["DEBUSSY"] == "1"
 from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
 
 def stop():

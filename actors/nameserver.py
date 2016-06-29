@@ -8,6 +8,8 @@ from threading import Thread
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application
 
+import emu_config
+
 known_hosts = {"heise.de": b"11.22.33.44", "lokaler_horst": b"127.0.0.1"}
 rr_update_signal = signal("rr-update")
 
@@ -23,7 +25,7 @@ class DynamicResolver(object):
     def query(self, query, timeout=None):
         """Calculate the response to a query."""
         requested_hostname = query.name.name
-        logging.info("Received query for %s" % requested_hostname)
+        logging.debug("Received query for %s" % requested_hostname)
 
         if known_hosts.has_key(requested_hostname):
             answer = dns.RRHeader(name=requested_hostname,
@@ -39,12 +41,12 @@ class DynamicResolver(object):
 @rr_update_signal.connect
 def rrUpdate(sender, hostname="", address=""):
     known_hosts[hostname] = address
-    logging.info("Hostname %s is now known under address %s" % (hostname, address))
+    logging.debug("Hostname %s is now known under address %s" % (hostname, address))
 
 
 def runNameserver():
     """Run the DNS server."""
-    logging.info("Nameserver starts")
+    logging.debug("Nameserver starts")
     factory = server.DNSServerFactory(
         clients=[DynamicResolver()]
     )
@@ -78,9 +80,9 @@ def make_app():
 
 def runWebserver():
     """Run a webserver that allows to register additonal domain names"""
-    logging.info("Webserver starts")
+    logging.debug("Webserver starts")
     app = make_app()
-    app.listen(8080)
+    app.listen(emu_config.PORT)
     IOLoop.current().start()
 
 

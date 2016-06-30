@@ -1,0 +1,7 @@
+#!/usr/bin/env python2.7
+# coding=UTF-8
+from AbstractTopology import AbstractTopology
+
+
+class BriteTopology(AbstractTopology):
+    pass

@@ -1,14 +1,19 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import logging, random, time, json
 import blinker
-from threading import Thread
+import json
+import logging
+import random
 import requests
 import sys
+import time
+from threading import Thread
 
+import Bot_Commands
+import emu_config
 from AbstractBot import AbstractBot, executeBot
-import Bot_Commands, emu_config
 from utils.NetworkUtils import NetworkAddressSchema
+
 
 class Bot(AbstractBot):
     def __init__(self, peerlist=[], name=""):
@@ -20,7 +25,6 @@ class Bot(AbstractBot):
             try:
                 tmp = requests.get("http://%s:%s/current_command" % (random.choice(self.peerlist), emu_config.PORT),
                                    headers={"Accept": "application/json"})
-                print "tmp.text: ", tmp.text
                 response = json.loads(tmp.text)
 
                 if isinstance(response, dict) and response.has_key("command") and response["command"] != "":

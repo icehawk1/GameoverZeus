@@ -1,9 +1,12 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import unittest, tempfile, os
-from DotFileWriter import DotFileWriter
-from BriteFileReader import createGraphFromBriteFile
+import os
+import tempfile
+import unittest
+
 import emu_config
+from DotFileWriter import DotFileWriter
+from topologies.BriteTopology import createGraphFromBriteFile
 
 
 class DotFileWriterTest(unittest.TestCase):

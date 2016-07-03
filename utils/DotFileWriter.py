@@ -1,9 +1,11 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-from BriteFileReader import BriteGraphAccepter, createGraphFromBriteFile
+import logging
 import pygraphviz as pgv
-import sys, logging
+import sys
 from string import lower
+
+from topologies.BriteTopology import BriteGraphAccepter, createGraphFromBriteFile
 
 nodetype_to_color = {'RT_NODE': 'blue', 'RT_BORDER': 'red'}
 edgetype_to_color = {'E_RT': 'blue', 'E_AS': 'red'}

@@ -3,8 +3,8 @@
 import re, logging
 from abc import abstractmethod, ABCMeta
 
-emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
+emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
 def createGraphFromBriteFile(inputfilename, accepters):
     """Reads a BRITE output file and passes its contents to the accepters."""
@@ -37,7 +37,7 @@ def _readHeader(inputfile, accepters):
 
     # Parse second line
     # Model (1 - RTWaxman):  20 100 100 1  2  0.15000000596046448 0.20000000298023224 1 1 10.0 1024.0
-    regex = re.compile(r"Model\s*\(\d+\s*-\s*([\w_-]+)\):.*")
+    regex = re.compile(r"Model\s*\(\d+\s*-\s*([\w_-]+)\).*")
     # regex = re.compile(r"Model\s*\(\d+\s*-\s*([\w_-])\):.*")
     match = regex.match(secondline)
     assert match is not None, "Second line of file %s is invalid: %s" % (inputfile.name, secondline)
@@ -45,6 +45,11 @@ def _readHeader(inputfile, accepters):
 
     for acc in accepters:
         acc.writeHeader(int(num_nodes), int(num_edges), str(modelname))
+
+    while True:
+        line = inputfile.readline()
+        if not line.startswith("Model"):
+            break
 
 
 def _readNodes(inputfile, accepters):
@@ -125,7 +130,7 @@ class BriteGraphAccepter(object):
         assert self.wroteHeader, "You have to invoke writeHeader() first"
 
     @abstractmethod
-    def addEdge(self, edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, type):
+    def addEdge(self, edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype):
         assert self.wroteHeader, "You have to invoke writeHeader() first"
 
     @abstractmethod

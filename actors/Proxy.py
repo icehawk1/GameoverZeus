@@ -1,6 +1,10 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import os, logging, sys
+"""This file runs a reverse proxy for the web application on the address given on the command line"""
+
+import logging
+import os
+import sys
 
 assert os.environ["DEBUSSY"] == "1"
 from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema

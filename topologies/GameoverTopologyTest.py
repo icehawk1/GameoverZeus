@@ -1,10 +1,19 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import random, unittest, logging, time, os
+"""This file tests a topology where 6 Bots talk to 2 CnC servers via a number of Proxies. The names are resolved via
+one nameserver."""
+
+import logging
+import os
+import random
+import time
+import unittest
+
 from timeout_decorator import timeout
 
-import emu_config
 from LayeredTopology import LayeredTopology
+from resources import emu_config
+
 
 class GameoverTopologyTest(unittest.TestCase):
     @classmethod

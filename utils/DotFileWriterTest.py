@@ -1,11 +1,13 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
+"""Tests whether the SVG and PDF is actually generated"""
+
 import os
 import tempfile
 import unittest
 
-import emu_config
 from DotFileWriter import DotFileWriter
+from resources import emu_config
 from topologies.BriteTopology import createGraphFromBriteFile
 
 

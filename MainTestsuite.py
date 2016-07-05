@@ -1,7 +1,12 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import unittest, logging, os
-import emu_config
+"""Invokes all Tests in this project"""
+
+import logging
+import os
+import unittest
+
+from resources import emu_config
 
 logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
 os.environ["DEBUSSY"] = "1"

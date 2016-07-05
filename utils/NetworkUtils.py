@@ -1,10 +1,11 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
+"""Some utility functions related to mininet networks"""
 import random
 
 from marshmallow import Schema, fields, post_load
 
-import emu_config
+from resources import emu_config
 
 
 class NetworkAddress(object):

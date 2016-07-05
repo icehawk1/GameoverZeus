@@ -1,13 +1,19 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import logging, os, random, time
-from tornado.ioloop import IOLoop
+"""This file implements a victim. A victim is a machine that randomly surfes the net and may fall prey to an attack by
+a botnet. If it is attacked sucessfully it changes to a bot."""
+
+import logging
+import os
+import random
+import time
+import tornado.web
 from blinker import signal
 from threading import Thread
-import tornado.web
+from tornado.ioloop import IOLoop
 
 from AbstractBot import Runnable
-import emu_config
+from resources import emu_config
 
 probability_of_infection = 0.5
 victimid = random.randint(1, 1000)
@@ -16,17 +22,12 @@ victimid = random.randint(1, 1000)
 def make_app():
     signal("got-infected").connect(replace_with_bot)
     return tornado.web.Application([
-        ("/", MainHandler),
         ("/infect", InfectionHandler)
     ], autoreload=True)
 
 
-class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.write("I am a victim")
-
-
 class InfectionHandler(tornado.web.RequestHandler):
+    """Handles an infection attempt and lets this attempt be successful with a predefined probability"""
     registered_bots = dict()
 
     def get(self):
@@ -45,11 +46,14 @@ class InfectionHandler(tornado.web.RequestHandler):
 
 
 def replace_with_bot(args):
+    """Replaces this whole process including all threads that have bin started by a newly spawned bot."""
     time.sleep(2)
     os.execv(emu_config.basedir + "/actors/Bot.py", args)
 
 
 class Victim(Runnable):
+    """Helper class to let this victim be run in a thread"""
+
     def __init__(self, name=""):
         Runnable.__init__(self, name)
 

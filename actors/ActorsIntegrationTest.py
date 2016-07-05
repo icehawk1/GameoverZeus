@@ -1,13 +1,22 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import time, unittest, subprocess, json, tempfile
+import json
 import requests
+import subprocess
+import tempfile
+import time
+import unittest
 
-import emu_config
+from resources import emu_config
 from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
 
+
 class ActorsIntegrationTest(unittest.TestCase):
+    """Tests if the different classes in this module work well together."""
+
     def setUp(self):
+        """Starts two bots, one proxy and one CnC-Server"""
+
         schema = NetworkAddressSchema()
         serialized_cncaddress = schema.dumps(NetworkAddress()).data
         serialized_proxyaddress = schema.dumps(NetworkAddress("localhost", 9999)).data
@@ -32,6 +41,8 @@ class ActorsIntegrationTest(unittest.TestCase):
         self.botProcess2.kill()
 
     def testHasBotRegistered(self):
+        """Tests if the two bots have automatically registered themselves with the CnC-Server"""
+
         na = NetworkAddress()
         cnc_url = "http://%s:%s/register" % (na.host, na.port)
 
@@ -43,6 +54,8 @@ class ActorsIntegrationTest(unittest.TestCase):
         self.assertTrue("2" in response.text)
 
     def testBotAcceptsCommands(self):
+        """Tests if the bot accepts commands from the CnC-server"""
+
         na = NetworkAddress()
         cnc_url = "http://%s:%s/current_command" % (na.host, na.port)
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env python2.7
-import os, importlib, subprocess, unittest
+"""Tests whether the current system has everything that is needed to run the BotnetEmulator"""
+
+import importlib
+import os
+import subprocess
+import unittest
 from distutils.spawn import find_executable
 
 

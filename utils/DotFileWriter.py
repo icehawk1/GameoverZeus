@@ -1,5 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
+"""This file defines a Writer that creates PDF and SVG visualizations from BRITE output files."""
+
 import logging
 import pygraphviz as pgv
 import sys

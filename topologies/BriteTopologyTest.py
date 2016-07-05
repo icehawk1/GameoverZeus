@@ -7,15 +7,13 @@ import unittest
 
 from timeout_decorator import timeout
 
-import emu_config
 from BriteTopology import BriteTopology, createGraphFromBriteFile, BriteGraphAccepter
+from resources import emu_config
 
 
 class BriteFileReaderTest(unittest.TestCase):
+    """Tests whether a BRITE file can be parsed"""
     inputfilename = emu_config.basedir + "/testfiles/flatrouter.brite"
-
-    def setUp(self):
-        pass
 
     def testReadToMockAccepter(self):
         accepter = MockAccepter()
@@ -26,6 +24,7 @@ class BriteFileReaderTest(unittest.TestCase):
 
 
 class MockAccepter(BriteGraphAccepter):
+    """Counts the number of nodes and edges that are seen"""
     num_nodes = 0
     num_edges = 0
     model_name = None
@@ -44,6 +43,8 @@ class MockAccepter(BriteGraphAccepter):
         pass
 
 class BriteTopologyTest(unittest.TestCase):
+    """Tests whether two specific BRITE output files are parsed correctly"""
+
     def setUp(self):
         self.topology = BriteTopology()
 
@@ -65,8 +66,10 @@ class BriteTopologyTest(unittest.TestCase):
 
 
 @unittest.skip("Only one of BriteMininetFlatrouterTest and BriteMininetTopdownTest can be active at the same time."
-               "Otherwise they stop working.")
+               "Otherwise they stop working because mininet.")
 class BriteMininetFlatrouterTest(unittest.TestCase):
+    """Tests if the topology created from the flatrouter file (with autonomous systems disabled) works in mininet"""
+
     @classmethod
     def setUpClass(cls):
         print "flatrouter"
@@ -88,6 +91,8 @@ class BriteMininetFlatrouterTest(unittest.TestCase):
 
 
 class BriteMininetTopdownTest(unittest.TestCase):
+    """Tests if the topology created from the topdown file (with autonomous systems enabled) works in mininet"""
+
     @classmethod
     def setUpClass(cls):
         print "topdown"

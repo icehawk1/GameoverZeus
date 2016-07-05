@@ -1,8 +1,10 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
+"""Starts and stops the Floodlight OpenFlow controller and enables its use in the Mininet() constructor"""
+
 from mininet.node import Controller
 
-import emu_config
+from resources import emu_config
 
 
 class FloodlightController(Controller):

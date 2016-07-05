@@ -1,14 +1,18 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-from twisted.internet import reactor, defer
-from twisted.names import dns, error, server
+import json
+import logging
 from blinker import signal
-import logging, json
 from threading import Thread
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application
+from twisted.internet import reactor, defer
+from twisted.names import dns, error, server
 
-import emu_config
+from resources import emu_config
+
+"""This file implements a nameserver that can issue requests for an internal set of known domain names
+ and register new domains via a web interface. """
 
 known_hosts = {"heise.de": b"11.22.33.44", "lokaler_horst": b"127.0.0.1"}
 rr_update_signal = signal("rr-update")
@@ -22,8 +26,9 @@ class DynamicResolver(object):
     def __init__(self):
         rr_update_signal.connect(rrUpdate)
 
-    def query(self, query, timeout=None):
-        """Calculate the response to a query."""
+    def answerQuery(self, query, timeout=None):
+        """Calculate the response to the given DNS query."""
+
         requested_hostname = query.name.name
         logging.debug("Received query for %s" % requested_hostname)
 
@@ -40,6 +45,8 @@ class DynamicResolver(object):
 
 @rr_update_signal.connect
 def rrUpdate(sender, hostname="", address=""):
+    """Updates the address of the given hostname"""
+
     known_hosts[hostname] = address
     logging.debug("Hostname %s is now known under address %s" % (hostname, address))
 
@@ -57,6 +64,8 @@ def runNameserver():
 
 
 class HostRegisterHandler(RequestHandler):
+    """Allows the address of a given hostname to be set via HTTP POST and dumps all known domains on a HTTP GET"""
+
     registered_bots = dict()
 
     def get(self):
@@ -73,13 +82,16 @@ class HostRegisterHandler(RequestHandler):
 
 
 def make_app():
+    """Starts the web application"""
+
     return Application([
         ("/register-host", HostRegisterHandler),
     ], autoreload=True)
 
 
 def runWebserver():
-    """Run a webserver that allows to register additonal domain names"""
+    """Run a webserver that allows to register additonal domain names.
+    Helper method so that the server can run in its own thread."""
     logging.debug("Webserver starts")
     app = make_app()
     app.listen(emu_config.PORT)
@@ -87,6 +99,7 @@ def runWebserver():
 
 
 def stopWebserver(sender):
+    """Stops the webserver"""
     IOLoop.instance().stop()
 
 

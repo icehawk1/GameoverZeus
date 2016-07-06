@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import json
+import json, os
 import requests
 import subprocess
 import tempfile
@@ -12,7 +12,7 @@ from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
 
 
 class ActorsIntegrationTest(unittest.TestCase):
-    """Tests if the different classes in this module work well together."""
+    """Tests if the different classes in this modulestr work well together."""
 
     def setUp(self):
         """Starts two bots, one proxy and one CnC-Server"""
@@ -59,15 +59,9 @@ class ActorsIntegrationTest(unittest.TestCase):
         na = NetworkAddress()
         cnc_url = "http://%s:%s/current_command" % (na.host, na.port)
 
-        temporary_file = tempfile.mkstemp()[1]
-        print temporary_file, type(temporary_file)
-        response = requests.post(cnc_url, data={'command': 'new_command',
-                                                'kwargs': json.dumps({'x': 4, 'filename': temporary_file})})
+        response = requests.post(cnc_url, data={'command': 'joinParams',
+                                                'kwargs': json.dumps({'hallo': 'welt', 'hello': 'world'})})
         self.assertEquals("OK", response.text)
 
-        time.sleep(5)
-        with open(temporary_file, 'r') as read_from:
-            line = read_from.readline()
-            print "line: ", line
-            self.assertEquals(16, int(line))
-
+        response = requests.get(cnc_url, data={'command': 'joinParams'})
+        self.assertTrue("welt" in response.text)

@@ -5,25 +5,21 @@ It is also responsible for triggering random events such as bot desinfections, t
 It uses unix sockets to communicate with the bots because they are independent of the network communication in mininet."""
 
 import logging
-import re
+import re, os.path
 from thrift.protocol import TBinaryProtocol
-from thrift.transport import TSocket
-from thrift.transport import TTransport
+from thrift.transport import TSocket, TTransport
+from thrift.transport.TTransport import TTransportException
 
 from HostActions import OverlordClient
-
-try:
-    from resources.emu_config import SOCKET_DIR
-except:
-    # If we execute the script directly from the command line, emu_config wont be found
-    SOCKET_DIR = "/tmp/overlordsocket/"
-
+from resources.emu_config import SOCKET_DIR
+from utils.FileUtils import mkdir_p
 
 class Overlord(object):
     """Central controller for everything."""
 
     def __init__(self):
         self.knownHosts = dict()
+        mkdir_p(SOCKET_DIR)
 
     def addHost(self, hostid):
         """Adds a host to the network"""
@@ -31,12 +27,55 @@ class Overlord(object):
         logging.debug("added host %s" % hostid)
 
     def getIDsOfAllKnownHosts(self):
+        """Return a set of the IDs of all hosts that are currently controlled by this Overlord"""
         result = set()
         for host in self.knownHosts.values():
             host.startCommunication()
             result.add(host.client.getID())
             host.stopCommunication()
         return result
+
+    def startRunnable(self, importmodule, runnable, kwargs, hostlist=None):
+        """Instruct the given hosts to run a certain Runnable.
+        :param runnable: The name of a subclass of AbstractBot.Runnable that does the work that the hosts shall be doing.
+        :type runnable: str
+        :param importmodule: The name of  the module where the subclass of AbstractBot.Runnable is defined.
+        :type importmodule: str
+        :param kwargs: The constructor parameter for the runnable
+        :type kwargs: dict
+        :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
+        :type hostlist: list"""
+
+        if hostlist is None:
+            hostlist = self.knownHosts.values()
+
+        for connector in hostlist:
+            try:
+                assert isinstance(connector, _HostConnector)
+                connector.startCommunication()
+                connector.client.startRunnable(importmodule, runnable, kwargs)
+                connector.stopCommunication()
+            except TTransportException as ex:
+                logging.error("Could not send startRunnable command to connector %s: %s" % (connector.id, ex.message))
+
+    def stopRunnable(self, runnable, hostlist=None):
+        """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.
+        :param runnable: The name of a subclass of AbstractBot.Runnable that does the work that the hosts shall be doing.
+        :type runnable: str
+        :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
+        :type hostlist: list"""
+
+        if hostlist is None:
+            hostlist = self.knownHosts.values()
+
+        for connector in hostlist:
+            try:
+                assert isinstance(connector, _HostConnector)
+                connector.startCommunication()
+                connector.client.stopRunnable(runnable)
+                connector.stopCommunication()
+            except TTransportException as ex:
+                logging.error("Could not send stopRunnable command to connector %s: %s" % (connector.id, ex.message))
 
 
 class _HostConnector(object):
@@ -47,6 +86,7 @@ class _HostConnector(object):
         assert re.match("[a-zA-Z0-9_]+", self.id)
 
         transport = TSocket.TSocket(unix_socket=SOCKET_DIR + self.id)
+        logging.debug("Use socket %s" % (SOCKET_DIR + self.id))
         # Buffering is critical. Raw sockets are very slow
         self.transport = TTransport.TBufferedTransport(transport)
         protocol = TBinaryProtocol.TBinaryProtocol(transport)
@@ -60,11 +100,3 @@ class _HostConnector(object):
     def stopCommunication(self):
         """Closes the communication."""
         self.transport.close()
-
-
-if __name__ == '__main__':
-    overlord = Overlord()
-    overlord.addHost(3545758)
-    overlord.addHost(767082)
-    overlord.addHost(4678221)
-    print overlord.getIDsOfAllKnownHosts()

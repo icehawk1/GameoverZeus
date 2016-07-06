@@ -6,7 +6,6 @@ import logging
 import os
 import sys
 
-assert os.environ["DEBUSSY"] == "1"
 from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
 
 def stop():

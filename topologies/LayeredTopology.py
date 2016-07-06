@@ -6,7 +6,7 @@ import random, time
 from mininet.net import Mininet, Controller
 
 from AbstractTopology import AbstractTopology
-from utils.FloodlightController import FloodlightController
+from utils.Floodlight import Controller
 
 class LayeredTopology(AbstractTopology):
     """This class defines a base Topology where the botnet is separated into layers. Each layer has its own switch and the
@@ -18,7 +18,7 @@ class LayeredTopology(AbstractTopology):
 
     To use the class, first add a few layers and then call start(). Not the other way around."""
 
-    def __init__(self, mininet=Mininet(controller=FloodlightController)):
+    def __init__(self, mininet=Mininet(controller=Controller)):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet

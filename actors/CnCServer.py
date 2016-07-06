@@ -55,7 +55,9 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
             self.write(json.dumps(self.current_command))
         else:
             self.set_header("Content-Type", "text/plain")
-            self.write("Command: hello there")
+            if not self.current_command == {}:
+                self.write(
+                    "%s: %s" % (self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
 
     def post(self):
         old_command = self.current_command

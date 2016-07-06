@@ -12,7 +12,7 @@ service OverlordClient {
     Starts the given runnable
     :throws OverlordException: Thrown if the runnable could not be started.
     */
-   void startRunnable(1:string command) throws (1:OverlordException oops),
+   void startRunnable(1:string importmodule, 2:string command, 3:map<string,string> params) throws (1:OverlordException oops),
    /**
     Starts the given runnable. Does nothing if that runnable does not exist or is not running.
     :throws OverlordException: Thrown if the runnable could not be started.

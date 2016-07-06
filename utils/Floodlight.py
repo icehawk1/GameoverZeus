@@ -7,7 +7,7 @@ from mininet.node import Controller
 from resources import emu_config
 
 
-class FloodlightController(Controller):
+class Controller(Controller):
     """Custom Controller that starts and stops Floodlight with custom options"""
     floodlight = 'nohup /usr/bin/floodlight'
 

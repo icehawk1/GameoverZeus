@@ -10,7 +10,7 @@ from abc import abstractmethod, ABCMeta
 from mininet.net import Mininet
 
 from AbstractTopology import AbstractTopology
-from utils.FloodlightController import FloodlightController
+from utils.Floodlight import Controller
 
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
@@ -174,7 +174,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     It will have a number of interconnected autonomous systems and each AS will have one switch and a number of
     hosts. Each host in an AS is connected to that switch."""
 
-    def __init__(self, mininet=Mininet(controller=FloodlightController), opts=dict()):
+    def __init__(self, mininet=Mininet(controller=Controller), opts=dict()):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
@@ -266,7 +266,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     # TODO: Move this method to the controller class/file
     def _startFirewall(self):
         """Starts the firewall in the Floodlight controller."""
-        response = requests.get("http://localhost:8080/wm/firewall/module/enable/json")
+        response = requests.get("http://localhost:8080/wm/firewall/modulestr/enable/json")
         if not response.status_code == 200:
             logging.warning("Firewall could not be enabled: response.status_code == %d" % response.status_code)
 

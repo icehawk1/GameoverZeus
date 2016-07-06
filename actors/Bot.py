@@ -85,10 +85,10 @@ if __name__ == "__main__":
 
     # Start listening for incoming D-ITG traffic
     itgrecvThread = Thread(name="ITGRecv_thread", target=listenForIncomingNoiseTraffic, args=(bot,))
-    itgrecvThread.start()
+    # itgrecvThread.start()
     # Start sending out traffic to random ips
     itgsend_thread = Thread(name="ITGSend_thread", target=sendOutRandomTraffic, args=(0.05, bot))
-    itgsend_thread.start()
+    #itgsend_thread.start()
 
     time.sleep(235)
     blinker.signal("stop").send()

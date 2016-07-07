@@ -1,14 +1,14 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
 import dns.resolver
-import logging
+import logging, os
 import subprocess
 import time
 import unittest
 from tornado.httpclient import HTTPClient
 
 from resources import emu_config
-
+import actors.nameserver
 
 class GameoverTopologyTest(unittest.TestCase):
     """Tests whether the nameserver correctly answers requests and whether addresses can be updated."""
@@ -21,17 +21,21 @@ class GameoverTopologyTest(unittest.TestCase):
 
         cls.http_client = HTTPClient()
 
-    def setUp(self):
-        self.nameserver_proc = subprocess.Popen(["python", emu_config.basedir + "/actors/nameserver.py"])
-        time.sleep(3)
-
-    def tearDown(self):
-        self.nameserver_proc.terminate()
+        cls.dns_server = actors.nameserver.Nameserver()
+        cls.dns_server.start()
         time.sleep(1)
+        os.system("netstat -tulpen|grep 53")
+
+    @classmethod
+    def tearDownClass(cls):
+        os.system("netstat -tulpen|grep 53")
+        cls.dns_server.stop()
+
+    def setUp(self):
+        actors.nameserver.known_hosts = {"heise.de": b"11.22.33.44", "lokaler_horst": b"127.0.0.1"}
 
     def testResolveName(self):
         """Tests if a request for a previously known hostname is answered correctly"""
-
         response = self.dnsresolver.query("lokaler_horst", "A")
 
         self.assertEquals(len(response), 1)

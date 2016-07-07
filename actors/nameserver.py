@@ -1,8 +1,9 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import json
-import logging
-from blinker import signal
+"""This file implements a nameserver that can issue requests for an internal set of known domain names
+ and register new domains via a web interface. """
+
+import json, time, logging, os
 from threading import Thread
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application
@@ -10,12 +11,9 @@ from twisted.internet import reactor, defer
 from twisted.names import dns, error, server
 
 from resources import emu_config
+from actors.AbstractBot import Runnable
 
-"""This file implements a nameserver that can issue requests for an internal set of known domain names
- and register new domains via a web interface. """
-
-known_hosts = {"heise.de": b"11.22.33.44", "lokaler_horst": b"127.0.0.1"}
-rr_update_signal = signal("rr-update")
+known_hosts = {}
 
 
 class DynamicResolver(object):
@@ -23,10 +21,7 @@ class DynamicResolver(object):
     A resolver which calculates the answers to certain queries based on an internal dictionary
     """
 
-    def __init__(self):
-        rr_update_signal.connect(rrUpdate)
-
-    def answerQuery(self, query, timeout=None):
+    def query(self, query, timeout=None):
         """Calculate the response to the given DNS query."""
 
         requested_hostname = query.name.name
@@ -43,25 +38,29 @@ class DynamicResolver(object):
             return defer.fail(error.DomainError())
 
 
-@rr_update_signal.connect
-def rrUpdate(sender, hostname="", address=""):
+def rrUpdate(hostname="", address=""):
     """Updates the address of the given hostname"""
 
     known_hosts[hostname] = address
     logging.debug("Hostname %s is now known under address %s" % (hostname, address))
 
 
-def runNameserver():
-    """Run the DNS server."""
+def runNameserver(dnsport):
+    """Run the DNS server.
+    :param dnsport: The port on which to listen for dns requests"""
+
     logging.debug("Nameserver starts")
     factory = server.DNSServerFactory(
         clients=[DynamicResolver()]
     )
     protocol = dns.DNSDatagramProtocol(controller=factory)
-    reactor.listenUDP(10053, protocol)
-    reactor.run()
-    signal("stop").send()
+    reactor.listenUDP(dnsport, protocol)
+    # Allow reactor to be started from non-main thread
+    reactor.run(installSignalHandlers=0)
 
+
+def stopNameserver():
+    reactor.callFromThread(reactor.stop)
 
 class HostRegisterHandler(RequestHandler):
     """Allows the address of a given hostname to be set via HTTP POST and dumps all known domains on a HTTP GET"""
@@ -77,7 +76,7 @@ class HostRegisterHandler(RequestHandler):
         hostname = self.get_body_argument("hostname")
         address = self.get_body_argument("address")
 
-        rr_update_signal.send(self, hostname=hostname, address=address)
+        rrUpdate(hostname, address)
         self.write("OK")
 
 
@@ -86,7 +85,7 @@ def make_app():
 
     return Application([
         ("/register-host", HostRegisterHandler),
-    ], autoreload=True)
+    ], autoreload=False)
 
 
 def runWebserver():
@@ -98,16 +97,24 @@ def runWebserver():
     IOLoop.current().start()
 
 
-def stopWebserver(sender):
+def stopWebserver():
     """Stops the webserver"""
     IOLoop.instance().stop()
 
 
-if __name__ == '__main__':
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
+class Nameserver(Runnable):
+    """Runs a nameserver that answers dns queries on the given port and accepts new domains via a web interface."""
 
-    webthread = Thread(name="webserver_thread", target=runWebserver, args=())
-    webthread.start()
-    signal("stop").connect(stopWebserver)
+    def __init__(self, name=""):
+        Runnable.__init__(self, name)
 
-    runNameserver()
+    def start(self, dnsport=10053):
+        webthread = Thread(name="webserver_thread", target=runWebserver, args=())
+        webthread.start()
+
+        dnsthread = Thread(name="nameserver_thread", target=runNameserver, args=(dnsport,))
+        dnsthread.start()
+
+    def stop(self):
+        stopWebserver()
+        stopNameserver()

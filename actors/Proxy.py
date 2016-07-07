@@ -3,24 +3,22 @@
 """This file runs a reverse proxy for the web application on the address given on the command line"""
 
 import logging
-import os
-import sys
+import subprocess
 
-from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
+from actors.AbstractBot import Runnable
 
-def stop():
-    os.system("kill %mitmdump")
 
-if __name__ == "__main__":
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-    schema = NetworkAddressSchema()
+class Proxy(Runnable):
+    def __init__(self, name=""):
+        Runnable.__init__(self, name)
 
-    if len(sys.argv) >= 3:
-        proxyaddress = schema.loads(sys.argv[1]).data
-        cncaddress = schema.loads(sys.argv[2]).data
-    else:
-        proxyaddress = NetworkAddress()
-        cncaddress = NetworkAddress()
+    def start(self, proxyport=8080, cnchost=None, cncport=8080):
+        command = "mitmdump -q --anticache -p %s -R 'http://%s:%s/' " % (proxyport, cnchost, cncport)
+        logging.debug(command)
+        mitmproc = subprocess.Popen(command)
+        self.processes.append(mitmproc)
 
-    os.system(
-        "mitmdump -q --anticache -p %s -R 'http://%s:%s/' " % (proxyaddress.port, cncaddress.host, cncaddress.port))
+    def stop(self):
+        logging.debug("Stop processes: %s" % [proc.pid for proc in self.processes])
+        for proc in self.processes:
+            proc.terminate()

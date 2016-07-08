@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-"""Some utility functions related to mininet networks"""
+"""Some utility functions related to mn networks"""
 import random
 
 from marshmallow import Schema, fields, post_load

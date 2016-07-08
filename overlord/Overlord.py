@@ -2,7 +2,7 @@
 # coding=UTF-8
 """This file defines a class that centrally controls every Host in the network. This includes all sorts of actors.
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
-It uses unix sockets to communicate with the bots because they are independent of the network communication in mininet."""
+It uses unix sockets to communicate with the bots because they are independent of the network communication in mn."""
 
 import logging
 import re, os.path

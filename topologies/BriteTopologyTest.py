@@ -6,10 +6,13 @@ import time
 import unittest
 
 from timeout_decorator import timeout
+from mininet.net import Mininet
 
 from BriteTopology import BriteTopology, createGraphFromBriteFile, BriteGraphAccepter
 from resources import emu_config
+from utils import Floodlight
 
+mn = Mininet(controller=Floodlight.Controller)
 
 class BriteFileReaderTest(unittest.TestCase):
     """Tests whether a BRITE file can be parsed"""
@@ -33,7 +36,6 @@ class MockAccepter(BriteGraphAccepter):
         self.model_name = modelname
 
     def addNode(self, nodeid, asid, nodetype):
-        print nodeid, asid, nodetype
         self.num_nodes += 1
 
     def addEdge(self, edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype):
@@ -46,7 +48,7 @@ class BriteTopologyTest(unittest.TestCase):
     """Tests whether two specific BRITE output files are parsed correctly"""
 
     def setUp(self):
-        self.topology = BriteTopology()
+        self.topology = BriteTopology(mininet=mn, probability_of_cpulimitation=0.8)
 
     @classmethod
     def tearDownClass(cls):
@@ -66,14 +68,13 @@ class BriteTopologyTest(unittest.TestCase):
 
 
 @unittest.skip("Only one of BriteMininetFlatrouterTest and BriteMininetTopdownTest can be active at the same time."
-               "Otherwise they stop working because mininet.")
+               "Otherwise they stop working because mn.")
 class BriteMininetFlatrouterTest(unittest.TestCase):
-    """Tests if the topology created from the flatrouter file (with autonomous systems disabled) works in mininet"""
+    """Tests if the topology created from the flatrouter file (with autonomous systems disabled) works in mn"""
 
     @classmethod
     def setUpClass(cls):
-        print "flatrouter"
-        cls.topology = BriteTopology()
+        cls.topology = BriteTopology(mininet=mn)
         createGraphFromBriteFile(emu_config.basedir + "/testfiles/flatrouter.brite", [cls.topology])
         cls.topology.start()
 
@@ -83,7 +84,7 @@ class BriteMininetFlatrouterTest(unittest.TestCase):
         time.sleep(2)
         os.system("mn -c")
 
-    @timeout(10)
+    @timeout(15)
     def testPingAll(self):
         """test if pingAll succeeds without packet loss"""
         packet_loss = self.topology.mininet.pingAll()
@@ -91,11 +92,10 @@ class BriteMininetFlatrouterTest(unittest.TestCase):
 
 
 class BriteMininetTopdownTest(unittest.TestCase):
-    """Tests if the topology created from the topdown file (with autonomous systems enabled) works in mininet"""
+    """Tests if the topology created from the topdown file (with autonomous systems enabled) works in mn"""
 
     @classmethod
     def setUpClass(cls):
-        print "topdown"
         cls.topology = BriteTopology()
         createGraphFromBriteFile(emu_config.basedir + "/testfiles/topdown.brite", [cls.topology])
         cls.topology.start()
@@ -106,12 +106,11 @@ class BriteMininetTopdownTest(unittest.TestCase):
         time.sleep(2)
         os.system("mn -c")
 
-    @timeout(10)
+    @timeout(15)
     def testPingAll(self):
         """test if pingAll succeeds without packet loss"""
         packet_loss = self.topology.mininet.pingAll()
         self.assertEquals(0, packet_loss)
-
 
 if __name__ == '__main__':
     logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.DEBUG)

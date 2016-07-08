@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
 """This file implements a script that can run any Runnable in a separate Thread. It can start and stop it any time.
-It is intended to be run on every mininet host to help the architecture being flexible and to allow the overlord to
+It is intended to be run on every mn host to help the architecture being flexible and to allow the overlord to
 control all hosts."""
 
 import logging, time, os, importlib, random, sys, socket, tempfile

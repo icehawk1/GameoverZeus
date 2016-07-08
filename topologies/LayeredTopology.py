@@ -7,6 +7,7 @@ from mininet.net import Mininet, Controller
 
 from AbstractTopology import AbstractTopology
 from utils.Floodlight import Controller
+from utils.NetworkUtils import createRandomDPID
 
 class LayeredTopology(AbstractTopology):
     """This class defines a base Topology where the botnet is separated into layers. Each layer has its own switch and the
@@ -29,7 +30,7 @@ class LayeredTopology(AbstractTopology):
 
     def addLayer(self, layername, num_bots=0, command=None, opts={}):
         """Adds a layer to the topology.
-        :param layername: The name of this layer. Used to give the mininet hosts some meaningful names. Should not be long.
+        :param layername: The name of this layer. Used to give the mn hosts some meaningful names. Should not be long.
         :param num_bots: The number of bots in this layer.
         :param command: The command to run on each bot in this layer
         :param opts: Some additional options to give to Mininet.addHost() and Mininet.addSwitch()
@@ -40,7 +41,8 @@ class LayeredTopology(AbstractTopology):
 
         current_layer = _Layer(layername, num_bots, command)
         self.layers[layername] = current_layer
-        switch = self.mininet.addSwitch(current_layer.switchname, opts=opts)
+        print current_layer.switchname
+        switch = self.mininet.addSwitch(current_layer.switchname, opts=opts, dpid=createRandomDPID())
 
         for i in range(num_bots):
             botname = _constructNameOfBot(current_layer.name)

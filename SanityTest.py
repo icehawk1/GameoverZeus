@@ -19,7 +19,7 @@ class SanityCheck(unittest.TestCase):
 
     def testRequiredPythonModulesAreInstalled(self):
         """test if all required python modules are installed"""
-        required_modules = ["blinker", "tornado", "mininet", "twisted.names", "marshmallow", "requests", "pygraphviz",
+        required_modules = ["blinker", "tornado", "mn", "twisted.names", "marshmallow", "requests", "pygraphviz",
                             "timeout_decorator"]
         for module in required_modules:
             try:
@@ -39,7 +39,7 @@ class SanityCheck(unittest.TestCase):
 
     @unittest.skip("Takes several seconds")
     def testMininetWorks(self):
-        """Executes the mininet selftest"""
+        """Executes the mn selftest"""
         output = str(subprocess.check_output("mn --test=pingall", shell=True, stderr=subprocess.STDOUT))
         self.assertTrue("Results: 0% dropped" in output)
 

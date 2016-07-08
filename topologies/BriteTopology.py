@@ -1,16 +1,18 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-"""This file defines a topology that reads a random network generated with BRITE and creates a mininet topology from it."""
+"""This file defines a topology that reads a random network generated with BRITE and creates a mn topology from it."""
 
-import logging
+import logging, random
 import re
 import requests
 import time
 from abc import abstractmethod, ABCMeta
 from mininet.net import Mininet
+from mininet.node import CPULimitedHost
+from mininet.util import custom
 
 from AbstractTopology import AbstractTopology
-from utils.Floodlight import Controller
+from utils import Floodlight
 
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
@@ -170,21 +172,23 @@ class BriteGraphAccepter(object):
 
 
 class BriteTopology(AbstractTopology, BriteGraphAccepter):
-    """The mininet topology created from the given BRITE output file.
+    """The mn topology created from the given BRITE output file.
     It will have a number of interconnected autonomous systems and each AS will have one switch and a number of
     hosts. Each host in an AS is connected to that switch."""
 
-    def __init__(self, mininet=Mininet(controller=Controller), opts=dict()):
+    def __init__(self, mininet=Mininet(controller=Floodlight.Controller), opts=dict(), **kwargs):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
+        :param kwargs: A number of keyword arguments to be given to AbstractTopology.__init__()
         """
-        AbstractTopology.__init__(self, mininet)
+        AbstractTopology.__init__(self, mininet, **kwargs)
         self.started = False
         self.autonomousSystems = dict()
         self.modelname = None
         self.opts = opts
         self.firewallRules = []
+        self.cpulimitedhost = custom(CPULimitedHost)
 
     def writeHeader(self, num_nodes, num_edges, modelname):
         """Invoked when starting to read the BRITE output file"""
@@ -192,13 +196,12 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         self.modelname = modelname
 
     def addNode(self, nodeid, asid, nodetype):
-        """Converts a node in the BRITE output file to a mininet host. Invoked for every node in the BRITE output file."""
+        """Converts a node in the BRITE output file to a mn host. Invoked for every node in the BRITE output file."""
 
         super(BriteTopology, self).addNode(nodeid, asid, nodetype)
         assert not self.started
 
-        self.mininet.addHost(_createBotname(nodeid), opts=self.opts)
-        bot = self.mininet.getNodeByName(_createBotname(nodeid))
+        bot = self._addHost(nodeid)
 
         if not self.autonomousSystems.has_key(asid):
             autsys = _AutonomousSystem()
@@ -210,14 +213,21 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         self.autonomousSystems[asid].botdict[nodeid] = bot
         self.mininet.addLink(bot, self.autonomousSystems[asid].switch)
 
+    def _addHost(self, nodeid):
+        """Adds a mininet host to the topology"""
+        if random.uniform(0, 1) < self.probability_of_cpulimitation:
+            self.mininet.addHost(_createBotname(nodeid), host=self.cpulimitedhost, opts=self.opts)
+        else:
+            self.mininet.addHost(_createBotname(nodeid), opts=self.opts)
+
+        bot = self.mininet.getNodeByName(_createBotname(nodeid))
+        return bot
+
     def addEdge(self, edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype):
-        """Invoked for every edge in the BRITE output file. Converts that edge into a connection between two mininet hosts."""
+        """Invoked for every edge in the BRITE output file. Converts that edge into a connection between two mn hosts."""
         super(BriteTopology, self).addEdge(edgeid, fromNode, toNode, communicationDelay, bandwidth,
                                            fromAS, toAS, edgetype)
         assert not self.started
-
-        self.firewallRules.append(_FirewallRule(fromNode, toNode))
-        self.firewallRules.append(_FirewallRule(toNode, fromNode))
 
     def writeFooter(self):
         """Invoked after fully reading the BRITE output file"""
@@ -229,10 +239,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         """Starts operation of the defined Topology. It will also start the command for each of the layers."""
         self.started = True
         self.mininet.start()
-        time.sleep(5)
-        self._applyFirewallRules()
-        self._startFirewall()
-        time.sleep(3)
+        time.sleep(2)
 
     def stop(self):
         """Stops the operation of this topology. Usually called when the experiment is over."""
@@ -252,24 +259,6 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         for autsys in self.autonomousSystems.values():
             for bot in autsys.botdict.values():
                 self.mininet.addLink(autsys.switch, bot)
-
-    # TODO: Move this method to the controller class/file
-    def _applyFirewallRules(self):
-        """Applies the firewall rules that were created while creating the topology"""
-        for rule in self.firewallRules:
-            response = requests.post("http://localhost:8080/wm/firewall/rules/json",
-                                     data=str(rule.toJSON(self.mininet)))
-            print "Added Rule: ", rule.toJSON(self.mininet), " ", response.text
-            if not response.status_code == 200:
-                logging.warning("Firewall rule could not be added: %s %d" % (rule, response.status_code))
-
-    # TODO: Move this method to the controller class/file
-    def _startFirewall(self):
-        """Starts the firewall in the Floodlight controller."""
-        response = requests.get("http://localhost:8080/wm/firewall/modulestr/enable/json")
-        if not response.status_code == 200:
-            logging.warning("Firewall could not be enabled: response.status_code == %d" % response.status_code)
-
 
 class _FirewallRule(object):
     """A rule for the firewall that forbids or allows communication between two hosts"""

@@ -13,13 +13,13 @@ class SanityCheck(unittest.TestCase):
 
     def testRequiredToolsAreInstalled(self):
         """test if all required tools are installed"""
-        required_commands = ["mn", "python", "ovs-docker", "docker", "mitmdump", "floodlight"]
+        required_commands = ["mn", "python", "mitmdump", "floodlight"]
         for cmd in required_commands:
             self.assertTrue(find_executable(cmd) or find_executable(cmd + ".exe"), "%s is not installed." % cmd)
 
     def testRequiredPythonModulesAreInstalled(self):
         """test if all required python modules are installed"""
-        required_modules = ["blinker", "tornado", "mn", "twisted.names", "marshmallow", "requests", "pygraphviz",
+        required_modules = ["blinker", "tornado", "mininet", "twisted.names", "marshmallow", "requests", "pygraphviz",
                             "timeout_decorator"]
         for module in required_modules:
             try:

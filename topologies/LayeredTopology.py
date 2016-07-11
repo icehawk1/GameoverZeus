@@ -10,7 +10,7 @@ from utils.Floodlight import Controller
 from utils.NetworkUtils import createRandomDPID
 
 class LayeredTopology(AbstractTopology):
-    """This class defines a base Topology where the botnet is separated into layers. Each layer has its own switch and the
+    """This class defines a base Topology where the botnet is separated into layers. Each layer has its own external_switch and the
     switches are connected serially from the first to the last layer. Therefore all traffic from a layer n host to a
     layer n+k host has to go to all the switches for the inbetween layers.
     The Topology allows an arbitrary number of named layers with an arbitrary number of bots each.

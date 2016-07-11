@@ -173,8 +173,8 @@ class BriteGraphAccepter(object):
 
 class BriteTopology(AbstractTopology, BriteGraphAccepter):
     """The mn topology created from the given BRITE output file.
-    It will have a number of interconnected autonomous systems and each AS will have one switch and a number of
-    hosts. Each host in an AS is connected to that switch."""
+    It will have a number of interconnected autonomous systems and each AS will have one external_switch and a number of
+    hosts. Each host in an AS is connected to that external_switch."""
 
     def __init__(self, mininet=Mininet(controller=Floodlight.Controller), opts=dict(), **kwargs):
         """
@@ -255,7 +255,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
             self.mininet.addLink(switch1, switch2)
 
     def _connectASNodesToSwitches(self):
-        """Connects the nodes in a common autonomous system to their switch"""
+        """Connects the nodes in a common autonomous system to their external_switch"""
         for autsys in self.autonomousSystems.values():
             for bot in autsys.botdict.values():
                 self.mininet.addLink(autsys.switch, bot)

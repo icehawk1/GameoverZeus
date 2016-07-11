@@ -2,6 +2,7 @@
 # coding=UTF-8
 from mininet.net import Mininet
 from mininet.nodelib import NAT
+from mininet.cli import CLI
 
 from utils import Floodlight
 from utils.NetworkUtils import createRandomDPID
@@ -15,6 +16,7 @@ class _AutonomousSystem(object):
     internal_switch = None
     asid = None
     subnet = (0, 1)
+    hasNAT = False
 
     def __len__(self):
         return len(self.botdict.values())
@@ -23,7 +25,7 @@ class _AutonomousSystem(object):
 autsysdict = dict()
 
 
-def addAS(asid, num_nodes):
+def addNatAS(asid, num_nodes):
     for i in range(num_nodes):
         addNode(asid, i + 1, i % 10 == 0)
 
@@ -38,31 +40,52 @@ def addNode(asid, nodeid, isBorderNode):
         assert len(
             autsys.botdict) < 255, "Currently the BriteTopology does not support more than 254 hosts per autonomous system"
     else:
-        autsys = _AutonomousSystem()
-        autsys.external_switch = net.addSwitch(_computeExternalIfaceName(asid), dpid=createRandomDPID())
-        autsys.internal_switch = net.addSwitch(_computeInternalIfaceName(asid), dpid=createRandomDPID())
-        print "net.addSwitch(%s)" % _computeExternalIfaceName(asid)
-        print "net.addSwitch(%s)" % _computeInternalIfaceName(asid)
-        autsys.asid = asid
-        autsys.subnet = _computeNextSubnet()
+        autsys = _initialiseAS(asid, _decideIfAShasNAT(asid))
         autsysdict[asid] = autsys
 
-    if isBorderNode:
-        nodename = 'b-%s-%d' % (asid[:4], nodeid)
+    if isBorderNode and autsys.hasNAT:
+        nodename = 'b%s%d' % (asid[:4], nodeid)
         host = net.addHost(nodename, cls=NAT, subnet='10.%d.%d.0/24' % autsys.subnet,
                            inetIntf="%s-external" % nodename, localIntf="%s-internal" % nodename)
-        net.addLink(autsys.external_switch, host, intfName1=_computeExternalIfaceName(asid))
+        net.addLink(autsys.external_switch, host, intfName1=_computeExternalSwitchName(asid))
         print "net.addLink(%s, %s)" % (autsys.external_switch.name, host.name)
+    elif autsys.hasNAT:
+        nodename = 'n%s%d' % (asid[:4], nodeid)
+        host = net.addHost(nodename, ip=_computeNextIP(autsys.subnet, len(autsys.botdict)) + '/24')
     else:
-        nodename = 'n-%s-%d' % (asid[:4], nodeid)
-        host = net.addHost(nodename, ip=_computeNextIP(autsys.subnet, len(autsys.botdict)) + '/24',
-                           defaultRoute='via %s' % autsys.internal_switch.IP())
+        nodename = 'n%s%d' % (asid[:4], nodeid)
+        host = net.addHost(nodename)
+
     print "net.addHost(%s)" % nodename
-    net.addLink(host, autsys.internal_switch, intfName1=_computeInternalIfaceName(asid),
-                params1={'ip': '%s/24' % _computeNextIP(autsys.subnet, len(autsys.botdict))})
+    net.addLink(host, autsys.internal_switch, intfName1=_computeInternalSwitchName(asid),
+                params1={'ip': '%s/24' % _computeNextIP(autsys.subnet, len(autsys.botdict))}
+                )
     print "net.addLink(%s, %s)" % (host.name, autsys.internal_switch.name)
     autsys.botdict[nodeid] = host
 
+
+def _initialiseAS(asid, hasNAT):
+    assert isinstance(asid, str)
+    assert isinstance(hasNAT, bool)
+
+    autsys = _AutonomousSystem()
+    autsys.hasNAT = hasNAT
+    autsys.internal_switch = net.addSwitch(_computeInternalSwitchName(asid), dpid=createRandomDPID())
+    print "net.addSwitch(%s)" % _computeExternalSwitchName(asid)
+    autsys.asid = asid
+    autsys.subnet = _computeNextSubnet()
+
+    if hasNAT:
+        autsys.external_switch = net.addSwitch(_computeExternalSwitchName(asid), dpid=createRandomDPID())
+        print "net.addSwitch(%s)" % _computeInternalSwitchName(asid)
+    else:
+        autsys.external_switch = autsys.internal_switch
+
+    return autsys
+
+
+def _decideIfAShasNAT(asid):
+    return "bot" not in asid
 
 def _computeNextIP(subnet, host):
     assert 0 <= host <= 254, "Invalid host number: %s" % host
@@ -70,11 +93,11 @@ def _computeNextIP(subnet, host):
     return "10.%d.%d.%d" % (subnet[0], subnet[1], host + 1)
 
 
-def _computeInternalIfaceName(asid):
+def _computeInternalSwitchName(asid):
     return "i%s" % asid
 
 
-def _computeExternalIfaceName(asid):
+def _computeExternalSwitchName(asid):
     return "e%s" % asid
 
 
@@ -89,9 +112,10 @@ if __name__ == '__main__':
     net = Mininet(controller=Floodlight.Controller)
     net.addController("controller1")
 
-    addAS("cnc", 4)
-    addAS("proxy", 3)
-    addAS("bot", 4)
+    addNatAS("cnc", 4)
+    addNatAS("proxy", 3)
+    addNatAS("bot", 4)  # TODO: Kein NAT hier
+    addNatAS("bot2", 4)  # TODO: Kein NAT hier
 
     last = None
     for autsys in autsysdict.values():
@@ -102,4 +126,5 @@ if __name__ == '__main__':
 
     net.start()
     net.pingAll()
+    CLI(net)
     net.stop()

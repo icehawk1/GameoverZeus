@@ -1,23 +1,24 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import os, logging, sys
+"""This file runs a reverse proxy for the web application on the address given on the command line"""
 
-assert os.environ["DEBUSSY"] == "1"
-from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
+import logging
+import subprocess
 
-def stop():
-    os.system("kill %mitmdump")
+from actors.AbstractBot import Runnable
 
-if __name__ == "__main__":
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-    schema = NetworkAddressSchema()
 
-    if len(sys.argv) >= 3:
-        proxyaddress = schema.loads(sys.argv[1]).data
-        cncaddress = schema.loads(sys.argv[2]).data
-    else:
-        proxyaddress = NetworkAddress()
-        cncaddress = NetworkAddress()
+class Proxy(Runnable):
+    def __init__(self, name=""):
+        Runnable.__init__(self, name)
 
-    os.system(
-        "mitmdump -q --anticache -p %s -R 'http://%s:%s/' " % (proxyaddress.port, cncaddress.host, cncaddress.port))
+    def start(self, proxyport=8080, cnchost=None, cncport=8080):
+        command = "mitmdump -q --anticache -p %s -R 'http://%s:%s/' " % (proxyport, cnchost, cncport)
+        logging.debug(command)
+        mitmproc = subprocess.Popen(command)
+        self.processes.append(mitmproc)
+
+    def stop(self):
+        logging.debug("Stop processes: %s" % [proc.pid for proc in self.processes])
+        for proc in self.processes:
+            proc.terminate()

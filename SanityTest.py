@@ -1,5 +1,10 @@
 #!/usr/bin/env python2.7
-import os, importlib, subprocess, unittest
+"""Tests whether the current system has everything that is needed to run the BotnetEmulator"""
+
+import importlib
+import os
+import subprocess
+import unittest
 from distutils.spawn import find_executable
 
 
@@ -8,7 +13,7 @@ class SanityCheck(unittest.TestCase):
 
     def testRequiredToolsAreInstalled(self):
         """test if all required tools are installed"""
-        required_commands = ["mn", "python", "ovs-docker", "docker", "mitmdump", "floodlight"]
+        required_commands = ["mn", "python", "mitmdump", "floodlight"]
         for cmd in required_commands:
             self.assertTrue(find_executable(cmd) or find_executable(cmd + ".exe"), "%s is not installed." % cmd)
 
@@ -34,7 +39,7 @@ class SanityCheck(unittest.TestCase):
 
     @unittest.skip("Takes several seconds")
     def testMininetWorks(self):
-        """Executes the mininet selftest"""
+        """Executes the mn selftest"""
         output = str(subprocess.check_output("mn --test=pingall", shell=True, stderr=subprocess.STDOUT))
         self.assertTrue("Results: 0% dropped" in output)
 

@@ -6,10 +6,12 @@ import random, time
 from mininet.net import Mininet, Controller
 
 from AbstractTopology import AbstractTopology
-from utils.FloodlightController import FloodlightController
+from utils.Floodlight import Controller
+from utils.MiscUtils import createRandomDPID
+
 
 class LayeredTopology(AbstractTopology):
-    """This class defines a base Topology where the botnet is separated into layers. Each layer has its own switch and the
+    """This class defines a base Topology where the botnet is separated into layers. Each layer has its own external_switch and the
     switches are connected serially from the first to the last layer. Therefore all traffic from a layer n host to a
     layer n+k host has to go to all the switches for the inbetween layers.
     The Topology allows an arbitrary number of named layers with an arbitrary number of bots each.
@@ -18,7 +20,7 @@ class LayeredTopology(AbstractTopology):
 
     To use the class, first add a few layers and then call start(). Not the other way around."""
 
-    def __init__(self, mininet=Mininet(controller=FloodlightController)):
+    def __init__(self, mininet=Mininet(controller=Controller)):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
@@ -29,7 +31,7 @@ class LayeredTopology(AbstractTopology):
 
     def addLayer(self, layername, num_bots=0, command=None, opts={}):
         """Adds a layer to the topology.
-        :param layername: The name of this layer. Used to give the mininet hosts some meaningful names. Should not be long.
+        :param layername: The name of this layer. Used to give the mn hosts some meaningful names. Should not be long.
         :param num_bots: The number of bots in this layer.
         :param command: The command to run on each bot in this layer
         :param opts: Some additional options to give to Mininet.addHost() and Mininet.addSwitch()
@@ -40,7 +42,8 @@ class LayeredTopology(AbstractTopology):
 
         current_layer = _Layer(layername, num_bots, command)
         self.layers[layername] = current_layer
-        switch = self.mininet.addSwitch(current_layer.switchname, opts=opts)
+        print current_layer.switchname
+        switch = self.mininet.addSwitch(current_layer.switchname, opts=opts, dpid=createRandomDPID())
 
         for i in range(num_bots):
             botname = _constructNameOfBot(current_layer.name)

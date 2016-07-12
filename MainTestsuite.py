@@ -1,13 +1,19 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import unittest, logging, os
-import emu_config
+"""Invokes all Tests in this project"""
 
-logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-os.environ["DEBUSSY"] = "1"
+import logging
+import os
+import unittest
 
-testSuite = unittest.TestSuite()
-testloader = unittest.TestLoader()
-testSuite.addTests(testloader.discover(emu_config.basedir, pattern="*Test.py"))
-testrunner = unittest.TextTestRunner()
-testrunner.run(testSuite)
+from resources import emu_config
+
+if __name__ == '__main__':
+    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.DEBUG)
+    os.environ["DEBUSSY"] = "1"
+
+    testSuite = unittest.TestSuite()
+    testloader = unittest.TestLoader()
+    testSuite.addTests(testloader.discover(emu_config.basedir, pattern="*Test.py"))
+    testrunner = unittest.TextTestRunner()
+    testrunner.run(testSuite)

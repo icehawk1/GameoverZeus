@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import random, unittest, logging, sys
+import random, unittest, logging, time, os
+from timeout_decorator import timeout
 
 import emu_config
 from LayeredTopology import LayeredTopology
@@ -17,11 +18,13 @@ class GameoverTopologyTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.zeustopo.stop()
+        time.sleep(2)
+        os.system("mn -c")
 
-    # @unittest.skip("Takes long if it fails")
+    @timeout(10)
     def testPingAll(self):
-        print "sys.path: ", sys.path
         """test if pingAll succeeds without packet loss"""
+
         packet_loss = self.zeustopo.mininet.pingAll()
         self.assertEquals(0, packet_loss)
 

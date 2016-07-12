@@ -1,7 +1,10 @@
 #!/usr/bin/env python2.7
 # coding=UTF-8
-import emu_config
+import random
+
 from marshmallow import Schema, fields, post_load
+
+import emu_config
 
 
 class NetworkAddress(object):
@@ -17,3 +20,8 @@ class NetworkAddressSchema(Schema):
     @post_load
     def make_address(self, data):
         return NetworkAddress(**data)
+
+
+def createRandomDPID():
+    dpidLen = 16
+    return ''.join([random.choice('0123456789ABCDEF') for x in range(dpidLen)])

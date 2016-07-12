@@ -8,7 +8,7 @@ import time
 import unittest
 
 from resources import emu_config
-from utils.NetworkUtils import NetworkAddress, NetworkAddressSchema
+from utils.MiscUtils import NetworkAddress, NetworkAddressSchema
 
 
 class ActorsIntegrationTest(unittest.TestCase):

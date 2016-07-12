@@ -13,7 +13,7 @@ from threading import Thread, Timer
 import Bot_Commands
 from AbstractBot import AbstractBot
 from resources import emu_config
-from utils.NetworkUtils import NetworkAddressSchema
+from utils.MiscUtils import NetworkAddressSchema
 
 
 class Bot(AbstractBot):

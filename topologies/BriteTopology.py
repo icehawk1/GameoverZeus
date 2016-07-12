@@ -211,7 +211,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
             self.autonomousSystems[asid] = autsys
 
         self.autonomousSystems[asid].botdict[nodeid] = bot
-        self.mininet.addLink(bot, self.autonomousSystems[asid].switch)
+        self._addLinkBetweenNodes(bot, self.autonomousSystems[asid].switch)
 
     def _addHost(self, nodeid):
         """Adds a mininet host to the topology"""
@@ -252,13 +252,13 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         for i in range(1, len(askeys)):
             switch1 = self.autonomousSystems[askeys[i - 1]].switch
             switch2 = self.autonomousSystems[askeys[i]].switch
-            self.mininet.addLink(switch1, switch2)
+            self._addLinkBetweenNodes(switch1, switch2)
 
     def _connectASNodesToSwitches(self):
         """Connects the nodes in a common autonomous system to their external_switch"""
         for autsys in self.autonomousSystems.values():
             for bot in autsys.botdict.values():
-                self.mininet.addLink(autsys.switch, bot)
+                self._addLinkBetweenNodes(autsys.switch, bot)
 
 class _FirewallRule(object):
     """A rule for the firewall that forbids or allows communication between two hosts"""

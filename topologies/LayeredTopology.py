@@ -7,7 +7,8 @@ from mininet.net import Mininet, Controller
 
 from AbstractTopology import AbstractTopology
 from utils.Floodlight import Controller
-from utils.NetworkUtils import createRandomDPID
+from utils.MiscUtils import createRandomDPID
+
 
 class LayeredTopology(AbstractTopology):
     """This class defines a base Topology where the botnet is separated into layers. Each layer has its own external_switch and the

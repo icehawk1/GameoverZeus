@@ -5,7 +5,7 @@ from mininet.nodelib import NAT
 from mininet.cli import CLI
 
 from utils import Floodlight
-from utils.NetworkUtils import createRandomDPID
+from utils.MiscUtils import createRandomDPID
 import os
 
 
@@ -46,8 +46,8 @@ def addNode(asid, nodeid, isBorderNode):
     if isBorderNode and autsys.hasNAT:
         nodename = 'b%s%d' % (asid[:4], nodeid)
         host = net.addHost(nodename, cls=NAT, subnet='10.%d.%d.0/24' % autsys.subnet,
-                           inetIntf="%s-external" % nodename, localIntf="%s-internal" % nodename)
-        net.addLink(autsys.external_switch, host, intfName1=_computeExternalSwitchName(asid))
+                           inetIntf="%sexternal" % nodename, localIntf="%sinternal" % nodename)
+        net.addLink(autsys.external_switch, host)
         print "net.addLink(%s, %s)" % (autsys.external_switch.name, host.name)
     elif autsys.hasNAT:
         nodename = 'n%s%d' % (asid[:4], nodeid)
@@ -57,7 +57,7 @@ def addNode(asid, nodeid, isBorderNode):
         host = net.addHost(nodename)
 
     print "net.addHost(%s)" % nodename
-    net.addLink(host, autsys.internal_switch, intfName1=_computeInternalSwitchName(asid),
+    net.addLink(host, autsys.internal_switch,
                 params1={'ip': '%s/24' % _computeNextIP(autsys.subnet, len(autsys.botdict))}
                 )
     print "net.addLink(%s, %s)" % (host.name, autsys.internal_switch.name)

@@ -12,7 +12,7 @@ from thrift.transport.TTransport import TTransportException
 
 from HostActions import OverlordClient
 from resources.emu_config import SOCKET_DIR
-from utils.FileUtils import mkdir_p
+from utils.MiscUtils import mkdir_p
 
 class Overlord(object):
     """Central controller for everything."""

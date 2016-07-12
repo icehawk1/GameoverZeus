@@ -16,7 +16,7 @@ from tornado.ioloop import IOLoop
 
 from AbstractBot import Runnable
 from resources import emu_config
-from utils.NetworkUtils import NetworkAddressSchema
+from utils.MiscUtils import NetworkAddressSchema
 
 
 # TODO: Remove plain text output

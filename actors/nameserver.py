@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file implements a nameserver that can issue requests for an internal set of known domain names
  and register new domains via a web interface. """

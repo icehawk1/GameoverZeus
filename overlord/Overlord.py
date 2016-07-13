@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file defines a class that centrally controls every Host in the network. This includes all sorts of actors.
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.

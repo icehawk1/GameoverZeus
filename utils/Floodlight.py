@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """Starts and stops the Floodlight OpenFlow controller and enables its use in the Mininet() constructor"""
 from mininet import node

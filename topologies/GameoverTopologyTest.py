@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file tests a topology where 6 Bots talk to 2 CnC servers via a number of Proxies. The names are resolved via
 one nameserver."""

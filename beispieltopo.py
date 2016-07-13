@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 from mininet.net import Mininet
 from mininet.nodelib import NAT

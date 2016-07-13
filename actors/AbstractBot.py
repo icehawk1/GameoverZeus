@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """Defines abstract base classes for all kinds of bots"""
 import logging

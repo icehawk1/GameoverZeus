@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file defines a Writer that creates PDF and SVG visualizations from BRITE output files."""
 

@@ -1,15 +1,12 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file defines a topology that reads a random network generated with BRITE and creates a mn topology from it."""
 
-import logging, random
-import re
-import requests
-import time
+import logging, random, re, time
 from abc import abstractmethod, ABCMeta
-from mininet.net import Mininet
 from mininet.node import CPULimitedHost
 from mininet.util import custom
+from mininet.net import Mininet
 
 from AbstractTopology import AbstractTopology
 from utils import Floodlight
@@ -244,7 +241,6 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     def stop(self):
         """Stops the operation of this topology. Usually called when the experiment is over."""
         self.mininet.stop()
-        pass
 
     def _connectSwitchesToSwitches(self):
         """Connects all the switches to each other."""

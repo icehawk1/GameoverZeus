@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file tests whether bots can be correctly separated via the Floodlight firewall. It uses a special BRITE file
 where every node is in the same AS but not every node is connected to every other node. The expectation is that firewall

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # coding=UTF-8
 """This file implements a victim. A victim is a machine that randomly surfes the net and may fall prey to an attack by
 a botnet. If it is attacked sucessfully it changes to a bot."""

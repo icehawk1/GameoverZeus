@@ -10,7 +10,7 @@ import sys
 import time
 from threading import Thread, Timer
 
-import Bot_Commands
+import BotCommands
 from AbstractBot import AbstractBot
 from resources import emu_config
 from utils.MiscUtils import NetworkAddressSchema
@@ -18,7 +18,7 @@ from utils.MiscUtils import NetworkAddressSchema
 
 class Bot(AbstractBot):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
-    and renews its registration with said server. The possible commands are defined in Bot_Commands.py."""
+    and renews its registration with said server. The possible commands are defined in BotCommands.py."""
 
     def __init__(self, peerlist=[], name=""):
         AbstractBot.__init__(self, peerlist, name=name, probability_of_disinfection=0.1)
@@ -51,7 +51,7 @@ class Bot(AbstractBot):
 
         if isinstance(self.current_command, dict) and self.current_command.has_key("command") \
                 and self.current_command["command"] != "":
-            methodToCall = getattr(Bot_Commands, self.current_command["command"])
+            methodToCall = getattr(BotCommands, self.current_command["command"])
             try:
                 methodToCall(**self.current_command["kwargs"])
             except TypeError:

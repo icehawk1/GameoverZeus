@@ -4,13 +4,15 @@
 It is intended to be run on every mn host to help the architecture being flexible and to allow the overlord to
 control all hosts."""
 
-import logging, time, os, importlib, random, sys, socket, tempfile
+import logging, json, os, importlib, random, sys, socket, tempfile
+
+sys.path.append(os.path.dirname(__file__))
 from threading import Thread
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 from thrift.transport import TSocket, TTransport
 from HostActions import OverlordClient
-from resources.emu_config import SOCKET_DIR
+from resources.emu_config import SOCKET_DIR, logging_config
 
 
 class HostActionHandler(object):
@@ -22,12 +24,15 @@ class HostActionHandler(object):
 
     def startRunnable(self, importmodule, command, kwargs):
         """Starts the given runnable. Throws an exception if the runnable is not found in the actors modulestr.
+        :param importmodule: the module where the runnable needs to be imported from
         :param command: The name of the Runnable that should be started
         :param kwargs: A dict that contains the parameter for the command's constructor"""
 
         assert isinstance(command, str)
-        assert isinstance(kwargs, dict)
-        print "%s.startRunnable(%s,%s)" % (self.hostid, command, kwargs)
+        assert isinstance(kwargs, str)
+        kwargs = json.loads(kwargs)
+
+        logging.debug("%s.startRunnable(%s,%s)" % (self.hostid, command, kwargs))
 
         # Import module and create object
         moduleobj = importlib.import_module("actors." + importmodule)
@@ -35,7 +40,9 @@ class HostActionHandler(object):
             constructorobj = getattr(moduleobj, command)
             runnable = constructorobj(**kwargs)
         except AttributeError:
-            raise NotImplementedError("%s.%s() does not exist" % (moduleobj, command))
+            message = "%s.%s() does not exist" % (moduleobj, command)
+            logging.error(message)
+            raise NotImplementedError(message)
 
         # Start runnable in her own Thread
         thread = Thread(name="Runnable %s" % command, target=runnable.start)
@@ -87,14 +94,15 @@ def createRPCServer(processor):
 
 
 if __name__ == '__main__':
+    # If a hostid is given
     if len(sys.argv) >= 2:
         # Create temporary file and get absolute path of it
-        logfile = tempfile.mkstemp(prefix=sys.argv[1] + "_")[1]
+        logfile = tempfile.mkstemp(prefix=sys.argv[1] + "_", suffix=".log")[1]
         # Write log to file and delete old logs
-        logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.DEBUG, filename=logfile, filemode="w")
+        logging.basicConfig(filename=logfile, filemode="w", **logging_config)
         handler = HostActionHandler(sys.argv[1])
     else:
-        logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.DEBUG)
+        logging.basicConfig(**logging_config)
         handler = HostActionHandler()
 
     logging.debug("Host %s has been created" % handler.getID())

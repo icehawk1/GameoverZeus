@@ -9,10 +9,11 @@ exception OverlordException {
 
 service OverlordClient {
     /**
-    Starts the given runnable
+    Starts the given runnable with the given params
+    :param kwargs: The keyword arguments to be passed to the runnable as a json-encoded dictionary
     :throws OverlordException: Thrown if the runnable could not be started.
     */
-   void startRunnable(1:string importmodule, 2:string command, 3:map<string,string> params) throws (1:OverlordException oops),
+   void startRunnable(1:string importmodule, 2:string command, 3:string kwargs) throws (1:OverlordException oops),
    /**
     Starts the given runnable. Does nothing if that runnable does not exist or is not running.
     :throws OverlordException: Thrown if the runnable could not be started.

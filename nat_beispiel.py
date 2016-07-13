@@ -114,8 +114,8 @@ if __name__ == '__main__':
 
     addNatAS("cnc", 4)
     addNatAS("proxy", 3)
-    addNatAS("bot", 4)  # TODO: Kein NAT hier
-    addNatAS("bot2", 4)  # TODO: Kein NAT hier
+    addNatAS("bot", 4)
+    addNatAS("bot2", 4)
 
     last = None
     for autsys in autsysdict.values():

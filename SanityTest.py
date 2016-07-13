@@ -20,7 +20,7 @@ class SanityCheck(unittest.TestCase):
     def testRequiredPythonModulesAreInstalled(self):
         """test if all required python modules are installed"""
         required_modules = ["blinker", "tornado", "mininet", "twisted.names", "marshmallow", "requests", "pygraphviz",
-                            "timeout_decorator"]
+                            "timeout_decorator", "netifaces"]
         for module in required_modules:
             try:
                 importlib.import_module(module)

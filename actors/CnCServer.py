@@ -2,7 +2,7 @@
 # coding=UTF-8
 """This file implements a CnC-Server that presents a web interface over which it can issue commands to bots
 and keep track of bots that register themselves regularly with the server. A command may be any method that
-is defined in Bot_Commands.py. This method will be executed by all bots that fetch it.
+is defined in BotCommands.py. This method will be executed by all bots that fetch it.
 All handler support plain text and json output."""
 
 import json, logging, string, sys, time

@@ -10,8 +10,8 @@ from resources import emu_config
 
 
 def mkdir_p(path):
-    """Creates all directories in this path that do not exist yet. Silently skips existing directories.
-    Behaves like mkdir -p in Linux."""
+    """Creates all directories in this path that did not exist beforehand. Silently skips existing directories.
+    (i.e. Behaves like mkdir -p in Linux.)"""
     try:
         os.makedirs(path)
     except OSError as exc:  # Python >2.5

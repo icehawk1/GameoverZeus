@@ -4,8 +4,7 @@
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
 It uses unix sockets to communicate with the bots because they are independent of the network communication in mn."""
 
-import logging
-import re, os.path
+import logging, json, re
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 from thrift.transport.TTransport import TTransportException
@@ -45,15 +44,23 @@ class Overlord(object):
         :type kwargs: dict
         :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
         :type hostlist: list"""
+        assert isinstance(importmodule, str)
+        assert isinstance(runnable, str)
+        assert isinstance(kwargs, dict)
 
         if hostlist is None:
             hostlist = self.knownHosts.values()
+        assert isinstance(hostlist, list)
 
-        for connector in hostlist:
+        for hostid in hostlist:
             try:
+                assert isinstance(hostid, str)
+                assert self.knownHosts.has_key(hostid)
+                connector = self.knownHosts[hostid]
                 assert isinstance(connector, _HostConnector)
+
                 connector.startCommunication()
-                connector.client.startRunnable(importmodule, runnable, kwargs)
+                connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
             except TTransportException as ex:
                 logging.error("Could not send startRunnable command to connector %s: %s" % (connector.id, ex.message))
@@ -83,7 +90,7 @@ class _HostConnector(object):
 
     def __init__(self, hostid):
         self.id = str(hostid)
-        assert re.match("[a-zA-Z0-9_]+", self.id)
+        assert re.match("[a-zA-Z0-9_]+", self.id), "Invalid host id: %s" % hostid
 
         transport = TSocket.TSocket(unix_socket=SOCKET_DIR + self.id)
         logging.debug("Use socket %s" % (SOCKET_DIR + self.id))

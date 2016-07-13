@@ -9,7 +9,7 @@ import unittest
 from resources import emu_config
 
 if __name__ == '__main__':
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.DEBUG)
+    logging.basicConfig(**emu_config.logging_config)
     os.environ["DEBUSSY"] = "1"
 
     testSuite = unittest.TestSuite()

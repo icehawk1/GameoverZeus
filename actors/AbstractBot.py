@@ -52,7 +52,7 @@ class AbstractBot(Runnable):
         self.disinfect_timeout = desinfect_timeout
         self.probability_of_disinfection = probability_of_disinfection
 
-    def start(self, pauseBetweenDuties=15, args=()):
+    def start(self, pauseBetweenDuties=emu_config.botcommand_timeout, args=()):
         """Starts the runnable, so that it performs its duties"""
         thread = Thread(name="Runnable %s" % self.name, target=self.doWork, args=(pauseBetweenDuties, args))
         thread.start()

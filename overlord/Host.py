@@ -25,12 +25,13 @@ class HostActionHandler(object):
     def startRunnable(self, importmodule, command, kwargs):
         """Starts the given runnable. Throws an exception if the runnable is not found in the actors modulestr.
         :param importmodule: the module where the runnable needs to be imported from
-        :param command: The name of the Runnable that should be started
-        :param kwargs: A dict that contains the parameter for the command's constructor"""
+        :param command: The name of the Runnable that should be started. Will be imported from the given module.
+        :param kwargs: A dict (possibly as json-encoded string) that contains the parameter for the command's constructor"""
 
         assert isinstance(command, str)
-        assert isinstance(kwargs, str)
-        kwargs = json.loads(kwargs)
+        if isinstance(kwargs, str):
+            kwargs = json.loads(kwargs)
+        assert isinstance(kwargs, dict)
 
         logging.debug("%s.startRunnable(%s,%s)" % (self.hostid, command, kwargs))
 
@@ -38,27 +39,32 @@ class HostActionHandler(object):
         moduleobj = importlib.import_module("actors." + importmodule)
         try:
             constructorobj = getattr(moduleobj, command)
-            runnable = constructorobj(**kwargs)
-        except AttributeError:
-            message = "%s.%s() does not exist" % (moduleobj, command)
+            runnable = constructorobj(name=command, **kwargs)
+        except AttributeError as ex:
+            message = "%s.%s() does not exist: %s" % (moduleobj, command, ex)
             logging.error(message)
             raise NotImplementedError(message)
 
         # Start runnable in her own Thread
-        thread = Thread(name="Runnable %s" % command, target=runnable.start)
+        thread = Thread(name="Runnable %s" % command, target=runnable.start, args=())
         thread.start()
 
         self.currentRunnables[command] = (runnable, thread)
 
-    def stopRunnable(self, command):
-        """Stops the given runnable. Does nothing if that runnable does not exist or is not running.
-        :param command: Which runnable should be stopped"""
+    def stopRunnable(self, command="*"):
+        """Stops the runnable representing the given command string. Does nothing if that runnable does not exist or is not running.
+        :param command: Which runnable should be stopped. The same string as has been given to startRunnable(). Give * to stop all runnables."""
         if self.currentRunnables.has_key(command):
             logging.debug("%s.stopRunnable(%s)" % (self.hostid, command))
 
             runnable, thread = self.currentRunnables[command]
             runnable.stop()
             thread.join()
+        elif command == "*":
+            # Stop everything
+            for runnable, thread in self.currentRunnables.values():
+                runnable.stop()
+                thread.join()
         else:
             logging.debug("Runnable %s not found" % command)
 

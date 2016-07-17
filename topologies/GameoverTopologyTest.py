@@ -3,12 +3,7 @@
 """This file tests a topology where 6 Bots talk to 2 CnC servers via a number of Proxies. The names are resolved via
 one nameserver."""
 
-import logging
-import os
-import random
-import time
-import unittest
-
+import logging, os, random, time, unittest
 from timeout_decorator import timeout
 
 from LayeredTopology import LayeredTopology

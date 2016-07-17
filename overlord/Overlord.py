@@ -34,7 +34,8 @@ class Overlord(object):
             host.stopCommunication()
         return result
 
-    def startRunnable(self, importmodule, runnable, kwargs, hostlist=None):
+    def startRunnable(self, importmodule, runnable, kwargs=dict(), hostlist=None):
+        # TODO: Keep track of running Runnables
         """Instruct the given hosts to run a certain Runnable.
         :param runnable: The name of a subclass of AbstractBot.Runnable that does the work that the hosts shall be doing.
         :type runnable: str
@@ -75,6 +76,8 @@ class Overlord(object):
         if hostlist is None:
             hostlist = self.knownHosts.values()
 
+        logging.debug("Stopping runnable %s of hosts %s" % (runnable, [host.id for host in hostlist]))
+
         for connector in hostlist:
             try:
                 assert isinstance(connector, _HostConnector)
@@ -84,6 +87,10 @@ class Overlord(object):
             except TTransportException as ex:
                 logging.error("Could not send stopRunnable command to connector %s: %s" % (connector.id, ex.message))
 
+    def stopEverything(self, hostlist=None):
+        """Stops everything that is running on the given hosts. Called before the program exits."""
+        self.stopRunnable("*", hostlist)
+        logging.debug("Stopped all runnables for all hosts")
 
 class _HostConnector(object):
     """Encapsulates the communication channel to the given host"""

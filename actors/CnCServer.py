@@ -5,7 +5,9 @@ and keep track of bots that register themselves regularly with the server. A com
 is defined in BotCommands.py. This method will be executed by all bots that fetch it.
 All handler support plain text and json output."""
 
-import json, logging, string, sys, time
+import json, logging, string, sys, time, socket, os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
@@ -97,29 +99,36 @@ class RegisterHandler(tornado.web.RequestHandler):
 class CnCServer(Runnable):
     """Allows the CnCServer to be run in its own thread."""
 
-    def __init__(self, name=""):
+    def __init__(self, name="", host="0.0.0.0", port=emu_config.PORT):
         Runnable.__init__(self, name)
+        self.host = host
+        self.port = port
 
-    def start(self, port=emu_config.PORT):
+    def start(self):
         """Implements start() from the superclass."""
         app = make_app()
-        app.listen(port)
-        IOLoop.current().start()
+        logging.debug("Start the CnCServer %s on %s:%d" % (self.name, self.host, self.port))
+        try:
+            app.listen(self.port)
+            IOLoop.current().start()
+        except socket.error as ex:
+            logging.warning("Could not start the CnC-Server: %s" % ex)
 
     def stop(self):
         """Implements stop() from the superclass."""
         IOLoop.current().stop()
+        logging.debug("Stopping CnCServer %s on %s:%d" % (self.name, self.host, self.port))
 
 
 if __name__ == "__main__":
-    cncserver = CnCServer("cnc1")
 
     schema = NetworkAddressSchema()
     if len(sys.argv) >= 2:
         cncaddress = schema.loads(sys.argv[1]).data
-        target_arguments = (cncaddress.port,)
+        cncserver = CnCServer(port=cncaddress.port)
     else:
-        target_arguments = ()
+        cncserver = CnCServer()
 
-    thread = Thread(name="Runnable mycnc1", target=cncserver.start, args=target_arguments)
+    thread = Thread(name="Runnable %s" % cncserver.name, target=cncserver.start)
     thread.start()
+    # cncserver.start()

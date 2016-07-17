@@ -17,4 +17,5 @@ class Controller(node.Controller):
 
     def stop(self, *args, **kwargs):
         super(node.Controller, self).stop(*args, **kwargs)
-        os.remove("./nohup.out")
+        if os.path.exists("./nohup.out"):
+            os.remove("./nohup.out")

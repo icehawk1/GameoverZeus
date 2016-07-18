@@ -11,7 +11,7 @@ from threading import Thread
 from matplotlib import pyplot
 import numpy
 
-from AbstractBot import Runnable
+from AbstractBot import CommandExecutor
 from resources.emu_config import logging_config
 from utils.MiscUtils import mkdir_p
 
@@ -26,26 +26,16 @@ def measureLoadingTime(url):
     return end - start
 
 
-class Sensor(Runnable):
+class Sensor(CommandExecutor):
     """Helper class to let this sensor be run in a thread"""
 
     def __init__(self, name="", pagesToWatch=[], outputdir="/tmp/loading_times"):
         """:param pagesToWatch: A list of URLs whose loading time shall be measured
         :param outputdir: Directory to store the resulting graphs"""
-        Runnable.__init__(self, name)
+        CommandExecutor.__init__(self, name=name)
         self.loadingTimesDict = {page: [] for page in pagesToWatch}
         self.outputdir = outputdir
-        self.lc = None
-
-    def start(self):
-        observer = log.PythonLoggingObserver()
-        observer.start()
-
-        self.lc = LoopingCall(self.performDuty)
-        lcDeferred = self.lc.start(0.1)
-        lcDeferred.addErrback(self.errback)
-
-        reactor.run(installSignalHandlers=0)
+        self.pauseBetweenDuties = 0.5
 
     def performDuty(self):
         """Implements method from superclass"""
@@ -59,8 +49,7 @@ class Sensor(Runnable):
 
     def stop(self):
         """Writes graphs of all measured loading times to the outputdir. Implements method from superclass."""
-        self.lc.stop()
-        reactor.stop()
+        CommandExecutor.stop(self)
 
         mkdir_p(self.outputdir)  # Ensure outputdir exists
         pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
@@ -75,14 +64,11 @@ class Sensor(Runnable):
             outputfile = os.path.join(self.outputdir, urlparse.urlparse(page).hostname) + ".pdf"
             pyplot.savefig(outputfile)
 
-    def errback(self, failure):
-        """Given to defereds to report errors"""
-        logging.warning("%s in %s: %s" % (failure.type, self.name, failure.getErrorMessage()))
-
 
 if __name__ == "__main__":
     logging.basicConfig(**logging_config)
     sensor = Sensor("sensor", pagesToWatch=["http://heise.de", "https://www.google.com"])
+    sensor.pauseBetweenDuties = 1
     thread = Thread(name="Runnable %s" % sensor.name, target=sensor.start)
     thread.start()
 

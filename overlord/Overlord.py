@@ -76,12 +76,12 @@ class Overlord(object):
         if hostlist is None:
             hostlist = self.knownHosts.values()
 
-        logging.debug("Stopping runnable %s of hosts %s" % (runnable, [host.id for host in hostlist]))
 
         for connector in hostlist:
             try:
                 assert isinstance(connector, _HostConnector)
                 connector.startCommunication()
+                logging.debug("Stopping runnable %s of host %s" % (runnable, connector.id))
                 connector.client.stopRunnable(runnable)
                 connector.stopCommunication()
             except TTransportException as ex:

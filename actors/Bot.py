@@ -18,7 +18,7 @@ class Bot(AbstractBot):
         self.current_command = None
         self.threads = []
 
-    def performDuty(self, args):
+    def performDuty(self):
         # If there is a CnC-Server in the peerlist
         if len(self.peerlist) > 0:
             try:

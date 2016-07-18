@@ -47,6 +47,7 @@ class HostActionHandler(object):
 
         # Start runnable in her own Thread
         thread = Thread(name="Runnable %s" % command, target=runnable.start, args=())
+        thread.daemon = True
         thread.start()
 
         self.currentRunnables[command] = (runnable, thread)
@@ -56,15 +57,14 @@ class HostActionHandler(object):
         :param command: Which runnable should be stopped. The same string as has been given to startRunnable(). Give * to stop all runnables."""
         if self.currentRunnables.has_key(command):
             logging.debug("%s.stopRunnable(%s)" % (self.hostid, command))
-
             runnable, thread = self.currentRunnables[command]
             runnable.stop()
-            thread.join()
+            thread.join(timeout=3)
         elif command == "*":
             # Stop everything
             for runnable, thread in self.currentRunnables.values():
                 runnable.stop()
-                thread.join()
+                thread.join(timeout=3)
         else:
             logging.debug("Runnable %s not found" % command)
 

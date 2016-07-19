@@ -10,7 +10,9 @@ import netifaces
 
 from actors.AbstractBot import Runnable
 from resources import emu_config
+from actors.BotCommands import executeCurrentCommand
 
+iface_searchterm = "eth"
 
 class KademliaBot(Runnable):
     """Allows the KademliaBot to be run in its own thread."""
@@ -29,8 +31,8 @@ class KademliaBot(Runnable):
         observer = log.PythonLoggingObserver()
         observer.start()
 
-        possible_interfaces = [iface for iface in netifaces.interfaces() if "eth" in iface]
-        logging.debug("Interfaces: %s" % possible_interfaces)
+        possible_interfaces = [iface for iface in netifaces.interfaces() if iface_searchterm in iface]
+        logging.debug("Interfaces: %s" % netifaces.ifaddresses(possible_interfaces[0]))
         iface = netifaces.ifaddresses(possible_interfaces[0])[2][0]['addr']
         logging.debug("Node %s starts with %s on %s" % (self.name, self.peerlist, iface))
 
@@ -48,11 +50,10 @@ class KademliaBot(Runnable):
         if not self.stopthread:
             reactor.callLater(emu_config.botcommand_timeout, self.executeBot)
 
-    def executeCurrentCommand(self, result):
+    def executeCurrentCommand(self, command):
         """If the bot received a new command, this method executes the command"""
-        logging.debug("Got new command: %s" % result)
-        # TODO: Ein CommandExecutor-Modul erstellen und hier verwenden
-        pass
+        logging.debug("Got new command: %s" % command)
+        executeCurrentCommand(command)
 
     def errback(self, failure):
         """Given to defereds to report errors"""
@@ -64,8 +65,8 @@ class KademliaBot(Runnable):
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)
-    reactor.install()
 
+    iface_searchterm = "s0"
     logging.info("KademliaBot direkt von der CLI")
     bot = KademliaBot()
     bot.start()

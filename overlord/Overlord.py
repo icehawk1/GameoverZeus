@@ -4,7 +4,7 @@
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
 It uses unix sockets to communicate with the bots because they are independent of the network communication in mn."""
 
-import logging, json, re
+import logging, json, re, random, time
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 from thrift.transport.TTransport import TTransportException
@@ -50,7 +50,7 @@ class Overlord(object):
         assert isinstance(kwargs, dict)
 
         if hostlist is None:
-            hostlist = self.knownHosts.values()
+            hostlist = self.knownHosts.keys()
         assert isinstance(hostlist, list)
 
         for hostid in hostlist:
@@ -66,19 +66,21 @@ class Overlord(object):
             except TTransportException as ex:
                 logging.error("Could not send startRunnable command to connector %s: %s" % (connector.id, ex.message))
 
-    def stopRunnable(self, runnable, hostlist=None):
+    def stopRunnable(self, runnable="*", hostlist=None):
         """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.
         :param runnable: The name of a subclass of AbstractBot.Runnable that does the work that the hosts shall be doing.
+                        Give a star or leave out to stop every runnable on the hosts.
         :type runnable: str
         :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
         :type hostlist: list"""
 
         if hostlist is None:
-            hostlist = self.knownHosts.values()
+            hostlist = self.knownHosts.keys()
 
-
-        for connector in hostlist:
+        for hostid in hostlist:
             try:
+                assert isinstance(hostid, str)
+                connector = self.knownHosts[str(hostid)]
                 assert isinstance(connector, _HostConnector)
                 connector.startCommunication()
                 logging.debug("Stopping runnable %s of host %s" % (runnable, connector.id))
@@ -89,8 +91,37 @@ class Overlord(object):
 
     def stopEverything(self, hostlist=None):
         """Stops everything that is running on the given hosts. Called before the program exits."""
-        self.stopRunnable("*", hostlist)
+        self.stopRunnable(hostlist=hostlist)
         logging.debug("Stopped all runnables for all hosts")
+
+    def removeRandomBots(self, probability, hostlist=None):
+        """Goes through hostlist and randomly decides, with the given probability, if it will stop all runnables on that machine
+        :param probability: The probability that a node will be stoped as a float between 0 and 1
+        :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
+        :type hostlist: list of strings
+        :type probability: a float between 0 and 1
+        :return: the bots that were removed"""
+        probability = float(probability)
+        assert 0 <= probability <= 1
+
+        if hostlist is None:
+            hostlist = self.knownHosts.values()
+        toRemove = [str(host) for host in hostlist if random.uniform(0, 1) <= probability]
+        self.stopRunnable(hostlist=toRemove)
+        return toRemove
+
+    def desinfectRandomBots(self, probability, hostlist=None):
+        """Goes through hostlist and randomly decides, with the given probability, if it will stop all runnables on that machine
+            and then start the Victim runnable.
+            :param probability: The probability that a node will be stoped as a float between 0 and 1
+            :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
+            :type hostlist: list of strings
+            :type probability: a float between 0 and 1
+            :return: the bots that were desinfected"""
+        toDesinfect = self.removeRandomBots(probability, hostlist)
+        time.sleep(1)
+        self.startRunnable("Victim", "Victim", hostlist=toDesinfect)
+        return toDesinfect
 
 class _HostConnector(object):
     """Encapsulates the communication channel to the given host"""

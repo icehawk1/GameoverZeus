@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import blinker, json, logging, os, random, requests, sys, time
+import json, logging, os, random, requests, sys, time
 from threading import Thread, Timer
 
-import BotCommands
+from actors import BotCommands
 from AbstractBot import AbstractBot
 from resources import emu_config
 from utils.MiscUtils import NetworkAddressSchema
@@ -13,21 +13,23 @@ class Bot(AbstractBot):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
     and renews its registration with said server. The possible commands are defined in BotCommands.py."""
 
-    def __init__(self, peerlist=[], name=""):
-        AbstractBot.__init__(self, peerlist, name=name, probability_of_disinfection=0.1)
+    def __init__(self, peerlist=[], **kwargs):
+        AbstractBot.__init__(self, peerlist, probability_of_disinfection=0.1, **kwargs)
         self.current_command = None
         self.threads = []
 
     def performDuty(self):
+        logging.debug("Doing my duties")
         # If there is a CnC-Server in the peerlist
         if len(self.peerlist) > 0:
             try:
                 cncserver = random.choice(self.peerlist)
-                self._fetchCurrentCommand(cncserver)
                 self._registerWithCnCServer(cncserver)
-                self._executeCurrentCommand()
-            except requests.ConnectionError as ex:
-                logging.debug("Duty of bot %s failed: %s" % (self.id, ex))
+                self._fetchCurrentCommand(cncserver)
+                if self.current_command is not None:
+                    self._executeCurrentCommand()
+            except Exception as ex:
+                logging.debug("Duty of bot %s failed with %s: %s" % (self.id, type(ex).__name__, ex))
 
     def _fetchCurrentCommand(self, cncserver):
         """Fetches a command from the CnC-Server and executes. This way the Botmaster can control the bots.
@@ -41,18 +43,19 @@ class Bot(AbstractBot):
             if newCmd != self.current_command:
                 logging.debug("Replaced command %s with %s" % (self.current_command, newCmd))
             self.current_command = newCmd
+        else:
+            self.current_command = None
 
     def _executeCurrentCommand(self):
         """Executes the last command that has been fetched from the CnC-Server"""
 
         if isinstance(self.current_command, dict) and self.current_command.has_key("command") \
                 and self.current_command["command"] != "":
-            methodToCall = getattr(BotCommands, self.current_command["command"])
             try:
-                methodToCall(**self.current_command["kwargs"])
-            except TypeError:
-                logging.warning("Command %s got invalid parameters: %s"
-                                % (self.current_command["command"], self.current_command["kwargs"]))
+                BotCommands.executeCurrentCommand(self.current_command)
+            except TypeError as ex:
+                logging.warning("Command %s got invalid parameters %s: %s"
+                                % (self.current_command["command"], self.current_command["kwargs"], ex.message))
 
     def _registerWithCnCServer(self, cncserver):
         """Notifies the CnC-Server that this bot exists and is still operational."""
@@ -95,5 +98,5 @@ if __name__ == "__main__":
     itgsend_thread.start()
 
     time.sleep(235)
-    blinker.signal("stop").send()
+    bot.stop()
     logging.info("Bot is stopping")

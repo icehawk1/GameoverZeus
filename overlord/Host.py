@@ -90,12 +90,15 @@ def createRPCServer(processor):
     serversocket = socket.socket(socket.AF_UNIX)
     serversocket.bind(socketFile)
 
+    logging.debug("create transport")
     transport = TSocket.TServerSocket(unix_socket=socketFile)
     # We need buffering for performance
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 
+    logging.debug("create result")
     result = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
+    # logging.debug("result = TServer.TSimpleServer(%s, %s, %s, %s)"%(processor, transport, tfactory, pfactory))
     return result
 
 
@@ -111,7 +114,9 @@ if __name__ == '__main__':
         logging.basicConfig(**logging_config)
         handler = HostActionHandler()
 
-    logging.debug("Host %s has been created" % handler.getID())
-
+    logging.debug("start rpc server")
     server = createRPCServer(OverlordClient.Processor(handler))
+    logging.debug("%s.serve()" % server)
     server.serve()
+
+    logging.debug("Host %s has been created" % handler.getID())

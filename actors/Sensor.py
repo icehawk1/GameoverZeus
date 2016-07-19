@@ -29,13 +29,19 @@ def measureLoadingTime(url):
 class Sensor(CommandExecutor):
     """Helper class to let this sensor be run in a thread"""
 
-    def __init__(self, name="", pagesToWatch=[], outputdir="/tmp/loading_times"):
+    def __init__(self, pagesToWatch=[], outputdir="/tmp/loading_times", **kwargs):
         """:param pagesToWatch: A list of URLs whose loading time shall be measured
-        :param outputdir: Directory to store the resulting graphs"""
-        CommandExecutor.__init__(self, name=name)
+        :param outputdir: Directory to store the resulting graphs
+        :param pauseBetweenDuties: How long to wait between invocations of performDuty()"""
+
+        # Use different default value for param
+        if not kwargs.has_key("pauseBetweenDuties"):
+            logging.debug("Use different default value for pauseBetweenDuties param")
+            kwargs["pauseBetweenDuties"] = 0.5
+
+        CommandExecutor.__init__(self, **kwargs)
         self.loadingTimesDict = {page: [] for page in pagesToWatch}
         self.outputdir = outputdir
-        self.pauseBetweenDuties = 0.5
 
     def performDuty(self):
         """Implements method from superclass"""

@@ -64,7 +64,7 @@ class Overlord(object):
                 connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
             except TTransportException as ex:
-                logging.error("Could not send startRunnable command to connector %s: %s" % (connector.id, ex.message))
+                logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
 
     def stopRunnable(self, runnable="*", hostlist=None):
         """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.
@@ -87,7 +87,7 @@ class Overlord(object):
                 connector.client.stopRunnable(runnable)
                 connector.stopCommunication()
             except TTransportException as ex:
-                logging.error("Could not send stopRunnable command to connector %s: %s" % (connector.id, ex.message))
+                logging.error("Could not send stopRunnable command to connector %s: %s" % (hostid, ex.message))
 
     def stopEverything(self, hostlist=None):
         """Stops everything that is running on the given hosts. Called before the program exits."""

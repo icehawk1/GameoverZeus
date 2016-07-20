@@ -86,6 +86,7 @@ class AbstractBot(CommandExecutor):
         """Shuts the bot down."""
         logging.info("Bot was stopped via signal from %s" % sender)
         CommandExecutor.stop(self)
+        super(AbstractBot, self).stop()
         for proc in self.processes:
             proc.terminate()
 

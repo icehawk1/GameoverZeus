@@ -16,6 +16,6 @@ class Controller(node.Controller):
         self.cmd(self.floodlight, '-cf %s/resources/floodlight.conf  &' % emu_config.basedir)
 
     def stop(self, *args, **kwargs):
-        super(node.Controller, self).stop(*args, **kwargs)
+        super(Controller, self).stop(*args, **kwargs)
         if os.path.exists("./nohup.out"):
             os.remove("./nohup.out")

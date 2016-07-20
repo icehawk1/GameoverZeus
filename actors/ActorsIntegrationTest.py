@@ -39,6 +39,7 @@ class ActorsIntegrationTest(unittest.TestCase):
         self.proxyProcess.kill()
         self.botProcess1.kill()
         self.botProcess2.kill()
+        os.system("fuser -kn tcp 9000")
 
     def testHasBotRegistered(self):
         """Tests if the two bots have automatically registered themselves with the CnC-Server"""

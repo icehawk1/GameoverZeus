@@ -12,24 +12,21 @@ from utils.MiscUtils import mkdir_p
 logfile = "/tmp/botnetemulator/machine_readable.log"
 
 
-def writeLogentry(runnable, message):
+def writeLogentry(runnable, message, timeissued=datetime.now()):
     """Appends an entry to the machine readable logfile
     :param runnable: The runnable that issued the log entry.
             Should be the name of the class and can be used for searching entries.
-    :param message: An explanatory message to be included with the entry"""
-    assert isinstance(runnable, str)
-    assert isinstance(message, str)
+    :param message: An explanatory message to be included with the entry
+    :param timeissued: Time when the event happened, that this entry is refering to"""
     mkdir_p(os.path.dirname(logfile))  # Make sure directory exists
 
-    datestr = datetime.now().isoformat(" ")
-    print datestr
     with open(logfile, mode="a") as fp:
-        fp.write("%s|%s|%s" % (datestr, string.strip(runnable), string.strip(message)))
+        fp.write("%s|%s|%s\n" % (timeissued.isoformat(" "), string.strip(str(runnable)), string.strip(str(message))))
 
 def parseMachineReadableLogfile(runnable=None):
     """Parses the machine readable logfile and returns its contents
     :param runnable: Only return entries from this runnable
-    :return: A list of Logentry's with the same order as in the logfile"""
+    :return: A list of Logentry's ordered by their timestamp"""
     mkdir_p(os.path.dirname(logfile))  # Make sure directory exists
 
     result = []
@@ -41,7 +38,7 @@ def parseMachineReadableLogfile(runnable=None):
                     result.append(logentry)
             except ValueError as ex:
                 pass
-    return result
+    return sorted(result, key=lambda entry: entry.entrytime)
 
 
 class Logentry(object):
@@ -49,10 +46,10 @@ class Logentry(object):
 
     def __init__(self, logentry):
         assert isinstance(logentry, str)
-        splitted = [string.strip(x) for x in logentry.split("|")]
+        splitted = [string.strip(x) for x in logentry.split("|", 2)]
 
         #: The time when the entry was recorded as given in the logfile
-        self.entrytime = datetime.strptime(splitted[0], "%Y-%m-%d %H:%M:%S,%f")
+        self.entrytime = datetime.strptime(splitted[0], "%Y-%m-%d %H:%M:%S.%f")
         #: The Runnable that issued the log entry
         self.runnable = splitted[1]
         #: The message that was recorded

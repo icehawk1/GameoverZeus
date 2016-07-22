@@ -5,8 +5,7 @@ from threading import Thread
 from abc import ABCMeta, abstractmethod
 from timeout_decorator import timeout
 
-from actors.AbstractBot import Runnable, CommandExecutor, AbstractBot
-
+from actors.AbstractBot import Runnable, CommandExecutor
 
 class RunnableTest(object):
     """An abstract Base Test for all tests that test Subclasses of Runnable
@@ -48,6 +47,31 @@ class RunnableTest(object):
         self.verifyOUThasBeenRun()
         self.thread.join()
 
+
+class CommandExecutorTest(RunnableTest, unittest.TestCase):
+    def setUp(self):
+        super(CommandExecutorTest, self).setUp()
+        self.assertTrue(isinstance(self.objectUnderTest, CommandExecutor),
+                        msg="type(OUT)==%s" % type(self.objectUnderTest))
+
+    def createObjectUnderTest(self):
+        return MockCommandExecutor(pauseBetweenDuties=0.1)
+
+    def verifyOUTisRunning(self):
+        oldlen = len(self.objectUnderTest.dutyTimes)
+        time.sleep(0.2)
+        newlen = len(self.objectUnderTest.dutyTimes)
+        self.assertTrue(newlen > oldlen)
+
+    def verifyOUThasBeenRun(self):
+        self.assertTrue(len(self.objectUnderTest.dutyTimes) >= 10)
+
+
+class MockCommandExecutor(CommandExecutor):
+    dutyTimes = []
+
+    def performDuty(self, *args, **kwargs):
+        self.dutyTimes.append(time.clock())
 
 if __name__ == '__main__':
     unittest.main()

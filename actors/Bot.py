@@ -1,22 +1,21 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import json, logging, os, random, requests, sys, time
-from threading import Thread, Timer
+import json, logging, random, requests
 
 from actors import BotCommands
-from AbstractBot import AbstractBot
+from AbstractBot import CommandExecutor
 from resources import emu_config
-from utils.MiscUtils import NetworkAddressSchema
 
 
-class Bot(AbstractBot):
+class Bot(CommandExecutor):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
     and renews its registration with said server. The possible commands are defined in BotCommands.py."""
 
     def __init__(self, peerlist=[], **kwargs):
-        AbstractBot.__init__(self, peerlist, probability_of_disinfection=0.1, **kwargs)
+        super(Bot, self).__init__(**kwargs)
         self.current_command = None
         self.threads = []
+        self.peerlist = peerlist
 
     def performDuty(self):
         logging.debug("Doing my duties")
@@ -29,7 +28,7 @@ class Bot(AbstractBot):
                 if self.current_command is not None:
                     self._executeCurrentCommand()
             except Exception as ex:
-                logging.debug("Duty of bot %s failed with %s: %s" % (self.id, type(ex).__name__, ex))
+                logging.debug("Duty of bot %s failed with %s: %s" % (self.name, type(ex).__name__, ex))
 
     def _fetchCurrentCommand(self, cncserver):
         """Fetches a command from the CnC-Server and executes. This way the Botmaster can control the bots.
@@ -61,42 +60,7 @@ class Bot(AbstractBot):
         """Notifies the CnC-Server that this bot exists and is still operational."""
 
         response = requests.post("http://%s:%s/register" % (cncserver, emu_config.PORT),
-                                 data={'id': self.id})
+                                 data={'id': self.name})
         if not response.text == "OK":
             logging.debug(
-                "Registration of bot %s failed with %s: %s" % (self.id, response.status_code, response.text))
-
-    def _sendOutRandomTraffic(self, probability):
-        """Sends random traffic to a random host to generate noise in the network.
-        ITGSend (belongs to D-ITG) is a traffic generator that sends out random traffic.
-        It is able to simulate various application of which one is randomly chosen."""
-
-        simulated_apps = ["Telnet", "DNS", "Quake3", "CSa", "CSi", "VoIP -x G.723.1", "VoIP -h CRTP -VAD G.711.2"]
-        known_ips = ["localhost"]
-        if random.uniform(0, 1) < probability:
-            # We can ignore the log files, because we are just using the traffic as noise
-            os.system(
-                "ITGSend -a %s -l /dev/null -x /dev/null %s" % (
-                random.choice(known_ips), random.choice(simulated_apps)))
-
-        if not bot.stopthread:
-            Timer(10, self._sendOutRandomTraffic, args=[probability]).start()
-
-if __name__ == "__main__":
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-
-    logging.info("Bot is starting")
-    schema = NetworkAddressSchema()
-    peerlist = [schema.loads(sys.argv[i]).data.host for i in range(1, len(sys.argv))]
-    bot = Bot(peerlist=peerlist)
-
-    # Start listening for incoming D-ITG traffic
-    itgrecvThread = Thread(name="ITGRecv_thread", target=bot.listenForIncomingNoiseTraffic, args=())
-    itgrecvThread.start()
-    # Start sending out traffic to random ips
-    itgsend_thread = Thread(name="ITGSend_thread", target=bot._sendOutRandomTraffic, args=(0.05,))
-    itgsend_thread.start()
-
-    time.sleep(235)
-    bot.stop()
-    logging.info("Bot is stopping")
+                "Registration of bot %s failed with %s: %s" % (self.name, response.status_code, response.text))

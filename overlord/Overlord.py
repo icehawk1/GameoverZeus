@@ -4,7 +4,7 @@
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
 It uses unix sockets to communicate with the bots because they are independent of the network communication in mn."""
 
-import logging, json, re, random, time
+import logging, json, re, random, time, os
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 from thrift.transport.TTransport import TTransportException
@@ -12,6 +12,7 @@ from thrift.transport.TTransport import TTransportException
 from HostActions import OverlordClient
 from resources.emu_config import SOCKET_DIR
 from utils.MiscUtils import mkdir_p
+from utils import LogfileParser
 
 class Overlord(object):
     """Central controller for everything."""
@@ -19,6 +20,10 @@ class Overlord(object):
     def __init__(self):
         self.knownHosts = dict()
         mkdir_p(SOCKET_DIR)
+
+        # Remove machine readable logfile from previous runs
+        if os.path.exists(LogfileParser.logfile):
+            os.remove(LogfileParser.logfile)
 
     def addHost(self, hostid):
         """Adds a host to the network"""
@@ -37,9 +42,9 @@ class Overlord(object):
     def startRunnable(self, importmodule, runnable, kwargs=dict(), hostlist=None):
         # TODO: Keep track of running Runnables
         """Instruct the given hosts to run a certain Runnable.
-        :param runnable: The name of a subclass of AbstractBot.Runnable that does the work that the hosts shall be doing.
+        :param runnable: The name of a subclass of RandomTrafficReceiver.Runnable that does the work that the hosts shall be doing.
         :type runnable: str
-        :param importmodule: The name of  the module where the subclass of AbstractBot.Runnable is defined.
+        :param importmodule: The name of  the module where the subclass of RandomTrafficReceiver.Runnable is defined.
         :type importmodule: str
         :param kwargs: The constructor parameter for the runnable
         :type kwargs: dict
@@ -64,11 +69,12 @@ class Overlord(object):
                 connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
             except TTransportException as ex:
+                logging.debug("ls /tmp/overlordsockets: %s" % os.listdir("/tmp/overlordsockets"))
                 logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
 
     def stopRunnable(self, runnable="*", hostlist=None):
         """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.
-        :param runnable: The name of a subclass of AbstractBot.Runnable that does the work that the hosts shall be doing.
+        :param runnable: The name of a subclass of RandomTrafficReceiver.Runnable that does the work that the hosts shall be doing.
                         Give a star or leave out to stop every runnable on the hosts.
         :type runnable: str
         :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
@@ -128,15 +134,16 @@ class _HostConnector(object):
 
     def __init__(self, hostid):
         self.id = str(hostid)
-        assert re.match("[a-zA-Z0-9_]+", self.id), "Invalid host id: %s" % hostid
+        assert re.match("[a-zA-Z0-9_-]+", self.id), "Invalid host id: %s" % hostid
 
-        transport = TSocket.TSocket(unix_socket=SOCKET_DIR + self.id)
-        logging.debug("Use socket %s" % (SOCKET_DIR + self.id))
+        socketfile = SOCKET_DIR + self.id
+        transport = TSocket.TSocket(unix_socket=socketfile)
         # Buffering is critical. Raw sockets are very slow
         self.transport = TTransport.TBufferedTransport(transport)
         protocol = TBinaryProtocol.TBinaryProtocol(transport)
         # Create a client that will be used to remotely invoke commands on the host
         self.client = OverlordClient.Client(protocol)
+        logging.debug("Use socket %s, File exists: %s" % (socketfile, os.path.exists(socketfile)))
 
     def startCommunication(self):
         """Opens the communication channel, so that self.client can be used."""

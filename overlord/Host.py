@@ -5,12 +5,11 @@ It is intended to be run on every mn host to help the architecture being flexibl
 control all hosts."""
 
 import logging, json, os, importlib, random, sys, socket, tempfile
-
-sys.path.append(os.path.dirname(__file__))
 from threading import Thread
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 from thrift.transport import TSocket, TTransport
+
 from HostActions import OverlordClient
 from resources.emu_config import SOCKET_DIR, logging_config
 
@@ -38,8 +37,10 @@ class HostActionHandler(object):
         # Import module and create object
         moduleobj = importlib.import_module("actors." + importmodule)
         try:
+            if not kwargs.has_key("name"):
+                kwargs["name"] = command
             constructorobj = getattr(moduleobj, command)
-            runnable = constructorobj(name=command, **kwargs)
+            runnable = constructorobj(**kwargs)
         except AttributeError as ex:
             message = "%s.%s() does not exist: %s" % (moduleobj, command, ex)
             logging.error(message)

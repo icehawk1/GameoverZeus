@@ -89,7 +89,7 @@ class RegisterHandler(tornado.web.RequestHandler):
 
     def post(self):
         self.set_header("Content-Type", "text/plain")
-        botid = int(self.get_body_argument("id"))
+        botid = self.get_body_argument("id")
         if self.registered_bots.has_key(botid):
             self.registered_bots[botid].last_seen = time.time()
         else:

@@ -12,10 +12,11 @@ class Controller(node.Controller):
 
     def start(self):
         """Start Floodlight with standard config file"""
-        node.Controller.start(self)
+        super(Controller, self).start()
         self.cmd(self.floodlight, '-cf %s/resources/floodlight.conf  &' % emu_config.basedir)
 
     def stop(self, *args, **kwargs):
         super(Controller, self).stop(*args, **kwargs)
         if os.path.exists("./nohup.out"):
             os.remove("./nohup.out")
+        os.system("fuser -k -n tcp 6633")  # Kill controller if it is still running

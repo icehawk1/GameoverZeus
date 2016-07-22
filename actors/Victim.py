@@ -10,7 +10,7 @@ from blinker import signal
 from threading import Thread
 from tornado.ioloop import IOLoop
 
-from AbstractBot import AbstractBot, Runnable
+from AbstractBot import RandomTrafficReceiver, Runnable
 
 probability_of_infection = 0.5
 victimid = random.randint(1, 1000)

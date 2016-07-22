@@ -5,28 +5,19 @@ import os, time, logging, sys, json
 sys.path.append(os.path.dirname(__file__))
 from mininet import net
 from mininet.cli import CLI
-import requests
 
 from utils import Floodlight
 from resources import emu_config
 from overlord.Overlord import Overlord
+from utils.MiscUtils import addHostToMininet
 
 pypath = "PYTHONPATH=$PYTHONPATH:%s " % emu_config.basedir
 
 
-def addHostToMininet(mn, switch, hostname, **linkopts):
-    result = mn.addHost(hostname)
-    overlord.addHost(result.name)
-    link = mn.addLink(result, switch)
-    link.intf1.config(**linkopts)
-    link.intf2.config(**linkopts)
-    return result
-
-
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)
+    logging.debug("Ich bin eine debug message")
 
-    os.system("fuser -k -n tcp 6633")  # Kill controller if it is still running
     net = net.Mininet(controller=Floodlight.Controller)
     net.addController("controller1")
 
@@ -35,25 +26,26 @@ if __name__ == '__main__':
 
     hosts = []
     for i in range(1, 6):
-        current_host = addHostToMininet(net, switch, "host%d" % i, bw=25)
+        current_host = addHostToMininet(net, switch, "host%d" % i, overlord, bw=25)
         hosts.append(current_host)
-    cncserver = addHostToMininet(net, switch, "cnc1")
-    victim = addHostToMininet(net, switch, "victim1", bw=90)
-    sensor = addHostToMininet(net, switch, "sensor1")
+    cncserver = addHostToMininet(net, switch, "cnc1", overlord)
+    victim = addHostToMininet(net, switch, "victim1", overlord, bw=90)
+    sensor = addHostToMininet(net, switch, "sensor1", overlord)
 
     net.start()
     # net.pingAll()
 
     for node in hosts + [victim, cncserver, sensor]:
         node.cmd(pypath + " python2 overlord/Host.py %s &" % node.name)
-    time.sleep(1)
+    time.sleep(5)
 
     overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
     overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=422" % victim.IP()]},
                            hostlist=[sensor.name])
     overlord.startRunnable("CnCServer", "CnCServer", {"host": "10.0.0.6"}, hostlist=[cncserver.name])
-    overlord.startRunnable("Bot", "Bot", {"peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
-                           hostlist=[h.name for h in hosts])
+    for h in hosts:
+        overlord.startRunnable("Bot", "Bot", {"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
+                               hostlist=[h.name])
     logging.debug("Runnables wurden gestartet")
     time.sleep(5)
 

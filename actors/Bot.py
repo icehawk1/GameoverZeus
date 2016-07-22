@@ -18,7 +18,6 @@ class Bot(CommandExecutor):
         self.peerlist = peerlist
 
     def performDuty(self):
-        logging.debug("Doing my duties")
         # If there is a CnC-Server in the peerlist
         if len(self.peerlist) > 0:
             try:

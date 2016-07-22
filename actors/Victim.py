@@ -6,11 +6,10 @@ a botnet. If it is attacked sucessfully it changes to a bot."""
 import logging
 import random
 import tornado.web
-from blinker import signal
 from threading import Thread
 from tornado.ioloop import IOLoop
 
-from AbstractBot import RandomTrafficReceiver, Runnable
+from actors.AbstractBot import Runnable
 
 probability_of_infection = 0.5
 victimid = random.randint(1, 1000)

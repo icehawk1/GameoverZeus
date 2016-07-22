@@ -40,7 +40,7 @@ if __name__ == '__main__':
     time.sleep(5)
 
     overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
-    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=422" % victim.IP()]},
+    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432" % victim.IP()]},
                            hostlist=[sensor.name])
     overlord.startRunnable("CnCServer", "CnCServer", {"host": "10.0.0.6"}, hostlist=[cncserver.name])
     for h in hosts:
@@ -53,12 +53,15 @@ if __name__ == '__main__':
                            % (json.dumps({"url": "http://%s:%d/ddos_me" % (victim.IP(), emu_config.PORT)}),
                               "http://%s:%d/current_command" % (cncserver.IP(), emu_config.PORT)), verbose=True)
     logging.debug("curl: %s" % result)
-    time.sleep(5)
-    # overlord.desinfectRandomBots(0.2, [h.name for h in hosts])
-    # time.sleep(5)
-    # overlord.desinfectRandomBots(0.2, [h.name for h in hosts])
-    # time.sleep(5)
+    time.sleep(25)
+    overlord.desinfectRandomBots(0.3, [h.name for h in hosts])
+    time.sleep(15)
+    overlord.desinfectRandomBots(0.2, [h.name for h in hosts])
+    time.sleep(15)
+    overlord.desinfectRandomBots(1, [h.name for h in hosts])
+    time.sleep(25)
 
     # CLI(net)
+    print "stopEverything"
     overlord.stopEverything()
     net.stop()

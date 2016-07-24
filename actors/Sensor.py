@@ -11,7 +11,7 @@ import numpy
 
 from AbstractBot import CommandExecutor
 from resources.emu_config import logging_config
-from utils.MiscUtils import mkdir_p
+from utils.MiscUtils import mkdir_p, datetimeToEpoch
 from utils.LogfileParser import writeLogentry, parseMachineReadableLogfile
 
 def measureLoadingTime(url):
@@ -56,18 +56,7 @@ class Sensor(CommandExecutor):
         logging.debug("Starting collection of loading times")
         loadingTimesDict = self._collectLoadingTimes()
 
-        mkdir_p(self.outputdir)  # Ensure outputdir exists
-        pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
-        for page in loadingTimesDict.keys():
-            pyplot.close()
-            y = loadingTimesDict[page]
-            x = [i for i in range(1, len(y) + 1)]
-            pyplot.plot(numpy.array(x), numpy.array(y))
-            pyplot.xlabel("time")
-            pyplot.ylabel('loading time')
-
-            outputfile = os.path.join(self.outputdir, urlparse.urlparse(page).hostname) + ".pdf"
-            pyplot.savefig(outputfile)
+        self._createPlotOfLoadingTimes(loadingTimesDict)
 
     def _collectLoadingTimes(self):
         logentries = parseMachineReadableLogfile(runnable=type(self).__name__)
@@ -76,10 +65,37 @@ class Sensor(CommandExecutor):
             splited = entry.message.split(" ")
             if not result.has_key(splited[0]):
                 result[splited[0]] = []
-            result[splited[0]].append(float(splited[1]))
+
+            #: The time when this entry was made as given in the logfile
+            logtimestamp = entry.entrytime
+            #: The time it took to load the page
+            pageloadTime = float(splited[1])
+            result[splited[0]].append((logtimestamp, pageloadTime))
 
         logging.debug("Measured the following loading times: %s" % result)
         return result
+
+    def _createPlotOfLoadingTimes(self, loadingTimesDict):
+        mkdir_p(self.outputdir)  # Ensure outputdir exists
+
+        pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
+        for page in loadingTimesDict.keys():
+            pyplot.close()
+
+            raw_x = [datetimeToEpoch(tuple[0]) for tuple in loadingTimesDict[page]]
+            raw_min = min(raw_x)
+            x = [x - raw_min for x in raw_x]
+            y = [tuple[1] for tuple in loadingTimesDict[page]]
+            logging.debug("x = %s"%x)
+            logging.debug("y = %s"%y)
+
+            pyplot.plot(numpy.array(x), numpy.array(y))
+            pyplot.xlabel("time")
+            pyplot.ylabel('loading time')
+
+            outputfile = os.path.join(self.outputdir, urlparse.urlparse(page).hostname) + ".pdf"
+            pyplot.savefig(outputfile)
+
 
 if __name__ == "__main__":
     logging.basicConfig(**logging_config)

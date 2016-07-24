@@ -2,9 +2,10 @@
 # coding=UTF-8
 """Some utility functions that fit nowhere else"""
 import os, errno, random
-from mininet.net import Mininet, Host
+from mininet.net import Mininet
 from mininet.node import Switch
 from marshmallow import Schema, fields, post_load
+from datetime import datetime
 
 from resources import emu_config
 
@@ -56,3 +57,9 @@ def addHostToMininet(mn, switch, hostname, overlord, **linkopts):
     link.intf1.config(**linkopts)
     link.intf2.config(**linkopts)
     return result
+
+
+def datetimeToEpoch(datetimeObj):
+    """Takes the given datetime object and returns the number of seconds since Epoch
+    :return: A positive or negative integer"""
+    return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())

@@ -47,7 +47,7 @@ if __name__ == '__main__':
         overlord.startRunnable("Bot", "Bot", {"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
                                hostlist=[h.name])
     logging.debug("Runnables wurden gestartet")
-    time.sleep(5)
+    time.sleep(25)
 
     result = cncserver.cmd("curl -X POST --data 'command=ddos_server&kwargs=%s' '%s'"
                            % (json.dumps({"url": "http://%s:%d/ddos_me" % (victim.IP(), emu_config.PORT)}),

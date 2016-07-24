@@ -4,8 +4,13 @@ import shlex, logging, os, re
 from subprocess import Popen, PIPE
 from datetime import datetime, timedelta
 
+from utils.MiscUtils import mkdir_p, createLoadtimePlot, datetimeToEpoch
 
 class TcptraceParser(object):
+    def __init__(self, outputdir="/tmp/botnetemulator/tcptrace",host=None):
+        self.outputdir = outputdir
+        self.host = host
+
     def extractConnectionStatisticsFromPcap(self, pcapfile):
         """Extracts the communicating hosts, relative time of first packet and duration for every tcp connection
             in the given pcap file.
@@ -13,11 +18,12 @@ class TcptraceParser(object):
             :return: A list of TcpConnection objects ordered by the connection start time."""
         ttoutput = self._runTcpTraceOnPcap(pcapfile)
         result = self._extractConnectionStatistics(ttoutput)
+        self._createPlotOfLoadingTimes(result)
         return result
 
     def _runTcpTraceOnPcap(self, pcapfile):
         """Runs tcptrace -ln on the given pcap file and returns the input"""
-        assert os.path.isfile(pcapfile)
+        assert os.path.isfile(pcapfile), "pcap file does not exist: %s"%pcapfile
         try:
             process = Popen(shlex.split("tcptrace -ln %s"%pcapfile), shell=False, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
@@ -67,8 +73,27 @@ class TcptraceParser(object):
                 current_connection = TcpConnection()
         result.append(current_connection)
 
+        result = sorted(result, key=lambda conn: datetimeToEpoch(conn.startTime))
         return result
 
+    def _createPlotOfLoadingTimes(self, connection_statistics):
+        """Creates a pdf file that shows a plot with the relative time when a page load began on the x-axis
+            and the time taken to complete the page load on the y-axis. Page load means that this sensor loads a web page
+            from a web server and measures how long this takes.
+            :param connection_statistics: A list of TcpConnection objects"""
+        mkdir_p(self.outputdir)  # Ensure outputdir exists
+
+        raw_x = [datetimeToEpoch(conn.startTime) for conn in connection_statistics]
+        raw_min = min(raw_x)
+        x = [x - raw_min for x in raw_x]
+        y = [conn.duration.total_seconds() for conn in connection_statistics]
+        logging.debug("x = %s"%x)
+        logging.debug("y = %s"%y)
+
+        if self.host:
+            createLoadtimePlot(x,y, "%s/loadingtimes-%s.pdf"%(self.outputdir,self.host))
+        else:
+            createLoadtimePlot(x, y, "%s/loadingtimes.pdf"%self.outputdir)
 
 class TcpConnection(object):
     host1 = None

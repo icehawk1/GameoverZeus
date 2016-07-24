@@ -27,7 +27,7 @@ def measureLoadingTime(url):
 class Sensor(CommandExecutor):
     """Helper class to let this sensor be run in a thread"""
 
-    def __init__(self, pagesToWatch=[], outputdir="/tmp/loading_times", **kwargs):
+    def __init__(self, pagesToWatch=[], outputdir="/tmp/botnetemulator/sensor", **kwargs):
         """:param pagesToWatch: A list of URLs whose loading time shall be measured
         :param outputdir: Directory to store the resulting graphs
         :param pauseBetweenDuties: How long to wait between invocations of performDuty()"""
@@ -76,6 +76,9 @@ class Sensor(CommandExecutor):
         return result
 
     def _createPlotOfLoadingTimes(self, loadingTimesDict):
+        """Creates a pdf file that shows a plot with the relative time when a page load began on the x-axis
+        and the time taken to complete the page load on the y-axis. Page load means that this sensor loads a web page
+        from a web server and measures how long this takes."""
         mkdir_p(self.outputdir)  # Ensure outputdir exists
 
         pyplot.ioff()  # Ensure that matplotlib does not try to show a gui

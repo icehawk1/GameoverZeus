@@ -9,7 +9,8 @@ from mininet.cli import CLI
 from utils import Floodlight
 from resources import emu_config
 from overlord.Overlord import Overlord
-from utils.MiscUtils import addHostToMininet
+from utils.MiscUtils import addHostToMininet,mkdir_p
+from utils.TcptraceParser import TcptraceParser
 
 pypath = "PYTHONPATH=$PYTHONPATH:%s " % emu_config.basedir
 
@@ -46,6 +47,9 @@ if __name__ == '__main__':
     for h in hosts:
         overlord.startRunnable("Bot", "Bot", {"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
                                hostlist=[h.name])
+    pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"
+    mkdir_p(os.path.dirname(pcapfile))
+    victim.cmd("tshark -F pcap -w %s port http or port https &"%pcapfile)
     logging.debug("Runnables wurden gestartet")
     time.sleep(25)
 
@@ -62,6 +66,10 @@ if __name__ == '__main__':
     time.sleep(25)
 
     # CLI(net)
-    print "stopEverything"
+    print "tshark: ", victim.cmd("jobs")
     overlord.stopEverything()
     net.stop()
+
+    ttparser = TcptraceParser(host="victim")
+    stats = ttparser.extractConnectionStatisticsFromPcap(pcapfile)
+    logging.debug("TcpTrace stats: %s"%stats)

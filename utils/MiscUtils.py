@@ -6,6 +6,8 @@ from mininet.net import Mininet
 from mininet.node import Switch
 from marshmallow import Schema, fields, post_load
 from datetime import datetime
+from matplotlib import pyplot
+import numpy
 
 from resources import emu_config
 
@@ -63,3 +65,10 @@ def datetimeToEpoch(datetimeObj):
     """Takes the given datetime object and returns the number of seconds since Epoch
     :return: A positive or negative integer"""
     return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
+
+def createLoadtimePlot(x,y,outputfile):
+    pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
+    pyplot.plot(numpy.array(x), numpy.array(y))
+    pyplot.xlabel("time")
+    pyplot.ylabel('loading time')
+    pyplot.savefig(outputfile)

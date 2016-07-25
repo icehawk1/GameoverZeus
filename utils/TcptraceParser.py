@@ -87,8 +87,8 @@ class TcptraceParser(object):
         raw_min = min(raw_x)
         x = [x - raw_min for x in raw_x]
         y = [conn.duration.total_seconds() for conn in connection_statistics]
-        logging.debug("x = %s"%x)
-        logging.debug("y = %s"%y)
+        # logging.debug("x = %s"%x)
+        # logging.debug("y = %s"%y)
 
         if self.host:
             createLoadtimePlot(x,y, "%s/loadingtimes-%s.pdf"%(self.outputdir,self.host))

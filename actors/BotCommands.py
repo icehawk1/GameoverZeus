@@ -41,7 +41,7 @@ def executeCurrentCommand(command):
     """Executes a command that has been passed to the bot
     :param command: A dict that contains the command to execute as well as its parameters"""
 
-    assert isinstance(command, dict)
+    assert isinstance(command, dict), "Command is a %s"%type(command)
     assert command.has_key("command") and command["command"] != ""
 
     methodToCall = getattr(BotCommands, command["command"])

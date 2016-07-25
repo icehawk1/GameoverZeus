@@ -25,7 +25,7 @@ class RandomTrafficGeneratorTest(RunnableTest, unittest.TestCase):
 
         overlord.startRunnable("RandomTrafficGenerator", "RandomTrafficReceiver", hostlist=[receiver.name])
         overlord.startRunnable("RandomTrafficGenerator", "RandomTrafficSender",
-                               {"peerlist": [receiver.IP()], "probability": 0.8}, hostlist=[sender.name])
+                               {"current_peerlist": [receiver.IP()], "probability": 0.8}, hostlist=[sender.name])
         logging.debug("Runnables wurden gestartet")
         time.sleep(2)
 

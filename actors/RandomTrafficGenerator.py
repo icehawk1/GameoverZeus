@@ -11,7 +11,7 @@ class RandomTrafficReceiver(Runnable):
 
     def __init__(self, peerlist=[], **kwargs):
         super(RandomTrafficReceiver, self).__init__(**kwargs)
-        assert isinstance(peerlist, list), "type(peerlist): %s" % type(peerlist)
+        assert isinstance(peerlist, list), "type(current_peerlist): %s"%type(peerlist)
 
         self.peerlist = peerlist
         self.id = random.randint(1, 100000)

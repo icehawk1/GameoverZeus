@@ -18,7 +18,7 @@ class Bot(CommandExecutor):
         self.peerlist = peerlist
 
     def performDuty(self):
-        # If there is a CnC-Server in the peerlist
+        # If there is a CnC-Server in the current_peerlist
         if len(self.peerlist) > 0:
             try:
                 cncserver = random.choice(self.peerlist)

@@ -15,7 +15,7 @@ class ActorsIntegrationTest(unittest.TestCase):
     """Tests if the different classes in this modulestr work well together."""
 
     def setUp(self):
-        """Starts two bots, one proxy and one CnC-Server"""
+        """Starts two clients, one proxy and one CnC-Server"""
 
         schema = NetworkAddressSchema()
         serialized_cncaddress = schema.dumps(NetworkAddress()).data
@@ -42,7 +42,7 @@ class ActorsIntegrationTest(unittest.TestCase):
         os.system("fuser -kn tcp 9000")
 
     def testHasBotRegistered(self):
-        """Tests if the two bots have automatically registered themselves with the CnC-Server"""
+        """Tests if the two clients have automatically registered themselves with the CnC-Server"""
 
         na = NetworkAddress()
         cnc_url = "http://%s:%s/register" % (na.host, na.port)

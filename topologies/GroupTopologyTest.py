@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""This file tests whether bots can be correctly separated via the Floodlight firewall. It uses a special BRITE file
+"""This file tests whether clients can be correctly separated via the Floodlight firewall. It uses a special BRITE file
 where every node is in the same AS but not every node is connected to every other node. The expectation is that firewall
 rules can be used to enforce that two nodes can ping each other iff they are connected in the BRITE file."""
 

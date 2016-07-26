@@ -2,7 +2,7 @@
 # coding=UTF-8
 """This file defines a class that centrally controls every Host in the network. This includes all sorts of actors.
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
-It uses unix sockets to communicate with the bots because they are independent of the network communication in mn."""
+It uses unix sockets to communicate with the clients because they are independent of the network communication in mn."""
 
 import logging, json, re, random, time, os
 from thrift.protocol import TBinaryProtocol
@@ -106,7 +106,7 @@ class Overlord(object):
         :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
         :type hostlist: list of strings
         :type probability: a float between 0 and 1
-        :return: the bots that were removed"""
+        :return: the clients that were removed"""
         probability = float(probability)
         assert 0 <= probability <= 1
 
@@ -123,7 +123,7 @@ class Overlord(object):
             :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
             :type hostlist: list of strings
             :type probability: a float between 0 and 1
-            :return: the bots that were desinfected"""
+            :return: the clients that were desinfected"""
         toDesinfect = self.removeRandomBots(probability, hostlist)
         time.sleep(1)
         self.startRunnable("Victim", "Victim", hostlist=toDesinfect)

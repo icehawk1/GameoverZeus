@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""Defines abstract base classes for all kinds of bots"""
+"""Defines abstract base classes for all kinds of clients"""
 import logging
 from abc import ABCMeta, abstractmethod
 from twisted.internet import reactor

@@ -72,4 +72,3 @@ if __name__ == '__main__':
 
     ttparser = TcptraceParser(host="victim")
     stats = ttparser.extractConnectionStatisticsFromPcap(pcapfile)
-    logging.debug("TcpTrace stats: %s"%stats)

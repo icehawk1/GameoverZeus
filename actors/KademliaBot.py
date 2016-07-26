@@ -23,7 +23,7 @@ iface_searchterm = "eth"
 
 # noinspection PyAbstractClass
 class CurrentCommandHandler(tornado.web.RequestHandler):
-    """A handler that lets bots fetch the current command via HTTP GET and lets the botmaster issue a new command via
+    """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command via
     HTTP POST."""
 
     current_command = {"command": "default_command", "kwargs": {}}

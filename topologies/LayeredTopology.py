@@ -14,7 +14,7 @@ class LayeredTopology(AbstractTopology):
     """This class defines a base Topology where the botnet is separated into layers. Each layer has its own external_switch and the
     switches are connected serially from the first to the last layer. Therefore all traffic from a layer n host to a
     layer n+k host has to go to all the switches for the inbetween layers.
-    The Topology allows an arbitrary number of named layers with an arbitrary number of bots each.
+    The Topology allows an arbitrary number of named layers with an arbitrary number of clients each.
     It will also run some command on all hosts in each layer. All hosts of one layer will run the same command but it may
      differ between layers.
 
@@ -32,7 +32,7 @@ class LayeredTopology(AbstractTopology):
     def addLayer(self, layername, num_bots=0, command=None, opts={}):
         """Adds a layer to the topology.
         :param layername: The name of this layer. Used to give the mn hosts some meaningful names. Should not be long.
-        :param num_bots: The number of bots in this layer.
+        :param num_bots: The number of clients in this layer.
         :param command: The command to run on each bot in this layer
         :param opts: Some additional options to give to Mininet.addHost() and Mininet.addSwitch()
 
@@ -52,7 +52,7 @@ class LayeredTopology(AbstractTopology):
             self.layers[layername].botlist.append(self.mininet.getNodeByName(botname))
 
     def _connectSwitches(self):
-        """Connects the switches in the different layers with each other, so that bots on different switches can talk to each other."""
+        """Connects the switches in the different layers with each other, so that clients on different switches can talk to each other."""
         switchnames = [layer.switchname for layer in self.layers.values()]
         # Important: The switches should NOT be connected in a ring. Mininet doesn't like that!
         for i in range(1, len(switchnames)):

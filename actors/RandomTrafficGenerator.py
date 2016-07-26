@@ -7,7 +7,7 @@ from utils.LogfileParser import writeLogentry
 
 
 class RandomTrafficReceiver(Runnable):
-    """The abstract base class for all bots in the simulated botnets"""
+    """The abstract base class for all clients in the simulated botnets"""
 
     def __init__(self, peerlist=[], **kwargs):
         super(RandomTrafficReceiver, self).__init__(**kwargs)

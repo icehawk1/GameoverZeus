@@ -41,8 +41,8 @@ if __name__ == '__main__':
                            hostlist=[sensor.name])
     for h in hosts:
         current_peerlist = [random.choice([x.IP() for x in hosts if not x == h])]
-        overlord.startRunnable("KademliaBot", "KademliaBot", {"name"    : h.name,
-                                                              "peerlist": current_peerlist}, hostlist=[h.name])
+        overlord.startRunnable("overbot.KademliaBot", "KademliaBot", {"name": h.name,
+                                                              "peerlist"    : current_peerlist}, hostlist=[h.name])
     pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"
     mkdir_p(os.path.dirname(pcapfile))
     victim.cmd("tshark -F pcap -w %s port http or port https &"%pcapfile)

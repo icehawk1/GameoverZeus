@@ -44,7 +44,7 @@ if __name__ == '__main__':
                            hostlist=[sensor.name])
     overlord.startRunnable("CnCServer", "CnCServer", {"host": "10.0.0.6"}, hostlist=[cncserver.name])
     for h in hosts:
-        overlord.startRunnable("Bot", "Bot",
+        overlord.startRunnable("zeus.Bot", "Bot",
                                {"name": h.name, "current_peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
                                hostlist=[h.name])
     pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"

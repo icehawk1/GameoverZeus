@@ -1,11 +1,12 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """Defines abstract base classes for all kinds of clients"""
-import logging
-from abc import ABCMeta, abstractmethod
+import logging, string, json, socket
+from abc import ABCMeta, abstractmethod, abstractproperty
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.python import log
+import tornado.web
 
 from resources import emu_config
 
@@ -31,11 +32,11 @@ class Runnable(object):
 
 
 class CommandExecutor(Runnable):
-    """Executs a command every x seconds"""
+    """Executes a method every x seconds"""
     __metaclass__ = ABCMeta
 
     def __init__(self, pauseBetweenDuties=emu_config.botcommand_timeout, **kwargs):
-        """:param pauseBetweenDuties: How long to wait between invocations of performDuty()"""
+        """:param pauseBetweenDuties: How long to wait between invocations of performDuty() in seconds"""
         super(CommandExecutor, self).__init__(**kwargs)
         self.pauseBetweenDuties = float(pauseBetweenDuties)
         self.lc = LoopingCall(self.performDuty)
@@ -49,7 +50,14 @@ class CommandExecutor(Runnable):
         lcDeferred = self.lc.start(float(self.pauseBetweenDuties))
         lcDeferred.addErrback(self.errback)
 
-        reactor.run(installSignalHandlers=0)
+        self.startReactor()
+
+    def startReactor(self):
+        """Starts the twisted reactor. Override this if you want to use a different reactor"""
+        try:
+            reactor.run(installSignalHandlers=0)
+        except socket.error as ex:
+            logging.error("Could not start the ping.Servent: %s"%ex)
 
     @abstractmethod
     def performDuty(self, *args, **kwargs):
@@ -61,6 +69,11 @@ class CommandExecutor(Runnable):
         self.stopthread = True
         if self.lc.running:
             self.lc.stop()
+        self.stopReactor()
+
+    def stopReactor(self):
+        """Stops the twisted reactor. Override this if you want to use a different reactor"""
+        logging.info("CommandExecutor.stopReactor()")
         if reactor.running:
             reactor.stop()
 
@@ -75,3 +88,54 @@ def executeBot(bot, pauseBetweenDuties):
     :param pauseBetweenDuties: How long to wait between invocations of performDuty()"""
     assert isinstance(bot, Runnable)
     bot.start(pauseBetweenDuties=pauseBetweenDuties)
+
+
+# noinspection PyAbstractClass
+class CurrentCommandHandler(tornado.web.RequestHandler):
+    """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command
+    via HTTP POST."""
+    __metaclass__ = ABCMeta
+
+    def __init__(self, *args, **kwargs):
+        super(CurrentCommandHandler, self).__init__(*args, **kwargs)
+
+    @abstractproperty
+    def current_command(self):
+        pass
+
+    @current_command.setter
+    def current_command(self, prop):
+        pass
+
+    def get(self):
+        """Returns the currently set command"""
+        if "json" in string.lower(self.request.headers.get("Accept")):
+            self.set_header("Content-Type", "application/json")
+            self.write(json.dumps(self.current_command))
+        else:
+            self.set_header("Content-Type", "text/plain")
+            if len(self.current_command) > 0:
+                self.write(
+                    "%s: %s"%(self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
+
+    def post(self):
+        """Changes the current command to the value given in the request body"""
+        logging.info("CurrentCommandHandler.post()")
+        logging.info(
+            'Received POST: %s != %s == %s'%(self.get_body_argument("command"), self.current_command["command"],
+                                             self.get_body_argument("command") != self.current_command["command"]))
+        if self.get_body_argument("command") != self.current_command["command"]:
+            # noinspection PyBroadException
+            old_command = self.current_command
+            try:
+                # Note: Don't use self.current_command['key'] = value here, because the setter would not be invoked
+                newCommand = {"command": self.get_body_argument("command"),
+                              "kwargs" : json.loads(self.get_body_argument("kwargs"))}
+                self.current_command = newCommand
+            except Exception as ex:
+                # rolls the change back
+                logging.warning("Command could not be applied: %s %s"%(ex, ex.message))
+                self.current_command = old_command
+
+        self.set_header("Content-Type", "text/plain")
+        self.write("OK")

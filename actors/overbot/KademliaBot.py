@@ -7,68 +7,44 @@ tornado.platform.twisted.install()
 from twisted.internet import reactor
 from twisted.python import log
 
-import logging, random, string, json, socket, time
+import logging, random, json, socket, time
 from threading import Thread
 from kademlia.network import Server
 import netifaces
 import tornado.web
 from tornado.ioloop import IOLoop
 
-from actors.AbstractBot import Runnable
+from actors.AbstractBot import Runnable, CurrentCommandHandler
 from resources import emu_config
 from actors.BotCommands import executeCurrentCommand
 
 iface_searchterm = "eth"
 
-
 # noinspection PyAbstractClass
-class CurrentCommandHandler(tornado.web.RequestHandler):
-    """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command via
-    HTTP POST."""
-
-    current_command = {"command": "default_command", "kwargs": {}}
-
-    # noinspection PyMethodOverriding,PyAttributeOutsideInit
-    def initialize(self, kserver):
+class KademliaCommandHandler(CurrentCommandHandler):
+    def __init__(self, kserver, *args, **kwargs):
+        super(KademliaCommandHandler, self).__init__(*args, **kwargs)
+        self._current_command = {"command": "default_command", "kwargs": {}}
         self.kserver = kserver
 
-    def get(self):
-        if "json" in string.lower(self.request.headers.get("Accept")):
-            self.set_header("Content-Type", "application/json")
-            self.write(json.dumps(self.current_command))
-        else:
-            self.set_header("Content-Type", "text/plain")
-            if not self.current_command == {}:
-                self.write(
-                    "%s: %s"%(self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
+    @property
+    def current_command(self):
+        return self._current_command
 
-    def post(self):
-        logging.debug(
-            'Received POST: %s != %s == %s'%(self.get_body_argument("command"), self.current_command["command"],
-                                             self.get_body_argument("command") != self.current_command["command"]))
-        if self.get_body_argument("command") != self.current_command["command"]:
-            # noinspection PyBroadException
-            old_command = self.current_command
-            try:
-                self.current_command["command"] = self.get_body_argument("command")
-                self.current_command["kwargs"] = json.loads(self.get_body_argument("kwargs"))
-                logging.debug("The KademliaBot has received a new command: "%self.current_command)
-                self.kserver.set("current_command", json.dumps(self.current_command)).addCallbacks(self._setSuccess,
-                                                                                                   self._setFailure)
-            except Exception as ex:
-                # rolls the change back
-                logging.warning("Command could not be applied: %s %s"%(ex, ex.message))
-                self.current_command = old_command
-
-        self.set_header("Content-Type", "text/plain")
-        self.write("OK")
+    @current_command.setter
+    def current_command(self, current_command):
+        self._current_command = current_command
+        logging.debug("The KademliaBot has received a new command: "%self.current_command)
+        self.kserver.set("current_command", json.dumps(self.current_command)) \
+            .addCallbacks(self._setSuccess, self._setFailure)
 
     def _setSuccess(self, result):
+        """Called when the Kademlia set command was successful"""
         logging.debug("Result of successful set command: %s"%result)
 
     def _setFailure(self, failure):
+        """Called when the Kademlia set command has failed"""
         logging.warning("Result of failed set command: %s"%failure)
-
 
 # TODO: Use CommandExecutor instead of Runnable
 class KademliaBot(Runnable):
@@ -97,7 +73,7 @@ class KademliaBot(Runnable):
 
     def make_app(self):
         """Starts the web interface that is used to interact with this server."""
-        handlers = [("/current_command", CurrentCommandHandler, {"kserver": self.kserver})]
+        handlers = [("/current_command", KademliaCommandHandler, {"kserver": self.kserver})]
         return tornado.web.Application(handlers, autoreload=True)
 
     def _startKademlia(self):

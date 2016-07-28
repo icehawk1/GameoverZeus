@@ -3,7 +3,7 @@
 import json, logging, random, requests
 
 from actors import BotCommands
-from AbstractBot import CommandExecutor
+from actors.AbstractBot import CommandExecutor
 from resources import emu_config
 
 

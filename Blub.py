@@ -1,50 +1,66 @@
-#!/usr/bin/env python2
-# coding=UTF-8
-import logging
-from resources import emu_config
+from tornado.platform.twisted import TwistedIOLoop
+from twisted.internet import reactor
 
-logdir = "/tmp/botnetemulator"
-#: The file where the logs are written to
-logfile = "%s/machine_readable.log" % logdir
+TwistedIOLoop(reactor).install()
 
+from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
 
-def _configureMRLogger(filename=logfile):
-    handler = logging.FileHandler(filename=filename, mode="a")
-    handler.setFormatter(logging.Formatter("%(asctime)s|%(name)s|%(message)s"))
-    logging.getLogger("machine_readable").addHandler(handler)
-    logging.getLogger("machine_readable").setLevel(logging.INFO)
-    logging.getLogger("machine_readable").propagate = 0
-    logging.debug("Configure machine readable logger")
+import logging, time, os
+import tornado.web
+from threading import Thread
+from resources.emu_config import logging_config
+from actors.AbstractBot import Runnable
+from actors.AbstractBot import CurrentCommandHandler
 
-
-def _configureRootLogger(filename=logfile):
-    handler = logging.FileHandler(filename=filename, mode="a")
-    formatter = logging.Formatter("[%(module)s.py:%(lineno)d (thread: %(threadName)s)]:%(levelname)s: %(message)s")
-    handler.setFormatter(formatter)
-    logging.getLogger().addHandler(handler)
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.getLogger().propagate = 0
-    logging.debug("Configure root logger")
+_current_command = {"command": "default_command", "kwargs": {}}
 
 
-if __name__ == '__main__':
-    logging.basicConfig(**emu_config.logging_config)
+# noinspection PyAbstractClass
+class BlubCommandHandler(CurrentCommandHandler):
+    def __init__(self, *args, **kwargs):
+        super(BlubCommandHandler, self).__init__(*args, **kwargs)
 
-    if len(logging.getLogger("machine_readable").handlers) == 0:  # If it is not configured already
-        _configureRootLogger()
-        _configureMRLogger()
+    @property
+    def current_command(self):
+        return _current_command
 
-    # log something
-    logging.debug('logging.debug message')
-    logging.info('logging.info message')
-    logging.warn('logging.warn message')
-    logging.error('logging.error message')
-    logging.critical('logging.critical message')
+    @current_command.setter
+    def current_command(self, value):
+        global _current_command
+        logging.info("Set command: %s"%value)
+        _current_command = value
 
-    # log something
-    mrlogger = logging.getLogger("machine_readable").getChild("blub")
-    mrlogger.debug('mrlogger.debug message')
-    mrlogger.info('mrlogger.info message')
-    mrlogger.warn('mrlogger.warn message')
-    mrlogger.error('mrlogger.error message')
-    mrlogger.critical('mrlogger.critical message')
+
+class NewServent(Runnable):
+    def start(self):
+        lc = LoopingCall(self.performDuty)
+        lc.start(1)
+
+        app = tornado.web.Application([(r"/current_command", BlubCommandHandler)])
+        app.listen(8888)
+
+        reactor.run(installSignalHandlers=0)
+
+    def stop(self):
+        reactor.stop()
+
+    def performDuty(self):
+        logging.info("duty performed")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(**logging_config)
+    obj = NewServent()
+    serverthread = Thread(target=obj.start)
+    serverthread.start()
+
+    time.sleep(3)
+    os.system(
+        'wget -q  --post-data=\'command=joinParams&kwargs={"hallo":"welt", "hello":"world"}\' -O - "http://localhost:8888/current_command"')
+    time.sleep(2)
+    os.system('wget -q -O - "http://localhost:8888/current_command"')
+
+    obj.stop()
+    print "join"
+    serverthread.join()

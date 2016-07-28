@@ -32,7 +32,7 @@ class HostActionHandler(object):
             kwargs = json.loads(kwargs)
         assert isinstance(kwargs, dict)
 
-        logging.debug("%s.startRunnable(%s,%s)" % (self.hostid, command, kwargs))
+        logging.debug("%s.startRunnable(%s,%s)"%(self.hostid, command, kwargs))
 
         # Import module and create object
         moduleobj = importlib.import_module("actors." + importmodule)

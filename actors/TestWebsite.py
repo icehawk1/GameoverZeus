@@ -50,9 +50,11 @@ class DDoSHandler(tornado.web.RequestHandler):
 
 
 class TestWebsite(Runnable):
-    """Allows the CnCServer to be run in its own thread."""
+    """Allows the Website to be run in its own thread."""
 
-    def __init__(self, name="", host="0.0.0.0", port=80):
+    def __init__(self, name="", host="0.0.0.0", port=emu_config.PORT):
+        """:param host: The IP-Address on which to listen for incomming connections
+        :param port: The Port on which to listen for incomming connections"""
         Runnable.__init__(self, name)
         self.host = host
         self.port = port
@@ -70,15 +72,11 @@ class TestWebsite(Runnable):
 
 if __name__ == "__main__":
     logging.basicConfig(**emu_config.logging_config)
-    runable = TestWebsite("testwebsite")
 
-    schema = NetworkAddressSchema()
-
-    if len(sys.argv) >= 2:
-        serverAddress = schema.loads(sys.argv[1]).data
-        target_arguments = (serverAddress.host, serverAddress.port,)
+    if len(sys.argv) >= 3:
+        runable = TestWebsite("testwebsite", sys.argv[2], int(sys.argv[3]))
     else:
-        target_arguments = ()
+        runable = TestWebsite("testwebsite")
 
-    thread = Thread(name="Runnable %s" % runable.name, target=runable.start, args=target_arguments)
+    thread = Thread(name="Runnable %s"%runable.name, target=runable.start)
     thread.start()

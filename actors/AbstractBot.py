@@ -73,7 +73,6 @@ class CommandExecutor(Runnable):
 
     def stopReactor(self):
         """Stops the twisted reactor. Override this if you want to use a different reactor"""
-        logging.info("CommandExecutor.stopReactor()")
         if reactor.running:
             reactor.stop()
 
@@ -96,9 +95,6 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
     via HTTP POST."""
     __metaclass__ = ABCMeta
 
-    def __init__(self, *args, **kwargs):
-        super(CurrentCommandHandler, self).__init__(*args, **kwargs)
-
     @abstractproperty
     def current_command(self):
         pass
@@ -120,22 +116,21 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
 
     def post(self):
         """Changes the current command to the value given in the request body"""
-        logging.info("CurrentCommandHandler.post()")
-        logging.info(
-            'Received POST: %s != %s == %s'%(self.get_body_argument("command"), self.current_command["command"],
-                                             self.get_body_argument("command") != self.current_command["command"]))
-        if self.get_body_argument("command") != self.current_command["command"]:
-            # noinspection PyBroadException
-            old_command = self.current_command
-            try:
-                # Note: Don't use self.current_command['key'] = value here, because the setter would not be invoked
-                newCommand = {"command": self.get_body_argument("command"),
-                              "kwargs" : json.loads(self.get_body_argument("kwargs"))}
-                self.current_command = newCommand
-            except Exception as ex:
-                # rolls the change back
-                logging.warning("Command could not be applied: %s %s"%(ex, ex.message))
-                self.current_command = old_command
-
         self.set_header("Content-Type", "text/plain")
-        self.write("OK")
+
+        try:
+            # Note: Don't use self.current_command['key'] = value here, because the setter would not be invoked
+            newCommand = {"command"  : self.get_body_argument("command"),
+                          "timestamp": self.get_body_argument("timestamp"),
+                          "kwargs"   : json.loads(self.get_body_argument("kwargs"))}
+            if newCommand["timestamp"] > self.current_command["timestamp"]:
+                logging.debug("newcommand: %s"%newCommand)
+                self.current_command = newCommand
+                self.write("OK")
+            else:
+                self.write("Command too old")
+        except Exception as ex:
+            # rolls the change back
+            logging.warning("Command could not be applied: %s %s"%(ex, ex.message))
+            self.set_status(400, "Command not accepted")
+            self.write("Could not parse the body")

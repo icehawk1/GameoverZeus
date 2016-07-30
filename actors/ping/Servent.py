@@ -8,6 +8,7 @@ import logging, time, os
 from datetime import datetime
 from threading import Thread
 import tornado.web
+import tornado.httpserver
 
 from actors.AbstractBot import CurrentCommandHandler
 from resources import emu_config
@@ -23,18 +24,19 @@ class Servent(Client):
     def __init__(self, peerlist, name="Servent", *args, **kwargs):
         """:param peerlist: The list of servents where this Servent requests new commands from"""
         super(Servent, self).__init__(name=name, peerlist=peerlist, *args, **kwargs)
+        app = tornado.web.Application([("/current_command", ServentCommandHandler, {"servent": self})],
+                                      autoreload=False)
+        self.httpserver = tornado.httpserver.HTTPServer(app)
 
     def start(self):
         """Makes the webserver listen on the configured port. Implements start() from the superclass."""
-        app = self.make_app()
-        app.listen(emu_config.PORT)
+        self.httpserver.listen(emu_config.PORT)
         logging.debug("Start the ping.Servent %s on port %d"%(self.name, emu_config.PORT))
         super(Servent, self).start()  # Do not execute this at the beginning, because it does not terminate
 
-    def make_app(self):
-        """Starts the web interface that is used to interact with this server."""
-        handlers = [("/current_command", ServentCommandHandler, {"servent": self})]
-        return tornado.web.Application(handlers, autoreload=False)
+    def stop(self):
+        self.httpserver.stop()
+        super(Servent, self).stop()
 
     def errback(self, failure):
         """Given to defereds to report errors"""
@@ -47,7 +49,6 @@ class Servent(Client):
     @current_command.setter
     def current_command(self, current_command):
         global _current_command
-        logging.info("Set command: %s"%current_command)
         _current_command = current_command
 
 # noinspection PyAbstractClass

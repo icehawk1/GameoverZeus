@@ -130,10 +130,10 @@ class Overlord(object):
             :type hostlist: list of strings
             :type probability: a float between 0 and 1
             :return: the clients that were desinfected"""
-        toDesinfect = self.removeRandomBots(probability, hostlist)
-        time.sleep(1)
-        self.startRunnable("Victim", "Victim", hostlist=toDesinfect)
-        return toDesinfect
+        desinfected = self.removeRandomBots(probability, hostlist)
+        time.sleep(3)
+        self.startRunnable("Victim", "Victim", hostlist=desinfected)
+        return desinfected
 
 class _HostConnector(object):
     """Encapsulates the communication channel to the given host"""
@@ -149,7 +149,6 @@ class _HostConnector(object):
         protocol = TBinaryProtocol.TBinaryProtocol(transport)
         # Create a client that will be used to remotely invoke commands on the host
         self.client = OverlordClient.Client(protocol)
-        logging.debug("Use socket %s, File exists: %s" % (socketfile, os.path.exists(socketfile)))
 
     def startCommunication(self):
         """Opens the communication channel, so that self.client can be used."""

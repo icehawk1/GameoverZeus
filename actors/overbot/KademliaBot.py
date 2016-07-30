@@ -74,7 +74,7 @@ class KademliaBot(Runnable):
     def make_app(self):
         """Starts the web interface that is used to interact with this server."""
         handlers = [("/current_command", KademliaCommandHandler, {"kserver": self.kserver})]
-        return tornado.web.Application(handlers, autoreload=True)
+        return tornado.web.Application(handlers, autoreload=False)
 
     def _startKademlia(self):
         observer = log.PythonLoggingObserver()

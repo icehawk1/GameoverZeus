@@ -20,7 +20,7 @@ from utils.MiscUtils import NetworkAddressSchema
 def make_app():
     """Starts the web interface that is used to interact with this server."""
     handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CurrentCommandHandler)]
-    return tornado.web.Application(handlers, autoreload=True)
+    return tornado.web.Application(handlers, autoreload=False)
 
 
 class BotInformation(object):

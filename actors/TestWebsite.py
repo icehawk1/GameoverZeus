@@ -13,7 +13,7 @@ from utils.MiscUtils import NetworkAddressSchema, NetworkAddress
 def make_app():
     """Starts the web interface that is used to interact with this server."""
     handlers = [("/", MainHandler), ("/ddos_me", DDoSHandler)]
-    return tornado.web.Application(handlers, autoreload=True)
+    return tornado.web.Application(handlers, autoreload=False)
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -67,6 +67,7 @@ class TestWebsite(Runnable):
 
     def stop(self):
         """Implements stop() from the superclass."""
+        logging.debug("ioloop.stop")
         IOLoop.current().stop()
 
 

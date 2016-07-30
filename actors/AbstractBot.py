@@ -38,6 +38,7 @@ class CommandExecutor(Runnable):
     def __init__(self, pauseBetweenDuties=emu_config.botcommand_timeout, **kwargs):
         """:param pauseBetweenDuties: How long to wait between invocations of performDuty() in seconds"""
         super(CommandExecutor, self).__init__(**kwargs)
+        logging.debug("pause: %d, kwargs: %s"%(pauseBetweenDuties, kwargs))
         self.pauseBetweenDuties = float(pauseBetweenDuties)
         self.lc = LoopingCall(self.performDuty)
 
@@ -47,7 +48,7 @@ class CommandExecutor(Runnable):
         observer = log.PythonLoggingObserver()
         observer.start()
 
-        lcDeferred = self.lc.start(float(self.pauseBetweenDuties))
+        lcDeferred = self.lc.start(self.pauseBetweenDuties)
         lcDeferred.addErrback(self.errback)
 
         self.startReactor()
@@ -74,7 +75,7 @@ class CommandExecutor(Runnable):
     def stopReactor(self):
         """Stops the twisted reactor. Override this if you want to use a different reactor"""
         if reactor.running:
-            reactor.stop()
+            reactor.callFromThread(reactor.stop)
 
     def errback(self, failure):
         """Given to defereds to report errors"""

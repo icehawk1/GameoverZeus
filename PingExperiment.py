@@ -4,7 +4,7 @@ import os, time, logging, sys, json, random
 from datetime import datetime
 
 sys.path.append(os.path.dirname(__file__))
-from mininet import net
+from mininet.net import Mininet
 from mininet.cli import CLI
 
 from utils import Floodlight
@@ -15,47 +15,77 @@ from utils.TcptraceParser import TcptraceParser
 
 pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
 
-if __name__ == '__main__':
-    logging.basicConfig(**emu_config.logging_config)
+
+def initMininet(ctrl=Floodlight.Controller):
+    mininet = Mininet(controller=ctrl)
+    mininet.addController("controller1")
+    overlord = Overlord()
+    switch = mininet.addSwitch("switch1")
+    return mininet, overlord, switch
+
+
+def cleanup():
     os.system("fuser -kn tcp 6633")
     os.system("rm -rf /tmp/overlordsockets/ /tmp/loading_times/ /tmp/*.log /tmp/botnetemulator /tmp/pymp-*")
 
-    net = net.Mininet(controller=Floodlight.Controller)
-    net.addController("controller1")
+
+if __name__ == '__main__':
+    logging.basicConfig(**emu_config.logging_config)
+    cleanup()
+
+    # mininet, overlord, switch =  initMininet()
+    mininet = Mininet(controller=Floodlight.Controller)
+    mininet.addController("controller1")
     overlord = Overlord()
-    switch = net.addSwitch("switch1")
+    switch = mininet.addSwitch("switch1")
 
-    servents = [addHostToMininet(net, switch, "servent%d"%i, overlord, bw=25) for i in range(2)]
-    victim = addHostToMininet(net, switch, "victim%d"%i, overlord, bw=25)
+    servents = {addHostToMininet(mininet, switch, "servent%d"%i, overlord, bw=25) for i in range(10)}
+    nonInfectedHosts = set()
+    victim = addHostToMininet(mininet, switch, "victim%d"%1, overlord, bw=125)
+    sensor = addHostToMininet(mininet, switch, "sensor%d"%1, overlord)
+    bots = lambda: (servents)
+    nodes = lambda: (bots() | {victim, sensor} | nonInfectedHosts)
+    assert len(nodes()) > 0
+    assert len(bots()) > 0 and len(servents) <= len(nodes())
 
-    peng = addHostToMininet(net, switch, "peng%d"%1, overlord, bw=25)
-    bumm = addHostToMininet(net, switch, "bumm%d"%1, overlord, bw=25)
+    mininet.start()
+    victimAddress = (victim.IP(), emu_config.PORT)
 
-    net.start()
-
-    for h in servents + [victim]:
+    for h in nodes():
         h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
-    time.sleep(1)
+    time.sleep(15)
+
     for h in servents:
-        peerlist = [peer.IP() for peer in servents if not peer == h]
+        peerlist = random.sample([peer.IP() for peer in servents if not peer == h], 3)
         overlord.startRunnable("ping.Servent", "Servent", {"peerlist": peerlist, "pauseBetweenDuties": 5},
                                hostlist=[h.name])
-    overlord.startRunnable("TestWebsite", "TestWebsite", {}, hostlist=[h.name])
-    time.sleep(2)
+    overlord.startRunnable("TestWebsite", "TestWebsite", {}, hostlist=[victim.name])
+    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1432"%victimAddress]},
+                           hostlist=[sensor.name])
+    time.sleep(5)
 
-    curlcmd = "timeout 60s wget  -O - --post-data 'command=ddos_server&kwargs=%s&timestamp=%d' '%s'"%(
-        json.dumps({"url": "http://%s:%d/ddos_me"%(victim.IP(), emu_config.PORT)}), datetimeToEpoch(datetime.now()),
-        "http://%s:%d/current_command"%(servents[0].IP(), emu_config.PORT))
-    result = peng.cmd(curlcmd, verbose=True)
-    print peng.cmd("echo $?")
+    chosenOne = random.sample(servents, 1)[0]
+    curlcmd = "timeout 60s wget -q -O - --post-data 'command=ddos_server&kwargs=%s&timestamp=%d' '%s'"%(
+        json.dumps({"url": "http://%s:%d/ddos_me"%victimAddress}), datetimeToEpoch(datetime.now()),
+        "http://%s:%d/current_command"%(chosenOne.IP(), emu_config.PORT))
+    result = chosenOne.cmd(curlcmd, verbose=True)
+    #print chosenOne.cmd("echo $?")
     logging.info("wget: %s"%result)
     time.sleep(2)
 
-    time.sleep(15)
+    time.sleep(25)
+    for i, prob in enumerate([0.3, 0.2, 1]):
+        print "desinfect %d"%i
+        desinfected = set(overlord.desinfectRandomBots(prob, [h.name for h in bots()]))
+        servents -= desinfected
+        nonInfectedHosts |= desinfected
+        print bots()
+        time.sleep(15)
+    time.sleep(10)
 
-    print "servent: ", servents[0].cmd("jobs")
+    print "servent: ", chosenOne.cmd("jobs")
     print "victim: ", victim.cmd("jobs")
 
-    # CLI(net)
+    #CLI(mininet)
     overlord.stopEverything()
-    net.stop()
+    mininet.stop()

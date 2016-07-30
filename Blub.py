@@ -1,66 +1,48 @@
+#!/usr/bin/env python2
+# coding=UTF-8
 from tornado.platform.twisted import TwistedIOLoop
 from twisted.internet import reactor
-
 TwistedIOLoop(reactor).install()
-
-from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 
 import logging, time, os
-import tornado.web
 from threading import Thread
 from resources.emu_config import logging_config
-from actors.AbstractBot import Runnable
-from actors.AbstractBot import CurrentCommandHandler
-
-_current_command = {"command": "default_command", "kwargs": {}}
 
 
-# noinspection PyAbstractClass
-class BlubCommandHandler(CurrentCommandHandler):
-    def __init__(self, *args, **kwargs):
-        super(BlubCommandHandler, self).__init__(*args, **kwargs)
-
-    @property
-    def current_command(self):
-        return _current_command
-
-    @current_command.setter
-    def current_command(self, value):
-        global _current_command
-        logging.info("Set command: %s"%value)
-        _current_command = value
+def performDuty():
+    logging.info("duty")
 
 
-class NewServent(Runnable):
-    def start(self):
-        lc = LoopingCall(self.performDuty)
-        lc.start(1)
-
-        app = tornado.web.Application([(r"/current_command", BlubCommandHandler)])
-        app.listen(8888)
-
-        reactor.run(installSignalHandlers=0)
-
-    def stop(self):
-        reactor.stop()
-
-    def performDuty(self):
-        logging.info("duty performed")
-
+def errback(failure):
+    logging.error(failure)
 
 if __name__ == "__main__":
     logging.basicConfig(**logging_config)
-    obj = NewServent()
-    serverthread = Thread(target=obj.start)
-    serverthread.start()
 
+    lc = LoopingCall(performDuty)
+    lcDeferred = lc.start(0.5)
+    lcDeferred.addErrback(errback)
+
+    reactorThread = Thread(target=reactor.run, kwargs={"installSignalHandlers": 0})
+    reactorThread.start()
     time.sleep(3)
-    os.system(
-        'wget -q  --post-data=\'command=joinParams&kwargs={"hallo":"welt", "hello":"world"}\' -O - "http://localhost:8888/current_command"')
-    time.sleep(2)
-    os.system('wget -q -O - "http://localhost:8888/current_command"')
+    reactor.callFromThread(reactor.stop)
 
-    obj.stop()
-    print "join"
-    serverthread.join()
+    #
+    # newServent = Bla.NewServent()
+    # regular = Bla.Regular("Regular")
+    #
+    # reactor.callFromThread(newServent.start)
+    # time.sleep(3)
+    # os.system("netstat -tulpen | grep 8888")
+    # reactor.callFromThread(regular.start)
+    # time.sleep(2)
+    # print "newServent.stop"
+    # reactor.callFromThread(newServent.stop)
+    # time.sleep(1)
+    # reactor.callFromThread(regular.stop)
+    # os.system("netstat -tulpen | grep 8888")
+    # reactor.callFromThread(reactor.stop)
+    # print "reactor should have been stopped"
+    #

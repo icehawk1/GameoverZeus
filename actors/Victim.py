@@ -4,7 +4,7 @@
 a botnet. If it is attacked sucessfully it changes to a bot."""
 
 import logging, os, random
-import psutil
+# import psutil
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
@@ -49,8 +49,8 @@ class Victim(Runnable):
 
     def start(self, port=emu_config.PORT):
         """Implements start() from the superclass."""
-        logging.debug("processes listening on %d: %s"%(port, [(psutil.Process(con.pid).cmdline(), con.pid) for con in
-                                                              psutil.net_connections() if con.laddr[1] == port]))
+        # procs = [(psutil.Process(con.pid).cmdline(), con.pid) for con in psutil.net_connections() if con.laddr[1] == port]
+        #logging.debug("processes listening on %d: %s"%(port, procs))
         self.httpserver.listen(port)
 
     def stop(self):

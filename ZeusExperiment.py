@@ -1,62 +1,53 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 import os, time, logging, sys, json
-
+from datetime import datetime
 sys.path.append(os.path.dirname(__file__))
-from mininet import net
 from mininet.cli import CLI
 
-from utils import Floodlight
 from resources import emu_config
-from overlord.Overlord import Overlord
-from utils.MiscUtils import addHostToMininet,mkdir_p
+from utils.MiscUtils import mkdir_p, datetimeToEpoch
 from utils.TcptraceParser import TcptraceParser
-
-pypath = "PYTHONPATH=$PYTHONPATH:%s " % emu_config.basedir
-
+from utils.ExperimentUtils import initMininet, startMininet, cleanup, addHostToMininet
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)
+    cleanup()
+    mininet, overlord, switch = initMininet()
 
-    net = net.Mininet(controller=Floodlight.Controller)
-    net.addController("controller1")
-
-    overlord = Overlord()
-    switch = net.addSwitch("switch1")
-
-    hosts = []
+    # Create all the hosts that make up the experimental network and assign them to groups
+    hosts = set()
     for i in range(1, 6):
-        current_host = addHostToMininet(net, switch, "host%d" % i, overlord, bw=25)
-        hosts.append(current_host)
-    cncserver = addHostToMininet(net, switch, "cnc1", overlord)
-    victim = addHostToMininet(net, switch, "victim1", overlord, bw=90)
-    sensor = addHostToMininet(net, switch, "sensor1", overlord)
+        current_host = addHostToMininet(mininet, switch, "host%d"%i, overlord, bw=25)
+        hosts.add(current_host)
+    cncserver = addHostToMininet(mininet, switch, "cnc1", overlord)
+    victim = addHostToMininet(mininet, switch, "victim1", overlord, bw=90)
+    sensor = addHostToMininet(mininet, switch, "sensor1", overlord)
+    nodes = lambda: hosts | {cncserver, victim, sensor}
+    assert len(nodes()) == len(hosts) + 3, "nodes: %s"%nodes()
 
-    net.start()
-    # net.pingAll()
-
-    for node in hosts + [victim, cncserver, sensor]:
-        node.cmd(pypath + " python2 overlord/Host.py %s &" % node.name)
-    time.sleep(5)
+    startMininet(mininet, nodes())
+    victimAddress = (victim.IP(), emu_config.PORT)
 
     overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
-    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432" % victim.IP()]},
+    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%victimAddress]},
                            hostlist=[sensor.name])
     overlord.startRunnable("CnCServer", "CnCServer", {"host": "10.0.0.6"}, hostlist=[cncserver.name])
     for h in hosts:
-        overlord.startRunnable("zeus.Bot", "Bot",
-                               {"name": h.name, "current_peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
-                               hostlist=[h.name])
+        overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
+                               kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
     pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"
     mkdir_p(os.path.dirname(pcapfile))
-    victim.cmd("tshark -F pcap -w %s port http or port https &"%pcapfile)
+    victim.cmd("tshark -i any -F pcap -w %s port http or port https &"%pcapfile)
     logging.debug("Runnables wurden gestartet")
     time.sleep(25)
 
-    result = cncserver.cmd("curl -X POST --data 'command=ddos_server&kwargs=%s' '%s'"
-                           % (json.dumps({"url": "http://%s:%d/ddos_me" % (victim.IP(), emu_config.PORT)}),
-                              "http://%s:%d/current_command" % (cncserver.IP(), emu_config.PORT)), verbose=True)
-    logging.debug("curl: %s" % result)
+    kwargs = json.dumps({"url": "http://%s:%d/ddos_me"%victimAddress})
+    urlOfCnCServer = "http://%s:%d/current_command"%(cncserver.IP(), emu_config.PORT)
+    result = cncserver.cmd("timeout 60s wget -q -O - --post-data 'command=ddos_server&timestamp=%d&kwargs=%s' '%s'"
+                           %(datetimeToEpoch(datetime.now()), kwargs, urlOfCnCServer), verbose=True)
+    logging.debug("wget: %s"%result)
+
     time.sleep(25)
     overlord.desinfectRandomBots(0.3, [h.name for h in hosts])
     time.sleep(15)
@@ -68,7 +59,7 @@ if __name__ == '__main__':
     # CLI(net)
     print "tshark: ", victim.cmd("jobs")
     overlord.stopEverything()
-    net.stop()
+    mininet.stop()
 
-    ttparser = TcptraceParser(host="victim")
-    stats = ttparser.extractConnectionStatisticsFromPcap(pcapfile)
+    ttparser = TcptraceParser()
+    stats = ttparser.extractConnectionStatisticsFromPcap(os.path.dirname(pcapfile))

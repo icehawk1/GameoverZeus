@@ -4,41 +4,20 @@ import os, time, logging, sys, json, random
 from datetime import datetime
 
 sys.path.append(os.path.dirname(__file__))
-from mininet.net import Mininet
 from mininet.cli import CLI
 
-from utils import Floodlight
 from resources import emu_config
-from overlord.Overlord import Overlord
-from utils.MiscUtils import addHostToMininet, mkdir_p, datetimeToEpoch
+from utils.MiscUtils import datetimeToEpoch
 from utils.TcptraceParser import TcptraceParser
-
-pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
-
-
-def initMininet(ctrl=Floodlight.Controller):
-    mininet = Mininet(controller=ctrl)
-    mininet.addController("controller1")
-    overlord = Overlord()
-    switch = mininet.addSwitch("switch1")
-    return mininet, overlord, switch
-
-
-def cleanup():
-    os.system("fuser -kn tcp 6633")
-    os.system("rm -rf /tmp/overlordsockets/ /tmp/loading_times/ /tmp/*.log /tmp/botnetemulator /tmp/pymp-*")
+from utils.ExperimentUtils import initMininet, startMininet, cleanup, addHostToMininet
 
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)
     cleanup()
+    mininet, overlord, switch = initMininet()
 
-    # mininet, overlord, switch =  initMininet()
-    mininet = Mininet(controller=Floodlight.Controller)
-    mininet.addController("controller1")
-    overlord = Overlord()
-    switch = mininet.addSwitch("switch1")
-
+    # Create all the hosts that make up the experimental network and assign them to groups
     servents = {addHostToMininet(mininet, switch, "servent%d"%i, overlord, bw=25) for i in range(10)}
     nonInfectedHosts = set()
     victim = addHostToMininet(mininet, switch, "victim%d"%1, overlord, bw=125)
@@ -48,12 +27,8 @@ if __name__ == '__main__':
     assert len(nodes()) > 0
     assert len(bots()) > 0 and len(servents) <= len(nodes())
 
-    mininet.start()
     victimAddress = (victim.IP(), emu_config.PORT)
-
-    for h in nodes():
-        h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
-    time.sleep(15)
+    startMininet(mininet, nodes())
 
     for h in servents:
         peerlist = random.sample([peer.IP() for peer in servents if not peer == h], 3)

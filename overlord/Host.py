@@ -4,12 +4,12 @@
 It is intended to be run on every mn host to help the architecture being flexible and to allow the overlord to
 control all hosts."""
 from tornado.platform.twisted import TwistedIOLoop
-from twisted.internet import reactor
+from twisted.internet import reactor, threads
 
 TwistedIOLoop(reactor).install()
 from twisted.python import log
 
-import logging, json, os, importlib, random, sys, socket, tempfile
+import logging, json, os, importlib, time, sys, socket, tempfile
 from threading import Thread
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
@@ -52,25 +52,26 @@ class HostActionHandler(object):
             raise NotImplementedError(message)
 
         # Start runnable in her own Thread
-        thread = Thread(name="Runnable %s" % command, target=runnable.start, args=())
-        thread.daemon = True
-        thread.start()
-
-        self.currentRunnables[command] = (runnable, thread)
+        defer = threads.deferToThread(runnable.start)
+        self.currentRunnables[command] = (runnable, defer)
 
     def stopRunnable(self, command="*"):
         """Stops the runnable representing the given command string. Does nothing if that runnable does not exist or is not running.
         :param command: Which runnable should be stopped. The same string as has been given to startRunnable(). Give * to stop all runnables."""
         if self.currentRunnables.has_key(command):
             logging.debug("%s.stopRunnable(%s)" % (self.hostid, command))
-            runnable, thread = self.currentRunnables[command]
-            runnable.stop()
-            thread.join(timeout=3)
+            runnable, defer = self.currentRunnables[command]
+            threads.blockingCallFromThread(reactor, runnable.stop)
+            # runnable.stop()
+            if not defer.called:
+                defer.cancel()
         elif command == "*":
             # Stop everything
-            for runnable, thread in self.currentRunnables.values():
-                runnable.stop()
-                thread.join(timeout=3)
+            for runnable, defer in self.currentRunnables.values():
+                threads.blockingCallFromThread(reactor, runnable.stop)
+                # runnable.stop()
+                if not defer.called:
+                    defer.cancel()
         else:
             logging.debug("Runnable %s not found" % command)
 
@@ -96,13 +97,10 @@ def createRPCServer(processor):
     serversocket = socket.socket(socket.AF_UNIX)
     serversocket.bind(socketFile)
 
-    logging.debug("create transport")
     transport = TSocket.TServerSocket(unix_socket=socketFile)
-    # We need buffering for performance
+    # We need buffering for performance reasons
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
-
-    logging.debug("create result")
     result = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
     return result
 
@@ -122,6 +120,8 @@ if __name__ == '__main__':
     logging.info("Start Host %s"%sys.argv[1])
     reactorThread = Thread(target=reactor.run, kwargs={"installSignalHandlers": 0})
     reactorThread.start()
+    time.sleep(1)
+    assert reactor.running
 
     # Start RPC server for communicating with the Overlord
     server = createRPCServer(OverlordClient.Processor(handler))

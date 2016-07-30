@@ -43,10 +43,13 @@ class Sensor(CommandExecutor):
     def performDuty(self):
         """Implements method from superclass"""
         n = 3
-        starttime = datetime.now()
-        for page in self.pagesToWatch:
-            loadTime = float(timeit(lambda: measureLoadingTime(page), number=n) / n)
-            writeLogentry(runnable=type(self).__name__, message="%s %f" % (page, loadTime), timeissued=starttime)
+        try:
+            starttime = datetime.now()
+            for page in self.pagesToWatch:
+                loadTime = float(timeit(lambda: measureLoadingTime(page), number=n)/n)
+                writeLogentry(runnable=type(self).__name__, message="%s %f"%(page, loadTime), timeissued=starttime)
+        except Exception as ex:
+            logging.warning("Measurement of the loading times failed with an %s: %s"%(type(ex).__name__, ex.message))
 
     def stop(self):
         """Writes graphs of all measured loading times to the outputdir. Implements method from superclass."""
@@ -89,8 +92,8 @@ class Sensor(CommandExecutor):
             raw_min = min(raw_x)
             x = [x - raw_min for x in raw_x]
             y = [tuple[1] for tuple in loadingTimesDict[page]]
-            logging.debug("x = %s"%x)
-            logging.debug("y = %s"%y)
+            logging.debug("len(x) = %d"%len(x))
+            logging.debug("len(y) = %d"%len(y))
 
             pyplot.plot(numpy.array(x), numpy.array(y))
             pyplot.xlabel("time")

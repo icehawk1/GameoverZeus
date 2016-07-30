@@ -2,8 +2,6 @@
 # coding=UTF-8
 """Some utility functions that fit nowhere else"""
 import os, errno, random
-from mininet.net import Mininet
-from mininet.node import Switch
 from marshmallow import Schema, fields, post_load
 from datetime import datetime
 from matplotlib import pyplot
@@ -39,27 +37,6 @@ class NetworkAddressSchema(Schema):
     @post_load
     def make_address(self, data):
         return NetworkAddress(**data)
-
-
-def createRandomDPID():
-    """Creates one of those strange number mininet needs"""
-    dpidLen = 16
-    return ''.join([random.choice('0123456789ABCDEF') for x in range(dpidLen)])
-
-
-def addHostToMininet(mn, switch, hostname, overlord, **linkopts):
-    """Creates a new host in the mininet network that is connected to the given switch and to the overlord"""
-    assert isinstance(mn, Mininet)
-    assert isinstance(switch, Switch)
-    assert isinstance(hostname, str)
-
-    result = mn.addHost(hostname, dpid=createRandomDPID())
-    overlord.addHost(result.name)
-    link = mn.addLink(result, switch)
-    link.intf1.config(**linkopts)
-    link.intf2.config(**linkopts)
-    return result
-
 
 def datetimeToEpoch(datetimeObj):
     """Takes the given datetime object and returns the number of seconds since Epoch

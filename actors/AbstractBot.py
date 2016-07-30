@@ -30,6 +30,10 @@ class Runnable(object):
         This can alternatively be invoked by sending a stop signal."""
 
 
+# self.lc = LoopingCall(self.performDuty)
+#       lcDeferred = self.lc.start(0.5)
+#       lcDeferred.addErrback(self.errback)
+
 class CommandExecutor(Runnable):
     """Executes a method every x seconds"""
     __metaclass__ = ABCMeta
@@ -74,7 +78,7 @@ def executeBot(bot, pauseBetweenDuties):
     bot.start(pauseBetweenDuties=pauseBetweenDuties)
 
 
-# noinspection PyAbstractClass
+# noinspection PyAbstractClass, PyPropertyAccess
 class CurrentCommandHandler(tornado.web.RequestHandler):
     """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command
     via HTTP POST."""

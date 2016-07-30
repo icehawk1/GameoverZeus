@@ -4,16 +4,11 @@ import logging, sys
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
+import tornado.httpserver
 
 from actors.AbstractBot import Runnable
 from resources import emu_config
 from utils.MiscUtils import NetworkAddressSchema, NetworkAddress
-
-
-def make_app():
-    """Starts the web interface that is used to interact with this server."""
-    handlers = [("/", MainHandler), ("/ddos_me", DDoSHandler)]
-    return tornado.web.Application(handlers, autoreload=False)
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -58,17 +53,16 @@ class TestWebsite(Runnable):
         Runnable.__init__(self, name)
         self.host = host
         self.port = port
+        handlers = [("/", MainHandler), ("/ddos_me", DDoSHandler)]
+        self.httpserver = tornado.httpserver.HTTPServer(tornado.web.Application(handlers, autoreload=False))
 
     def start(self):
         """Implements start() from the superclass."""
-        app = make_app()
-        app.listen(self.port, self.host)
-        IOLoop.current().start()
+        self.httpserver.listen(self.port, self.host)
 
     def stop(self):
         """Implements stop() from the superclass."""
-        logging.debug("ioloop.stop")
-        IOLoop.current().stop()
+        self.httpserver.stop()
 
 
 if __name__ == "__main__":

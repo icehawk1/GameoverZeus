@@ -8,17 +8,13 @@ import psutil
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
+import tornado.httpserver
 
 from actors.AbstractBot import Runnable
 from resources import emu_config
 
 probability_of_infection = 0.5
 victimid = random.randint(1, 1000)
-
-
-def make_app():
-    return tornado.web.Application([("/ddos_me", DDoSHandler)], autoreload=False)
-
 
 class DDoSHandler(tornado.web.RequestHandler):
     keydict = {"default": "no_param", "erster": "first", "zweiter": "second", "dritter": "third"}
@@ -48,19 +44,18 @@ class Victim(Runnable):
 
     def __init__(self, name=""):
         Runnable.__init__(self, name)
+        app = tornado.web.Application([("/ddos_me", DDoSHandler)], autoreload=False)
+        self.httpserver = tornado.httpserver.HTTPServer(app)
 
     def start(self, port=emu_config.PORT):
         """Implements start() from the superclass."""
         logging.debug("processes listening on %d: %s"%(port, [(psutil.Process(con.pid).cmdline(), con.pid) for con in
                                                               psutil.net_connections() if con.laddr[1] == port]))
-        app = make_app()
-        app.listen(port)
-        IOLoop.current().start()
+        self.httpserver.listen(port)
 
     def stop(self):
         """Implements stop() from the superclass."""
-        logging.debug("ioloop.stop")
-        IOLoop.current().stop()
+        self.httpserver.stop()
 
 
 if __name__ == "__main__":

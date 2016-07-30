@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
+import tornado.httpserver
 
 from AbstractBot import Runnable
 from resources import emu_config
@@ -105,20 +106,20 @@ class CnCServer(Runnable):
         Runnable.__init__(self, **kwargs)
         self.host = host
         self.port = port
+        app = tornado.web.Application(make_app())
+        self.httpserver = tornado.httpserver.HTTPServer(app)
 
     def start(self):
         """Implements start() from the superclass."""
-        app = make_app()
         logging.debug("Start the CnCServer %s on %s:%d" % (self.name, self.host, self.port))
         try:
-            app.listen(self.port)
-            IOLoop.current().start()
+            self.httpserver.listen(self.port)
         except socket.error as ex:
-            logging.warning("Could not start the CnC-Server: %s" % ex)
+            logging.error("Could not start the CnC-Server: %s"%ex)
 
     def stop(self):
         """Implements stop() from the superclass."""
-        IOLoop.current().stop()
+        self.httpserver.stop()
         logging.debug("Stopping CnCServer %s on %s:%d" % (self.name, self.host, self.port))
 
 
@@ -133,4 +134,3 @@ if __name__ == "__main__":
 
     thread = Thread(name="Runnable %s" % cncserver.name, target=cncserver.start)
     thread.start()
-    # cncserver.start()

@@ -16,7 +16,6 @@ class Runnable(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, name=""):
-        self.stopthread = False
         self.name = name
         self.processes = []  # A list of processes that can be stopped via terminate()
 
@@ -51,15 +50,6 @@ class CommandExecutor(Runnable):
         lcDeferred = self.lc.start(self.pauseBetweenDuties)
         lcDeferred.addErrback(self.errback)
 
-        self.startReactor()
-
-    def startReactor(self):
-        """Starts the twisted reactor. Override this if you want to use a different reactor"""
-        try:
-            reactor.run(installSignalHandlers=0)
-        except socket.error as ex:
-            logging.error("Could not start the ping.Servent: %s"%ex)
-
     @abstractmethod
     def performDuty(self, *args, **kwargs):
         """Does the actual work. Is called regularly and should be implemented by subclasses."""
@@ -67,15 +57,9 @@ class CommandExecutor(Runnable):
     def stop(self):
         """Stops performDuty() from being called"""
         logging.debug("Stopping %s" % self.name)
-        self.stopthread = True
         if self.lc.running:
             self.lc.stop()
-        self.stopReactor()
 
-    def stopReactor(self):
-        """Stops the twisted reactor. Override this if you want to use a different reactor"""
-        if reactor.running:
-            reactor.callFromThread(reactor.stop)
 
     def errback(self, failure):
         """Given to defereds to report errors"""

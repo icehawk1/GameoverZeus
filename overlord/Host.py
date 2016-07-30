@@ -3,6 +3,11 @@
 """This file implements a script that can run any Runnable in a separate Thread. It can start and stop it any time.
 It is intended to be run on every mn host to help the architecture being flexible and to allow the overlord to
 control all hosts."""
+from tornado.platform.twisted import TwistedIOLoop
+from twisted.internet import reactor
+
+TwistedIOLoop(reactor).install()
+from twisted.python import log
 
 import logging, json, os, importlib, random, sys, socket, tempfile
 from threading import Thread
@@ -17,7 +22,7 @@ from resources.emu_config import SOCKET_DIR, logging_config
 class HostActionHandler(object):
     """Handles RPC calls from the overlord. Implements the methods defined in HostActions.thrift ."""
 
-    def __init__(self, hostid=random.randint(1, 10000000)):
+    def __init__(self, hostid):
         self.currentRunnables = dict()
         self.hostid = hostid
 
@@ -79,7 +84,7 @@ def createRPCServer(processor):
     :param processor: Thrift Processor that will handle incoming RPC calls"""
 
     # Clean up sockets from earlier launches
-    if not os.path.isdir(SOCKET_DIR):
+    if os.path.exists(SOCKET_DIR) and not os.path.isdir(SOCKET_DIR):
         os.remove(SOCKET_DIR)
         os.mkdir(SOCKET_DIR)
 
@@ -99,25 +104,28 @@ def createRPCServer(processor):
 
     logging.debug("create result")
     result = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
-    # logging.debug("result = TServer.TSimpleServer(%s, %s, %s, %s)"%(processor, transport, tfactory, pfactory))
     return result
 
 
 if __name__ == '__main__':
-    # If a hostid is given
-    if len(sys.argv) >= 2:
-        # Create temporary file and get absolute path of it
-        logfile = tempfile.mkstemp(prefix=sys.argv[1] + "_", suffix=".log")[1]
-        # Write log to file and delete old logs
-        logging.basicConfig(filename=logfile, filemode="w", **logging_config)
-        handler = HostActionHandler(sys.argv[1])
-    else:
-        logging.basicConfig(**logging_config)
-        handler = HostActionHandler()
+    assert len(sys.argv) >= 2, "Please provide a HostID"
 
-    logging.debug("start rpc server")
+    # Create temporary file and get absolute path of it
+    logfile = tempfile.mkstemp(prefix=sys.argv[1] + "_", suffix=".log")[1]
+    # Write log to file and delete old logs
+    logging.basicConfig(filename=logfile, filemode="w", **logging_config)
+    handler = HostActionHandler(sys.argv[1])
+
+    # Start Twisted reactor
+    observer = log.PythonLoggingObserver()
+    observer.start()
+    logging.info("Start Host %s"%sys.argv[1])
+    reactorThread = Thread(target=reactor.run, kwargs={"installSignalHandlers": 0})
+    reactorThread.start()
+
+    # Start RPC server for communicating with the Overlord
     server = createRPCServer(OverlordClient.Processor(handler))
-    logging.debug("%s.serve()" % server)
     server.serve()
 
-    logging.debug("Host %s has been created" % handler.getID())
+    logging.info("Stopping Host %s"%sys.argv[1])
+    reactor.callFromThread(reactor.stop)

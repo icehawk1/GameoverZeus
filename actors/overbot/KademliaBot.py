@@ -12,6 +12,7 @@ from threading import Thread
 from kademlia.network import Server
 import netifaces
 import tornado.web
+import tornado.httpserver
 from tornado.ioloop import IOLoop
 
 from actors.AbstractBot import Runnable, CurrentCommandHandler
@@ -53,7 +54,10 @@ class KademliaBot(Runnable):
     def __init__(self, name="KademliaBot%d" % random.randint(1, 1000),
                  port=emu_config.kademlia_default_port, peerlist=[]):
         super(KademliaBot, self).__init__(name=name)
-        self.kserver = Server()
+        self.kademliaServer = Server()
+        handlers = [("/current_command", KademliaCommandHandler, {"kademliaServer": self.kademliaServer})]
+        app = tornado.web.Application(handlers, autoreload=False)
+        self.httpserver = tornado.httpserver.HTTPServer(app)
         self.port = port
         self.peerlist = peerlist
 
@@ -67,14 +71,9 @@ class KademliaBot(Runnable):
             logging.warning("Could not start the KademliaBot: %s"%ex)
 
     def _startTornado(self):
-        app = self.make_app()
-        app.listen(emu_config.PORT)
+        self.httpserver.listen(emu_config.PORT)
         logging.debug("Start the KademliaBot %s on port %d"%(self.name, self.port))
 
-    def make_app(self):
-        """Starts the web interface that is used to interact with this server."""
-        handlers = [("/current_command", KademliaCommandHandler, {"kserver": self.kserver})]
-        return tornado.web.Application(handlers, autoreload=False)
 
     def _startKademlia(self):
         observer = log.PythonLoggingObserver()
@@ -88,14 +87,15 @@ class KademliaBot(Runnable):
         ipAddr = netifaces.ifaddresses(possible_interfaces[0])[netifaces.AF_INET][0]["addr"]
         logging.debug("Node %s starts with %s on %s"%(self.name, self.peerlist, ipAddr))
 
-        self.kserver.listen(self.port, interface=ipAddr)
-        serverDeferred = self.kserver.bootstrap([(peer, emu_config.kademlia_default_port) for peer in self.peerlist])
+        self.kademliaServer.listen(self.port, interface=ipAddr)
+        serverDeferred = self.kademliaServer.bootstrap(
+            [(peer, emu_config.kademlia_default_port) for peer in self.peerlist])
         serverDeferred.addCallback(self.executeBot)
         serverDeferred.addErrback(self.errback)
 
     def executeBot(self, peersfound=[]):
         """Method that is called regularly and checks for new commands"""
-        self.kserver.get("current_command").addCallbacks(self.handleCommand, self.errback)
+        self.kademliaServer.get("current_command").addCallbacks(self.handleCommand, self.errback)
         if not self.stopthread:
             reactor.callLater(emu_config.botcommand_timeout, self.executeBot)
 
@@ -111,7 +111,7 @@ class KademliaBot(Runnable):
 
     def stop(self):
         """Implements stop() from the superclass."""
-        IOLoop.current().stop()
+        self.httpserver.stop()
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)

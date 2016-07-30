@@ -1,9 +1,5 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-from tornado.platform.twisted import TwistedIOLoop
-from twisted.internet import reactor
-TwistedIOLoop().install()
-
 import logging, time, os
 from datetime import datetime
 from threading import Thread

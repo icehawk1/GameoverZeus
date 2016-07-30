@@ -3,6 +3,11 @@
 """This file implements a nameserver that can issue requests for an internal set of known domain names
  and register new domains via a web interface. """
 # TODO: Verwende genau einen Reactor
+# !/usr/bin/env python2
+# coding=UTF-8
+"""This file implements a nameserver that answers DNS queries on port 66/67 and provides a web interface for registering
+domains"""
+# TODO: Remove calls to reactor.run and reactor.stop
 
 import json, time, logging, os
 from threading import Thread
@@ -15,7 +20,7 @@ from resources import emu_config
 from actors.AbstractBot import Runnable
 
 known_hosts = {}
-
+protocol = None
 
 class DynamicResolver(object):
     """
@@ -49,19 +54,19 @@ def rrUpdate(hostname="", address=""):
 def runNameserver(dnsport):
     """Run the DNS server.
     :param dnsport: The port on which to listen for dns requests"""
+    global protocol
+    logging.debug("Nameserver starts on port %d"%dnsport)
 
-    logging.debug("Nameserver starts")
     factory = server.DNSServerFactory(
         clients=[DynamicResolver()]
     )
     protocol = dns.DNSDatagramProtocol(controller=factory)
     reactor.listenUDP(dnsport, protocol)
-    # Allow reactor to be started from non-main thread
-    reactor.run(installSignalHandlers=0)
-
 
 def stopNameserver():
-    reactor.callFromThread(reactor.stop)
+    global protocol
+    assert protocol is not None
+    protocol.stopProtocol()
 
 class HostRegisterHandler(RequestHandler):
     """Allows the address of a given hostname to be set via HTTP POST and dumps all known domains on a HTTP GET"""
@@ -81,28 +86,22 @@ class HostRegisterHandler(RequestHandler):
         self.write("OK")
 
 
-def make_app():
-    """Starts the web application"""
-
-    return Application([
-        ("/register-host", HostRegisterHandler),
-    ], autoreload=False)
-
-
+httpserver = None
 def runWebserver():
     """Run a webserver that allows to register additonal domain names.
     Helper method so that the server can run in its own thread."""
-    logging.debug("Webserver starts")
-    app = make_app()
+    global httpserver
+    logging.debug("Webserver starts on port %d"%emu_config.PORT)
+
+    app = Application([("/register-host", HostRegisterHandler)], autoreload=False)
     app.listen(emu_config.PORT)
-    IOLoop.current().start()
 
 
 def stopWebserver():
     """Stops the webserver"""
-    logging.debug("ioloop.stop")
-    IOLoop.instance().stop()
-
+    global httpserver
+    assert httpserver is not None
+    httpserver.stop()
 
 class Nameserver(Runnable):
     """Runs a nameserver that answers dns queries on the given port and accepts new domains via a web interface."""
@@ -111,11 +110,8 @@ class Nameserver(Runnable):
         Runnable.__init__(self, name)
 
     def start(self, dnsport=10053):
-        webthread = Thread(name="webserver_thread", target=runWebserver, args=())
-        webthread.start()
-
-        dnsthread = Thread(name="nameserver_thread", target=runNameserver, args=(dnsport,))
-        dnsthread.start()
+        reactor.callInThread(runWebserver)
+        reactor.callInThread(runNameserver, dnsport)
 
     def stop(self):
         stopWebserver()

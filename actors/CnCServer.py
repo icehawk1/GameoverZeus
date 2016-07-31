@@ -15,7 +15,9 @@ from tornado.ioloop import IOLoop
 from AbstractBot import Runnable
 from resources import emu_config
 from utils.MiscUtils import NetworkAddressSchema
+from utils.LogfileParser import writeLogentry
 
+_registered_bots = dict()
 
 def make_app():
     """Starts the web interface that is used to interact with this server."""
@@ -77,8 +79,6 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
 class RegisterHandler(tornado.web.RequestHandler):
     """Bots can register via HTTP POST, the number of currently known clients can be retrieved via HTTP GET"""
 
-    registered_bots = dict()
-
     def get(self):
         if "json" in string.lower(self.request.headers.get("Accept")):
             self.set_header("Content-Type", "application/json")
@@ -97,14 +97,29 @@ class RegisterHandler(tornado.web.RequestHandler):
         self.write("OK")
         logging.debug("Bot %s has registered itself with the server" % botid)
 
+    @property
+    def registered_bots(self):
+        global _registered_bots
+        return _registered_bots
+
+    @registered_bots.setter
+    def registered_bots(self, value):
+        global _registered_bots
+        _registered_bots = value
 
 class CnCServer(Runnable):
     """Allows the CnCServer to be run in its own thread."""
+
+    # TODO: Implementiere das zählen der Bots mittels Twisted
 
     def __init__(self, host="0.0.0.0", port=emu_config.PORT, **kwargs):
         Runnable.__init__(self, **kwargs)
         self.host = host
         self.port = port
+
+    def writeNumBots(self):
+        writeLogentry(runnable=type(self).__name__, message="Number of bots: %d"%len())
+        IOLoop.current().call_later(1, self.writeNumBots())
 
     def start(self):
         """Implements start() from the superclass."""
@@ -115,6 +130,8 @@ class CnCServer(Runnable):
             IOLoop.current().start()
         except socket.error as ex:
             logging.warning("Could not start the CnC-Server: %s" % ex)
+
+        self.writeNumBots()
 
     def stop(self):
         """Implements stop() from the superclass."""

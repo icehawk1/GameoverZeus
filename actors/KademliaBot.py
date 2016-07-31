@@ -75,11 +75,11 @@ class KademliaBot(Runnable):
     """Allows the KademliaBot to be run in its own thread."""
 
     def __init__(self, name="KademliaBot%d" % random.randint(1, 1000),
-                 port=emu_config.kademlia_default_port, peerlist=[]):
+                 port=emu_config.kademlia_default_port, peerlist=None):
         super(KademliaBot, self).__init__(name=name)
         self.kserver = Server()
         self.port = port
-        self.peerlist = peerlist
+        self.peerlist = peerlist if peerlist is not None else list()
 
     def start(self):
         """Implements start() from the superclass."""
@@ -117,7 +117,7 @@ class KademliaBot(Runnable):
         serverDeferred.addCallback(self.executeBot)
         serverDeferred.addErrback(self.errback)
 
-    def executeBot(self, peersfound=[]):
+    def executeBot(self):
         """Method that is called regularly and checks for new commands"""
         self.kserver.get("current_command").addCallbacks(self.handleCommand, self.errback)
         if not self.stopthread:

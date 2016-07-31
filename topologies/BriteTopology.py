@@ -173,17 +173,18 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     It will have a number of interconnected autonomous systems and each AS will have one external_switch and a number of
     hosts. Each host in an AS is connected to that external_switch."""
 
-    def __init__(self, mininet=Mininet(controller=Floodlight.Controller), opts=dict(), **kwargs):
+    def __init__(self, mininet=None, opts=None, **kwargs):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
         :param kwargs: A number of keyword arguments to be given to AbstractTopology.__init__()
         """
+        mininet = mininet if mininet is not None else Mininet(controller=Floodlight.Controller)
         AbstractTopology.__init__(self, mininet, **kwargs)
         self.started = False
         self.autonomousSystems = dict()
         self.modelname = None
-        self.opts = opts
+        self.opts = opts if opts is not None else dict()
         self.firewallRules = []
         self.cpulimitedhost = custom(CPULimitedHost)
 

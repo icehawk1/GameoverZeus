@@ -5,17 +5,17 @@ import json, logging, random, requests
 from actors import BotCommands
 from AbstractBot import CommandExecutor
 from resources import emu_config
-
+from utils.LogfileParser import writeLogentry
 
 class Bot(CommandExecutor):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
     and renews its registration with said server. The possible commands are defined in BotCommands.py."""
 
-    def __init__(self, peerlist=[], **kwargs):
+    def __init__(self, peerlist=None, **kwargs):
         super(Bot, self).__init__(**kwargs)
         self.current_command = None
         self.threads = []
-        self.peerlist = peerlist
+        self.peerlist = peerlist if peerlist is not None else list()
 
     def performDuty(self):
         # If there is a CnC-Server in the current_peerlist
@@ -40,6 +40,7 @@ class Bot(CommandExecutor):
             newCmd = json.loads(response.text)
             if newCmd != self.current_command:
                 logging.debug("Replaced command %s with %s" % (self.current_command, newCmd))
+                writeLogentry(runnable=type(self).__name__, message="register %s"%self.name)
             self.current_command = newCmd
         else:
             self.current_command = None

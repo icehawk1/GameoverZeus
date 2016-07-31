@@ -39,7 +39,7 @@ class Overlord(object):
             host.stopCommunication()
         return result
 
-    def startRunnable(self, importmodule, runnable, kwargs=dict(), hostlist=None):
+    def startRunnable(self, importmodule, runnable, kwargs=None, hostlist=None):
         # TODO: Keep track of running Runnables
         """Instruct the given hosts to run a certain Runnable.
         :param runnable: The name of a subclass of RandomTrafficReceiver.Runnable that does the work that the hosts shall be doing.
@@ -54,8 +54,9 @@ class Overlord(object):
         assert isinstance(runnable, str)
         assert isinstance(kwargs, dict)
 
-        if hostlist is None:
-            hostlist = self.knownHosts.keys()
+        if hostlist is None: hostlist = self.knownHosts.keys()
+        if kwargs is None: kwargs = dict()
+
         assert isinstance(hostlist, list)
 
         for hostid in hostlist:

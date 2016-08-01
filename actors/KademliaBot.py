@@ -17,9 +17,9 @@ from tornado.ioloop import IOLoop
 from actors.AbstractBot import Runnable
 from resources import emu_config
 from actors.BotCommands import executeCurrentCommand
+from utils.LogfileParser import writeLogentry
 
 iface_searchterm = "eth"
-
 
 # noinspection PyAbstractClass
 class CurrentCommandHandler(tornado.web.RequestHandler):
@@ -113,11 +113,12 @@ class KademliaBot(Runnable):
         logging.debug("Node %s starts with %s on %s"%(self.name, self.peerlist, ipAddr))
 
         self.kserver.listen(self.port, interface=ipAddr)
+        logging.debug("peerlist: %s"%self.peerlist)
         serverDeferred = self.kserver.bootstrap([(peer, emu_config.kademlia_default_port) for peer in self.peerlist])
         serverDeferred.addCallback(self.executeBot)
         serverDeferred.addErrback(self.errback)
 
-    def executeBot(self):
+    def executeBot(self, *args, **kwargs):
         """Method that is called regularly and checks for new commands"""
         self.kserver.get("current_command").addCallbacks(self.handleCommand, self.errback)
         if not self.stopthread:
@@ -127,6 +128,8 @@ class KademliaBot(Runnable):
         """If the bot received a new command, this method executes the command"""
         logging.debug("Got (new?) command: %s"%command)
         if command is not None:
+            writeLogentry(runnable=type(self).__name__, message='received command: %s'
+                                                                %json.dumps({"bot": self.name, "newcmd": command}))
             executeCurrentCommand(json.loads(command))
 
     def errback(self, failure):

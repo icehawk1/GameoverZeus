@@ -1,13 +1,13 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import os, string, re, logging
+import sys, string, re, logging, json
 from utils.MiscUtils import createLoadtimePlot, mkdir_p, datetimeToEpoch, average
 from utils.LogfileParser import parseMachineReadableLogfile
 from resources.emu_config import logging_config
 
 
 def readExperimentStartStopTime():
-    logentries = parseMachineReadableLogfile(runnable="ZeusExperiment")
+    logentries = parseMachineReadableLogfile(runnable="KademliaExperiment")
 
     tmp = [datetimeToEpoch(entry.entrytime) for entry in logentries if "Experiment started" in entry.message]
     assert len(tmp) == 1
@@ -21,11 +21,17 @@ def readExperimentStartStopTime():
     return startTime, stopTime
 
 
-def readTimeCommandWasIssued():
-    logentries = parseMachineReadableLogfile(runnable="ZeusExperiment")
-    result = sorted([(datetimeToEpoch(entry.entrytime), entry.message.replace("issued command", "").strip())
-                     for entry in logentries if "issued command" in string.lower(entry.message)])
-    return result
+def readTimesCommandsWereIssued():
+    logentries = parseMachineReadableLogfile(runnable="KademliaExperiment")
+
+    result = []
+    for entry in logentries:
+        if "send command" in string.lower(entry.message):
+            match = re.match("Send command ([\w_\-.]+) to bot ([\w_\-.]+)", entry.message)
+            curr = (int(datetimeToEpoch(entry.entrytime)), match.group(1), match.group(2))
+            result.append(curr)
+
+    return sorted(result, key=lambda e: e[0])
 
 
 def plotBotsThatRegistered(startTime, outfile):
@@ -42,7 +48,7 @@ def plotBotsThatRegistered(startTime, outfile):
 def readTimeToPropagateCommand(issuetime):
     assert isinstance(issuetime, int)
 
-    logentries = parseMachineReadableLogfile(runnable="Bot")
+    logentries = parseMachineReadableLogfile(runnable="KademliaBot")
     result = [datetimeToEpoch(entry.entrytime) - issuetime for entry in logentries if "received command" in entry.message]
     return result
 
@@ -51,8 +57,21 @@ if __name__ == '__main__':
     logging.basicConfig(**logging_config)
 
     startTime, stopTime = readExperimentStartStopTime()
-    issuetimes = readTimeCommandWasIssued()
-    assert len(issuetimes) == 1
-    propTimes = readTimeToPropagateCommand(issuetimes[0][0])
-    print "It took %s (avg: %d) seconds to propagate the command to the bots"%(propTimes, average(propTimes))
-    plotBotsThatRegistered(startTime, "/tmp/botnetemulator/NumRegisteredBotsVsTime.pdf")
+    issuetimes = [tp[0] for tp in readTimesCommandsWereIssued()] + [sys.maxint]
+    print issuetimes
+
+    receivings = []
+    for entry in parseMachineReadableLogfile(runnable="KademliaBot"):
+        if "received command" in entry.message and "ddos_server" in entry.message:
+            time = datetimeToEpoch(entry.entrytime)
+            tmp = re.match("received command: (.*)", entry.message).group(1)
+            print tmp
+            command = json.loads(tmp)
+            receivings.append((time, command["bot"]))
+    print receivings
+
+    for i in range(1, len(issuetimes)):
+        timings = [r[0] - issuetimes[i - 1] for r in receivings if (issuetimes[i - 1] <= r[0] <= issuetimes[i])]
+        print "It took %s (avg: %d) seconds to issue the %d. command"%(timings, average(timings), i)
+        botlist = [r[1] for r in receivings if (issuetimes[i - 1] <= r[0] <= issuetimes[i])]
+        print "Got %d responses from %d different bots"%(len(botlist), len(set(botlist)))

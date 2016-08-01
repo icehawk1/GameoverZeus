@@ -2,6 +2,7 @@
 # coding=UTF-8
 import logging, string, subprocess, shlex
 from resources import emu_config
+from utils.LogfileParser import writeLogentry
 
 class BotCommands(object):
     """This class collects all methods that can be used as commands for a bot.

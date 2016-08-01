@@ -40,9 +40,9 @@ class Bot(CommandExecutor):
             newCmd = json.loads(response.text)
             if newCmd != self.current_command:
                 logging.debug("Replaced command %s with %s" % (self.current_command, newCmd))
-                writeLogentry(runnable=type(self).__name__,
-                              message="received command: {'bot':%s, 'newcmd':%s, 'oldcmd':%s}"%(
-                              self.name, newCmd, self.current_command))
+                writeLogentry(runnable=type(self).__name__, message="received command: {'bot':%s, 'newcmd':%s, 'oldcmd':%s}"
+                                                                    %json.dumps(
+                    {"bot": self.name, "newcmd": newCmd, "oldcmd": self.current_command}))
             self.current_command = newCmd
         else:
             self.current_command = None

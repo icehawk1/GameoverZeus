@@ -114,7 +114,7 @@ def createTcpResetPlot(pcapfile, outputfile="/tmp/resetsVsTime.pdf"):
 def average(seq):
     """Computes the arithmetic mean over the given iterable. Returns 0 on an empty sequence.
     :type seq: Iterable of numbers"""
-    if len(seq) >= 0:
+    if len(seq) > 0:
         return float(sum(seq))/len(seq)
     else:
         return 0  # Mathematically not true, but OK for our purposes

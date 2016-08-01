@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """Some utility functions that fit nowhere else"""
-import os, errno, random
+import os, errno, random, sys, re, shlex
+from subprocess import Popen, PIPE
+import validators
 from mininet.net import Mininet
 from mininet.node import Switch
 from marshmallow import Schema, fields, post_load
@@ -67,8 +69,52 @@ def datetimeToEpoch(datetimeObj):
     return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
 
 def createLoadtimePlot(x,y,outputfile):
+    """Writes a pdf to the given path that contains a plot of the given values.
+    :param x: The values of the X-Axis
+    :param y: The values on the Y-Axis
+    :param outputfile: Where the plot should be written to."""
+    assert len(x) == len(y)
+
     pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
     pyplot.plot(numpy.array(x), numpy.array(y))
     pyplot.xlabel("time")
     pyplot.ylabel('loading time')
     pyplot.savefig(outputfile)
+
+
+def createTcpResetPlot(pcapfile, outputfile="/tmp/resetsVsTime.pdf"):
+    """Creates a pdf file that contains a plot that shows how many packets
+    with TCP reset flag are seen every second in the given pcap file.
+    :param pcapfile: The file containing the network traffic dump to analyse
+    :param outputfile: Where the plot should be written to."""
+    pathRE = "[\w-/]+"
+    assert re.match(pathRE, pcapfile) and os.path.isfile(pcapfile)
+    assert re.match(pathRE, outputfile)
+
+    proc = Popen(shlex.split('tshark -r %s "tcp.flags.reset == 1"'%pcapfile))
+    stdout, stderr = proc.communicate()
+
+    data = {}
+    for line in stdout.splitlines():
+        match = re.search("\d+\s+(\d+)\.*\d*\s+[\d.]+ -> [\d.]+.*\[RST.*", line)
+        if match:
+            tick = int(match.group(1))
+            if data.has_key(tick):
+                data[tick] += 1
+            else:
+                data[tick] = 1
+
+    maxkey = max(data.keys())
+    x = [tick for tick in range(maxkey)]
+    y = [data[tick] if data.has_key(tick) else 0 for tick in range(maxkey)]
+
+    createLoadtimePlot(x, y, outputfile)
+
+
+def average(seq):
+    """Computes the arithmetic mean over the given iterable. Returns 0 on an empty sequence.
+    :type seq: Iterable of numbers"""
+    if len(seq) >= 0:
+        return float(sum(seq))/len(seq)
+    else:
+        return 0  # Mathematically not true, but OK for our purposes

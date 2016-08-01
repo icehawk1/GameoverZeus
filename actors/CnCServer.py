@@ -6,7 +6,7 @@ is defined in BotCommands.py. This method will be executed by all clients that f
 All handler support plain text and json output."""
 
 import json, logging, string, sys, time, socket, os
-
+from datetime import datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import tornado.web
 from threading import Thread
@@ -22,7 +22,7 @@ _registered_bots = dict()
 def make_app():
     """Starts the web interface that is used to interact with this server."""
     handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CurrentCommandHandler)]
-    return tornado.web.Application(handlers, autoreload=True)
+    return tornado.web.Application(handlers, autoreload=False)
 
 
 class BotInformation(object):
@@ -112,26 +112,37 @@ class CnCServer(Runnable):
 
     # TODO: Implementiere das zählen der Bots mittels Twisted
 
-    def __init__(self, host="0.0.0.0", port=emu_config.PORT, **kwargs):
+    def __init__(self, host="0.0.0.0", port=emu_config.PORT, botsExpireAfterSeconds=3, **kwargs):
         Runnable.__init__(self, **kwargs)
         self.host = host
         self.port = port
+        self.botsExpireAfterSeconds = botsExpireAfterSeconds
 
     def writeNumBots(self):
-        writeLogentry(runnable=type(self).__name__, message="Number of bots: %d"%len())
-        IOLoop.current().call_later(1, self.writeNumBots())
+        global _registered_bots
+        writeLogentry(runnable=type(self).__name__, message="Number of bots: %d"%len(_registered_bots))
+        IOLoop.current().call_later(1, self.writeNumBots)
+
+    def removeExpiredBots(self):
+        global _registered_bots
+        expired = [botid for botid in _registered_bots.keys() if _registered_bots[botid].last_seen < (time.time() - 3)]
+        for botid in expired:
+            del _registered_bots[botid]
+        logging.debug("Removed expired bots: %s"%expired)
+
+        IOLoop.current().call_later(1, self.removeExpiredBots)
 
     def start(self):
         """Implements start() from the superclass."""
         app = make_app()
         logging.debug("Start the CnCServer %s on %s:%d" % (self.name, self.host, self.port))
         try:
+            self.removeExpiredBots()
+            self.writeNumBots()
             app.listen(self.port)
             IOLoop.current().start()
         except socket.error as ex:
             logging.warning("Could not start the CnC-Server: %s" % ex)
-
-        self.writeNumBots()
 
     def stop(self):
         """Implements stop() from the superclass."""

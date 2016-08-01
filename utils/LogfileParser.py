@@ -12,13 +12,14 @@ from utils.MiscUtils import mkdir_p
 logfile = "/tmp/botnetemulator/machine_readable.log"
 
 
-def writeLogentry(runnable, message, timeissued=datetime.now()):
+def writeLogentry(runnable, message, timeissued=None):
     """Appends an entry to the machine readable logfile
     :param runnable: The runnable that issued the log entry.
             Should be the name of the class and can be used for searching entries.
     :param message: An explanatory message to be included with the entry
     :param timeissued: Time when the event happened, that this entry is refering to"""
     mkdir_p(os.path.dirname(logfile))  # Make sure directory exists
+    if timeissued is None: timeissued = datetime.now()
 
     with open(logfile, mode="a") as fp:
         fp.write("%s|%s|%s\n" % (timeissued.isoformat(" "), string.strip(str(runnable)), string.strip(str(message))))

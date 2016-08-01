@@ -62,7 +62,7 @@ class CommandExecutor(Runnable):
         if self.lc.running:
             self.lc.stop()
         if reactor.running:
-            reactor.stop()
+            reactor.callFromThread(reactor.stop)
 
     def errback(self, failure):
         """Given to defereds to report errors"""

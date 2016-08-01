@@ -21,10 +21,6 @@ class Overlord(object):
         self.knownHosts = dict()
         mkdir_p(SOCKET_DIR)
 
-        # Remove machine readable logfile from previous runs
-        if os.path.exists(LogfileParser.logfile):
-            os.remove(LogfileParser.logfile)
-
     def addHost(self, hostid):
         """Adds a host to the network"""
         self.knownHosts[hostid] = _HostConnector(hostid)
@@ -50,13 +46,12 @@ class Overlord(object):
         :type kwargs: dict
         :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
         :type hostlist: list"""
-        assert isinstance(importmodule, str)
-        assert isinstance(runnable, str)
-        assert isinstance(kwargs, dict)
-
         if hostlist is None: hostlist = self.knownHosts.keys()
         if kwargs is None: kwargs = dict()
 
+        assert isinstance(importmodule, str)
+        assert isinstance(runnable, str)
+        assert isinstance(kwargs, dict)
         assert isinstance(hostlist, list)
 
         for hostid in hostlist:

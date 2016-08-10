@@ -9,6 +9,9 @@ import numpy
 
 from resources import emu_config
 
+#: Environment variable that contains the searchpath for python modules/packages. Needed for the imports in Host.py to work.
+_pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
+
 def mkdir_p(path):
     """Creates all directories in this path that did not exist beforehand. Silently skips existing directories.
     (i.e. Behaves like mkdir -p in Linux.)"""
@@ -73,3 +76,9 @@ def removeSuffixes(text, suffixes):
         return text
     else:
         assert False, "suffixes has wrong type %s"%type(suffixes)
+
+
+def createRandomDPID():
+    """Creates one of those strange number mininet needs"""
+    dpidLen = 16
+    return ''.join([random.choice('0123456789ABCDEF') for x in range(dpidLen)])

@@ -9,7 +9,6 @@ from mininet.cli import CLI
 from resources import emu_config
 from utils.MiscUtils import datetimeToEpoch
 from utils.TcptraceParser import TcptraceParser
-from utils.ExperimentUtils import initMininet, startMininet, cleanup, addHostToMininet
 
 
 if __name__ == '__main__':

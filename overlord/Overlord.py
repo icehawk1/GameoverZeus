@@ -8,6 +8,7 @@ import logging, json, re, random, time, os, pkgutil
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 from thrift.transport.TTransport import TTransportException
+from mininet.node import Node
 
 from HostActions import OverlordClient
 from resources.emu_config import SOCKET_DIR
@@ -63,10 +64,13 @@ class Overlord(object):
         # By default, start runnable on all known hosts
         if hostlist is None:
             hostlist = self.knownHosts.keys()
-        assert isinstance(hostlist, list)
+        assert isinstance(hostlist, list) or isinstance(hostlist, set)
 
         for hostid in hostlist:
             try:
+                if isinstance(hostid, Node):
+                    hostid = hostid.name
+
                 assert isinstance(hostid, str)
                 assert self.knownHosts.has_key(hostid)
                 connector = self.knownHosts[hostid]
@@ -91,6 +95,9 @@ class Overlord(object):
 
         for hostid in hostlist:
             try:
+                if isinstance(hostid, Node):
+                    hostid = hostid.name
+
                 assert isinstance(hostid, str)
                 connector = self.knownHosts[str(hostid)]
                 assert isinstance(connector, _HostConnector)

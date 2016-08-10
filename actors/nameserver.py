@@ -1,17 +1,11 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """This file implements a nameserver that can issue requests for an internal set of known domain names
- and register new domains via a web interface. """
-# TODO: Verwende genau einen Reactor
+ and register new domains via a web interface. The nameserver answers DNS queries on port 66/67."""
 # !/usr/bin/env python2
 # coding=UTF-8
-"""This file implements a nameserver that answers DNS queries on port 66/67 and provides a web interface for registering
-domains"""
-# TODO: Remove calls to reactor.run and reactor.stop
 
-import json, time, logging, os
-from threading import Thread
-from tornado.ioloop import IOLoop
+import json, logging
 from tornado.web import RequestHandler, Application
 from twisted.internet import reactor, defer
 from twisted.names import dns, error, server

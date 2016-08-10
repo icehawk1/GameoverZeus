@@ -30,10 +30,6 @@ class Runnable(object):
         This can alternatively be invoked by sending a stop signal."""
 
 
-# self.lc = LoopingCall(self.performDuty)
-#       lcDeferred = self.lc.start(0.5)
-#       lcDeferred.addErrback(self.errback)
-
 class CommandExecutor(Runnable):
     """Executes a method every x seconds"""
     __metaclass__ = ABCMeta

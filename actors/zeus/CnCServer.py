@@ -13,7 +13,7 @@ from threading import Thread
 from tornado.ioloop import IOLoop
 import tornado.httpserver
 
-from AbstractBot import Runnable, CurrentCommandHandler
+from actors.AbstractBot import Runnable, CurrentCommandHandler
 from resources import emu_config
 from utils.MiscUtils import NetworkAddressSchema, datetimeToEpoch
 

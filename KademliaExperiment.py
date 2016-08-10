@@ -40,7 +40,7 @@ if __name__ == '__main__':
     overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432"%victim.IP()]},
                            hostlist=[sensor.name])
     for h in hosts:
-        current_peerlist = [random.choice([x.IP() for x in hosts if not x == h])]
+        current_peerlist = [random.sample([x.IP() for x in hosts if not x == h], 2)]
         overlord.startRunnable("overbot.KademliaBot", "KademliaBot", {"name": h.name,
                                                               "peerlist"    : current_peerlist}, hostlist=[h.name])
     pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"

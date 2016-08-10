@@ -19,7 +19,7 @@ class SensorTest(unittest.TestCase):
         if os.path.exists(LogfileParser.logfile):
             os.remove(LogfileParser.logfile)
 
-        self.sensor = Sensor.Sensor(name="sensor", pagesToWatch=["http://heise.de", "https://www.google.com"])
+        self.sensor = Sensor.Sensor(name="sensor", pagesToWatch=["http://heise.de/tr", "https://www.google.com"])
         self.sensor.pauseBetweenDuties = 1
         thread = Thread(name="Runnable %s" % self.sensor.name, target=self.sensor.start)
         shutil.rmtree(self.sensor.outputdir, ignore_errors=True)

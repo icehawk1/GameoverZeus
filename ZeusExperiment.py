@@ -35,11 +35,10 @@ class ZeusExperiment(Experiment):
         self.startMininet(self.mininet, self.getNodes("nodes"))
         victim = next(iter(self.getNodes("victim")))  # Get one element from a set ...
         cncserver = next(iter(self.getNodes("cncserver")))
-        victimAddress = (victim.IP(), emu_config.PORT)
 
         # Start the necessary runnables
         self.overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
-        self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%victimAddress]},
+        self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), emu_config.PORT)]},
                                     hostlist=[h.name for h in self.getNodes("sensor")])
         self.overlord.startRunnable("zeus.CnCServer", "CnCServer", {"host": "10.0.0.6"},
                                     hostlist=[h.name for h in self.getNodes("cncserver")])
@@ -52,7 +51,7 @@ class ZeusExperiment(Experiment):
         time.sleep(25)
 
         # Initiate DDoS attack
-        kwargs = json.dumps({"url": "http://%s:%d/ddos_me"%victimAddress})
+        kwargs = json.dumps({"url": "http://%s:%d/ddos_me?composite=%d"%(victim.IP(), emu_config.PORT, 9999123456789012345678901456780L)})
         urlOfCnCServer = "http://%s:%d/current_command"%(cncserver.IP(), emu_config.PORT)
         result = cncserver.cmd("timeout 60s wget -q -O - --post-data 'command=ddos_server&timestamp=%d&kwargs=%s' '%s'"
                                %(datetimeToEpoch(datetime.now()), kwargs, urlOfCnCServer), verbose=True)

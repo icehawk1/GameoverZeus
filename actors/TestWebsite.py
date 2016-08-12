@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import logging, sys
+import logging, sys,json
 import tornado.web
 from threading import Thread
 from tornado.ioloop import IOLoop
@@ -26,12 +26,13 @@ class DDoSHandler(tornado.web.RequestHandler):
 
     def get(self):
         self.set_header("Content-Type", "application/json")
-        key = self.get_argument('key', default="default")
-        if self.keydict.has_key(key):
-            self.write('{"%s":"%s"}' % (key, self.keydict[key]))
-        else:
-            self.set_status(404, "No such key")
-            self.write("No such key in %s" % self.keydict.keys())
+
+	composite = int(self.get_argument('composite', default="12345")) + random.randint(1,10000)
+        # print composite
+        primes = [p for p in primefac(composite)]
+
+	self.write(json.dumps({"composite":composite, "primes":primes}))
+        self.write("\n")
 
     def post(self):
         key = self.get_argument('key', default=None)

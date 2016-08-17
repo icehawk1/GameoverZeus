@@ -1,0 +1,11 @@
+[Host.py:118 (thread: MainThread)]:DEBUG: start rpc server
+[Host.py:90 (thread: MainThread)]:DEBUG: Opening socket /tmp/overlordsockets/cnc1
+[Host.py:94 (thread: MainThread)]:DEBUG: create transport
+[Host.py:100 (thread: MainThread)]:DEBUG: create result
+[Host.py:120 (thread: MainThread)]:DEBUG: <thrift.server.TServer.TSimpleServer instance at 0x7f1ee04a83b0>.serve()
+[Host.py:35 (thread: MainThread)]:DEBUG: cnc1.startRunnable(CnCServer,{u'host': u'10.0.0.6'})
+[CnCServer.py:112 (thread: Runnable CnCServer)]:DEBUG: Start the CnCServer CnCServer on 10.0.0.6:8080
+[CnCServer.py:60 (thread: Runnable CnCServer)]:DEBUG: ddos_server != default_command == True
+[CnCServer.py:67 (thread: Runnable CnCServer)]:DEBUG: The CnC-Server has received a new command: 
+[web.py:1908 (thread: Runnable CnCServer)]:INFO: 200 POST /current_command (10.0.0.6) 2.18ms
+[CnCServer.py:122 (thread: MainThread)]:DEBUG: Stopping CnCServer CnCServer on 10.0.0.6:8080

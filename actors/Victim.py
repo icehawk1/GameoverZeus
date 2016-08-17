@@ -1,57 +1,58 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""This file implements a sensor. A sensor is a machine that randomly surfes the net and may fall prey to an attack by
-a botnet. If it is attacked sucessfully it changes to a bot."""
-
-import logging, os, random
-# import psutil
+import logging, sys, random
 import tornado.web
 from threading import Thread
-from tornado.ioloop import IOLoop
 import tornado.httpserver
+from primefac import primefac
 
 from actors.AbstractBot import Runnable
 from resources import emu_config
 
-probability_of_infection = 0.5
-victimid = random.randint(1, 1000)
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        try:
+            self.set_header("Content-Type", "text/plain")
+            root = int(self.get_argument('root', default="0"))
+            self.write("The square of %d is %d" % (root, root ** 2))
+        except ValueError as ex:
+            self.write("This is not a number: %s" % self.get_argument('root', default="0"))
+
 
 class DDoSHandler(tornado.web.RequestHandler):
-    keydict = {"default": "no_param", "erster": "first", "zweiter": "second", "dritter": "third"}
-
     def get(self):
-        self.set_header("Content-Type", "application/json")
-        key = self.get_argument('key', default="default")
-        if self.keydict.has_key(key):
-            self.write('{"%s":"%s"}' % (key, self.keydict[key]))
-        else:
-            self.set_status(404, "No such key")
-            self.write("No such key in %s" % self.keydict.keys())
+        try:
+            self.set_header("Content-Type", "text/plain")
 
-    def post(self):
-        key = self.get_argument('key', default=None)
-        if key is None:
-            self.write("Please provide one of the following keys: %s" % self.keydict.keys())
-        elif self.keydict.has_key(key):
-            self.write("OK")
-        else:
-            self.set_status(404, "No such key")
-            self.write("No such key in %s" % self.keydict.keys())
+            composite = int(self.get_argument('composite', default="9123456789012345678901456780")) + random.randint(1, 10000)
+            # print composite
+            primes = [str(p) for p in primefac(composite)]
+
+            self.write("%d ="%composite)
+            for p in primes:
+                self.write(" * ".join(primes))
+            self.write("\n")
+        except ValueError as ex:
+            self.set_status(400, "Parameter composite not valid")
+            self.write("This is not a number: %s"%self.get_argument('composite', default="0"))
 
 
 class Victim(Runnable):
-    """Helper class to let this sensor be run in a thread"""
+    """Allows the Website to be run in its own thread."""
 
-    def __init__(self, name=""):
+    def __init__(self, name="", host="0.0.0.0", port=emu_config.PORT):
+        """:param host: The IP-Address on which to listen for incomming connections
+        :param port: The Port on which to listen for incomming connections"""
         Runnable.__init__(self, name)
-        app = tornado.web.Application([("/ddos_me", DDoSHandler)], autoreload=False)
-        self.httpserver = tornado.httpserver.HTTPServer(app)
+        self.host = host
+        self.port = port
+        handlers = [("/", MainHandler), ("/ddos_me", DDoSHandler)]
+        self.httpserver = tornado.httpserver.HTTPServer(tornado.web.Application(handlers, autoreload=False))
 
-    def start(self, port=emu_config.PORT):
+    def start(self):
         """Implements start() from the superclass."""
-        # procs = [(psutil.Process(con.pid).cmdline(), con.pid) for con in psutil.net_connections() if con.laddr[1] == port]
-        #logging.debug("processes listening on %d: %s"%(port, procs))
-        self.httpserver.listen(port)
+        self.httpserver.listen(self.port, self.host)
 
     def stop(self):
         """Implements stop() from the superclass."""
@@ -59,7 +60,12 @@ class Victim(Runnable):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(threadName)s: %(message)s", level=logging.INFO)
-    victim = Victim("sensor")
-    thread = Thread(name="Runnable sensor", target=victim.start, args=(8081,))
+    logging.basicConfig(**emu_config.logging_config)
+
+    if len(sys.argv) >= 3:
+        runable = Victim("testwebsite", sys.argv[2], int(sys.argv[3]))
+    else:
+        runable = Victim("testwebsite")
+
+    thread = Thread(name="Runnable %s"%runable.name, target=runable.start)
     thread.start()

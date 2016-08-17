@@ -38,7 +38,7 @@ class ZeusExperiment(Experiment):
         victimAddress = (victim.IP(), emu_config.PORT)
 
         # Start the necessary runnables
-        self.overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
+        self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
         self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%victimAddress]},
                                     hostlist=[h.name for h in self.getNodes("sensor")])
         self.overlord.startRunnable("zeus.CnCServer", "CnCServer", {"host": "10.0.0.6"},
@@ -47,7 +47,7 @@ class ZeusExperiment(Experiment):
             self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
                                         kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
 
-        victim.cmd("tshark -i any -F pcap -w %s port http or port https &"%self.pcapfile)
+        victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")
         time.sleep(25)
 
@@ -67,7 +67,7 @@ class ZeusExperiment(Experiment):
         self.mininet.stop()
 
         ttparser = TcptraceParser()
-        stats = ttparser.extractConnectionStatisticsFromPcap(os.path.dirname(self.pcapfile))
+        stats = ttparser.plotConnectionStatisticsFromPcap(os.path.dirname(self.pcapfile))
 
 
 if __name__ == '__main__':

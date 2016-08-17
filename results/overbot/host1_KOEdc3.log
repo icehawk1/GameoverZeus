@@ -1,0 +1,24 @@
+[Host.py:118 (thread: MainThread)]:DEBUG: start rpc server
+[Host.py:90 (thread: MainThread)]:DEBUG: Opening socket /tmp/overlordsockets/host1
+[Host.py:94 (thread: MainThread)]:DEBUG: create transport
+[Host.py:100 (thread: MainThread)]:DEBUG: create result
+[Host.py:120 (thread: MainThread)]:DEBUG: <thrift.server.TServer.TSimpleServer instance at 0x7f87f22363b0>.serve()
+[Host.py:35 (thread: MainThread)]:DEBUG: host1.startRunnable(KademliaBot,{u'peerlist': [u'10.0.0.5'], u'name': u'host1'})
+[KademliaBot.py:91 (thread: Runnable KademliaBot)]:DEBUG: Start the KademliaBot host1 on port 8468
+[KademliaBot.py:106 (thread: Runnable KademliaBot)]:DEBUG: Interfaces: {17: [{'broadcast': 'ff:ff:ff:ff:ff:ff', 'addr': '0a:e8:d2:24:c2:ef'}], 2: [{'broadcast': '10.255.255.255', 'netmask': '255.0.0.0', 'addr': '10.0.0.1'}], 10: [{'netmask': 'ffff:ffff:ffff:ffff::', 'addr': 'fe80::8e8:d2ff:fe24:c2ef%host1-eth0'}]}
+[KademliaBot.py:108 (thread: Runnable KademliaBot)]:DEBUG: Node host1 starts with [u'10.0.0.5'] on 10.0.0.1
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: KademliaProtocol starting on 8468
+[_legacy.py:154 (thread: Runnable KademliaBot)]:CRITICAL: 'Did not received reply for msg id wS4yf2eRI2NbgjGZsVV00FfjhIc= within 5 seconds'
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] creating spider with peers: []
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] crawling with nearest: ()
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] last iteration same as current - checking all in list now
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [WARNING] There are no known neighbors to get key current_command
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: None
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [WARNING] There are no known neighbors to get key current_command
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: None
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [WARNING] There are no known neighbors to get key current_command
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: None
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [WARNING] There are no known neighbors to get key current_command
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: None
+[Host.py:35 (thread: MainThread)]:DEBUG: host1.startRunnable(Victim,{})
+[Host.py:35 (thread: MainThread)]:DEBUG: host1.startRunnable(Victim,{})

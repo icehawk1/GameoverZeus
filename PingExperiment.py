@@ -33,7 +33,7 @@ if __name__ == '__main__':
         peerlist = random.sample([peer.IP() for peer in servents if not peer == h], 3)
         overlord.startRunnable("ping.Servent", "Servent", {"peerlist": peerlist, "pauseBetweenDuties": 5},
                                hostlist=[h.name])
-    overlord.startRunnable("TestWebsite", "TestWebsite", {}, hostlist=[victim.name])
+    overlord.startRunnable("Victim", "Victim", {}, hostlist=[victim.name])
     overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1432"%victimAddress]},
                            hostlist=[sensor.name])
     time.sleep(5)

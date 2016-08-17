@@ -1,0 +1,22 @@
+[Host.py:118 (thread: MainThread)]:DEBUG: start rpc server
+[Host.py:90 (thread: MainThread)]:DEBUG: Opening socket /tmp/overlordsockets/host3
+[Host.py:94 (thread: MainThread)]:DEBUG: create transport
+[Host.py:100 (thread: MainThread)]:DEBUG: create result
+[Host.py:120 (thread: MainThread)]:DEBUG: <thrift.server.TServer.TSimpleServer instance at 0x7fe39a8e93b0>.serve()
+[Host.py:35 (thread: MainThread)]:DEBUG: host3.startRunnable(Bot,{u'pauseBetweenDuties': 1, u'name': u'host3', u'current_peerlist': [u'10.0.0.6']})
+[TServer.py:88 (thread: MainThread)]:ERROR: __init__() got an unexpected keyword argument 'current_peerlist'
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/dist-packages/thrift/server/TServer.py", line 84, in serve
+    self.processor.process(iprot, oprot)
+  File "/media/sf_Masterarbeit/GameoverZeus/overlord/HostActions/OverlordClient.py", line 178, in process
+    self._processMap[name](self, seqid, iprot, oprot)
+  File "/media/sf_Masterarbeit/GameoverZeus/overlord/HostActions/OverlordClient.py", line 187, in process_startRunnable
+    self._handler.startRunnable(args.importmodule, args.command, args.kwargs)
+  File "overlord/Host.py", line 43, in startRunnable
+    runnable = constructorobj(**kwargs)
+  File "/home/icehawk/vbox/GameoverZeus/actors/Bot.py", line 15, in __init__
+    super(Bot, self).__init__(**kwargs)
+  File "/home/icehawk/vbox/GameoverZeus/actors/AbstractBot.py", line 39, in __init__
+    super(CommandExecutor, self).__init__(**kwargs)
+TypeError: __init__() got an unexpected keyword argument 'current_peerlist'
+[Host.py:35 (thread: MainThread)]:DEBUG: host3.startRunnable(Victim,{})

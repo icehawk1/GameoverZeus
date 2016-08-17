@@ -36,7 +36,7 @@ if __name__ == '__main__':
         node.cmd(pypath + " python2 overlord/Host.py %s &"%node.name)
     time.sleep(5)
 
-    overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
+    overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
     overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432"%victim.IP()]},
                            hostlist=[sensor.name])
     for h in hosts:
@@ -68,4 +68,4 @@ if __name__ == '__main__':
     net.stop()
 
     ttparser = TcptraceParser(host="victim")
-    stats = ttparser.extractConnectionStatisticsFromPcap(pcapfile)
+    stats = ttparser.plotConnectionStatisticsFromPcap(pcapfile)

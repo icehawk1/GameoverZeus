@@ -1,0 +1,38 @@
+[Host.py:118 (thread: MainThread)]:DEBUG: start rpc server
+[Host.py:90 (thread: MainThread)]:DEBUG: Opening socket /tmp/overlordsockets/host4
+[Host.py:94 (thread: MainThread)]:DEBUG: create transport
+[Host.py:100 (thread: MainThread)]:DEBUG: create result
+[Host.py:120 (thread: MainThread)]:DEBUG: <thrift.server.TServer.TSimpleServer instance at 0x7f68184f13b0>.serve()
+[Host.py:35 (thread: MainThread)]:DEBUG: host4.startRunnable(KademliaBot,{u'peerlist': [u'10.0.0.2'], u'name': u'host4'})
+[KademliaBot.py:91 (thread: Runnable KademliaBot)]:DEBUG: Start the KademliaBot host4 on port 8468
+[KademliaBot.py:106 (thread: Runnable KademliaBot)]:DEBUG: Interfaces: {17: [{'broadcast': 'ff:ff:ff:ff:ff:ff', 'addr': 'c6:93:45:24:da:fc'}], 2: [{'broadcast': '10.255.255.255', 'netmask': '255.0.0.0', 'addr': '10.0.0.4'}], 10: [{'netmask': 'ffff:ffff:ffff:ffff::', 'addr': 'fe80::c493:45ff:fe24:dafc%host4-eth0'}]}
+[KademliaBot.py:108 (thread: Runnable KademliaBot)]:DEBUG: Node host4 starts with [u'10.0.0.2'] on 10.0.0.4
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: KademliaProtocol starting on 8468
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] creating spider with peers: [[324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468]]
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] crawling with nearest: ([324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468],)
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.2:8468, adding to router
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] crawling with nearest: ([1180189788549748379899267727395852849789696997576L, '10.0.0.3', 8468], [324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468])
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.3:8468, adding to router
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] creating spider with peers: [[1180189788549748379899267727395852849789696997576L, '10.0.0.3', 8468], [324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468]]
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] crawling with nearest: ([1180189788549748379899267727395852849789696997576L, '10.0.0.3', 8468], [324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468])
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.3:8468, adding to router
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.2:8468, adding to router
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: None
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 765978881870936217673365922905375815677236244626 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 765978881870936217673365922905375815677236244626 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 324804616546447175140291206854963413400425823390 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 1180189788549748379899267727395852849789696997576 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] creating spider with peers: [[1180189788549748379899267727395852849789696997576L, '10.0.0.3', 8468], [765978881870936217673365922905375815677236244626L, '10.0.0.5', 8468], [324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468]]
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] crawling with nearest: ([1180189788549748379899267727395852849789696997576L, '10.0.0.3', 8468], [765978881870936217673365922905375815677236244626L, '10.0.0.5', 8468], [324804616546447175140291206854963413400425823390L, u'10.0.0.2', 8468])
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.3:8468, adding to router
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.5:8468, adding to router
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] got response from 10.0.0.2:8468, adding to router
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: None
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 765978881870936217673365922905375815677236244626 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 324804616546447175140291206854963413400425823390 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [INFO] finding neighbors of 1180189788549748379899267727395852849789696997576 in local table
+[_legacy.py:154 (thread: Runnable KademliaBot)]:INFO: [DEBUG] got a store request from ('10.0.0.3', 8468), storing value
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: {"command": "ddos_server", "kwargs": {"url": "http://10.0.0.6:8080/ddos_me"}}
+[KademliaBot.py:123 (thread: Runnable KademliaBot)]:DEBUG: Got (new?) command: {"command": "ddos_server", "kwargs": {"url": "http://10.0.0.6:8080/ddos_me"}}
+[Host.py:35 (thread: MainThread)]:DEBUG: host4.startRunnable(Victim,{})
+[Host.py:35 (thread: MainThread)]:DEBUG: host4.startRunnable(Victim,{})

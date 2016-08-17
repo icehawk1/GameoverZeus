@@ -9,7 +9,7 @@ from mininet.node import Switch
 from overlord.Overlord import Overlord
 from utils import Floodlight
 from utils.MiscUtils import mkdir_p, _pypath, createRandomDPID, datetimeToEpoch
-
+from resources import emu_config
 
 class Experiment(object):
     __metaclass__ = ABCMeta
@@ -21,6 +21,7 @@ class Experiment(object):
         if os.path.exists(self.outputdir):
             shutil.rmtree(self.outputdir)
         mkdir_p(self.outputdir)
+        self.tsharkCommand = "tshark -i any -F pcap -w %s port http or port " + str(emu_config.PORT) + " &"
 
     def executeExperiment(self):
         name = self.__class__.__name__
@@ -33,7 +34,7 @@ class Experiment(object):
         doNextStep = True
         currentIteration = 0
         while doNextStep:
-            logging.info("Step %d on %d"%(currentIteration, datetimeToEpoch(datetime.now())))
+            logging.info("Step %d on %d "%(currentIteration, datetimeToEpoch(datetime.now())))
             doNextStep = self._executeStep(currentIteration)
             currentIteration += 1
 
@@ -60,6 +61,8 @@ class Experiment(object):
         pass
 
     def _executeStep(self, num):
+        assert len(self.getNodes("bots")) > 0, "The key bots must be set"
+
         disinfected = set(self.overlord.desinfectRandomBots(0.3, [h.name for h in self.getNodes("bots")]))
         bots = {h for h in self.getNodes("bots") if not h.name in disinfected}
         self.setNodes("bots", bots)

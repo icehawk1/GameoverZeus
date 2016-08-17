@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import logging, os, time, shutil
+import logging, os, time, shutil, random
 from datetime import datetime
 from abc import ABCMeta, abstractmethod
 from mininet.net import Mininet
@@ -50,6 +50,10 @@ class Experiment(object):
 
     def setNodes(self, category, nodes):
         assert isinstance(nodes, set) or isinstance(nodes,frozenset), "nodes is a %s"%type(nodes)
+        if len(nodes) > 8:
+            logging.debug("Created the category %s which includes the following nodes: %s"%(category, random.sample(nodes, 8)))
+        else:
+            logging.debug("Created the category %s with the following nodes: %s"%(category, nodes))
         self._nodedict[category] = nodes
 
     @abstractmethod

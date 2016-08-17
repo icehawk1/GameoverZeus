@@ -21,9 +21,9 @@ class BlubExperiment(Experiment):
 
         nodes = set(self.topology.nodes)
         assert len(nodes) >= 28
-        self.setNodes("bots", random.sample(nodes, 25))
+        self.setNodes("bots", set(random.sample(nodes, 25)))
         nodes -= self.getNodes("bots")
-        self.setNodes("non-bots", random.sample(3))
+        self.setNodes("non-bots", set(random.sample(3)))
         self.setNodes("nodes", self.getNodes("bots") | self.getNodes("non-bots"))
 
     def _start(self):
@@ -31,6 +31,9 @@ class BlubExperiment(Experiment):
         for h in self.getNodes("nodes"):
             h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
         time.sleep(15)
+
+    def _executeStep(self, num):
+        super(BlubExperiment, self)._executeStep(num)
 
     def _stop(self):
         self.overlord.stopEverything()

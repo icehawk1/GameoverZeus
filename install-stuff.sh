@@ -5,5 +5,5 @@ apt-get install --ignore-missing -y gcc floodlight git mininet iptables wireshar
                 python-pip python-thrift thrift-compiler goldeneye pip siege
 wget https://atom.io/download/deb -O atom.deb
 gdebi atom.deb
-pip2 install kademlia rfc3987 marshmallow validators twisted tornado netifaces matplotlib
+pip2 install kademlia rfc3987 marshmallow validators twisted tornado netifaces matplotlib thrift
 apt-get upgrade

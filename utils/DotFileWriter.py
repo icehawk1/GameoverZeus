@@ -7,7 +7,7 @@ import pygraphviz as pgv
 import sys
 from string import lower
 
-from topologies.BriteTopology import BriteGraphAccepter, createGraphFromBriteFile
+from topologies.BriteTopology import BriteGraphAccepter, applyBriteFile
 
 nodetype_to_color = {'RT_NODE': 'blue', 'RT_BORDER': 'red'}
 edgetype_to_color = {'E_RT': 'blue', 'E_AS': 'red'}
@@ -72,6 +72,6 @@ class DotFileWriter(BriteGraphAccepter):
 if __name__ == "__main__":
     if len(sys.argv) >= 4:
         writer = DotFileWriter()
-        createGraphFromBriteFile(sys.argv[1], [writer])
+        applyBriteFile(sys.argv[1], [writer])
         writer.generatePdf(sys.argv[2])
         writer.generateSvg(sys.argv[3])

@@ -8,7 +8,7 @@ import unittest
 
 from DotFileWriter import DotFileWriter
 from resources import emu_config
-from topologies.BriteTopology import createGraphFromBriteFile
+from topologies.BriteTopology import applyBriteFile
 
 
 class DotFileWriterTest(unittest.TestCase):
@@ -18,7 +18,7 @@ class DotFileWriterTest(unittest.TestCase):
         self.svgfile = tempfile.mkstemp(suffix=".svg")[1]
 
     def testFlatrouter(self):
-        createGraphFromBriteFile(emu_config.basedir + "/testfiles/flatrouter.brite", [self.dotwriter])
+        applyBriteFile(emu_config.basedir + "/testfiles/flatrouter.brite", [self.dotwriter])
         self.dotwriter.generatePdf(self.pdffile)
         self.dotwriter.generateSvg(self.svgfile)
 

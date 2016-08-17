@@ -60,9 +60,10 @@ class ZeusExperiment(Experiment):
 
     def _stop(self):
         victim = next(iter(self.getNodes("victim")))
+        print "tshark: ", victim.cmd("jobs")
 
         # CLI(net)
-        print "tshark: ", victim.cmd("jobs")
+
         self.overlord.stopEverything()
         self.mininet.stop()
 

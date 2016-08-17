@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """This file defines a topology that reads a random network generated with BRITE and creates a mn topology from it."""
-
 import logging, random, re, time
 from abc import abstractmethod, ABCMeta
 from mininet.node import CPULimitedHost
@@ -14,7 +13,7 @@ from utils import Floodlight
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
 
-def createGraphFromBriteFile(inputfilename, accepters):
+def applyBriteFile(inputfilename, accepters):
     """Reads a BRITE output file and passes its contents to the accepters.
     :type accepters: list of BriteGraphAccepter"""
     # An example input file can be found in testfiles/flatrouter.brite
@@ -129,8 +128,8 @@ def _readEdges(inputfile, accepters):
 
 
 class BriteGraphAccepter(object):
-    """This is the base class for all objects where createGraphFromBriteFile will write its output to.
-    It defines some callbacks that are invoked by createGraphFromBriteFile."""
+    """This is the base class for all objects where applyBriteFile will write its output to.
+    It defines some callbacks that are invoked by applyBriteFile."""
     __metaclass__ = ABCMeta
     wroteHeader = False
 
@@ -173,7 +172,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     It will have a number of interconnected autonomous systems and each AS will have one external_switch and a number of
     hosts. Each host in an AS is connected to that external_switch."""
 
-    def __init__(self, mininet=Mininet(controller=Floodlight.Controller), opts=dict(), **kwargs):
+    def __init__(self, mininet, opts=dict(), **kwargs):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
@@ -212,18 +211,17 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     def _addHost(self, nodeid):
         """Adds a mininet host to the topology"""
         if random.uniform(0, 1) < self.probability_of_cpulimitation:
-            self.mininet.addHost(_createBotname(nodeid), host=self.cpulimitedhost, opts=self.opts)
+            bot = self.mininet.addHost(_createBotname(nodeid), host=self.cpulimitedhost, opts=self.opts)
         else:
-            self.mininet.addHost(_createBotname(nodeid), opts=self.opts)
+            bot = self.mininet.addHost(_createBotname(nodeid), opts=self.opts)
 
-        bot = self.mininet.getNodeByName(_createBotname(nodeid))
+        super(BriteTopology, self)._addHost(bot)
         return bot
 
     def addEdge(self, edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype):
         """Invoked for every edge in the BRITE output file. Converts that edge into a connection between two mn hosts."""
-        super(BriteTopology, self).addEdge(edgeid, fromNode, toNode, communicationDelay, bandwidth,
-                                           fromAS, toAS, edgetype)
         assert not self.started
+        super(BriteTopology, self).addEdge(edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype)
 
     def writeFooter(self):
         """Invoked after fully reading the BRITE output file"""

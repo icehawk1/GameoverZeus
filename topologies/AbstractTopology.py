@@ -9,14 +9,14 @@ class AbstractTopology(object):
         """:param mininet: Mininet instance to be used for running this topology
         :param probability_of_cpulimitation: How likely it is that a Host will be created as a CPULimitedHost
         :param probability_unreliable_links: How likely it is that any link between a host and switch will have
-        some restrictions regarding packet loss and delay
-        :param linkoptions: The bandwidth, delay and/or packet loss options to impose on unreliable links
-        :type linkoptions: dict"""
+        some restrictions regarding packet loss and delay"""
+
 
         self.mininet = mininet
         self.mininet.addController("controller1")
         self.probability_of_cpulimitation = probability_of_cpulimitation
         self.probability_of_unreliable_links = probability_unreliable_links
+        self._nodes = set()
 
         assert 0 <= self.probability_of_cpulimitation <= 1, \
             "probability_of_cpulimitation must be between 0 and 1: %d" % self.probability_of_cpulimitation
@@ -31,3 +31,11 @@ class AbstractTopology(object):
             self.mininet.addLink(node1, node2, linkoptions)
         else:
             self.mininet.addLink(node1, node2)
+
+    @property
+    def nodes(self):
+        """Returns a read-only view of the nodes in this topology"""
+        return frozenset(self._nodes)
+
+    def _addHost(self, mnhost):
+        self._nodes.add(mnhost)

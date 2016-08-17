@@ -8,7 +8,7 @@ from mininet.node import Switch
 
 from overlord.Overlord import Overlord
 from utils import Floodlight
-from utils.MiscUtils import mkdir_p, _pypath, createRandomDPID, datetimeToEpoch
+from utils.MiscUtils import mkdir_p, pypath, createRandomDPID, datetimeToEpoch
 from resources import emu_config
 
 class Experiment(object):
@@ -56,6 +56,7 @@ class Experiment(object):
     def _setup(self):
         self.mininet, self.overlord, self.switch = self.initMininet()
 
+
     @abstractmethod
     def _start(self):
         pass
@@ -97,7 +98,7 @@ class Experiment(object):
     def startMininet(self, mininet, nodeSet):
         mininet.start()
         for h in nodeSet:
-            h.cmd(_pypath + " python2 overlord/Host.py %s &"%h.name)
+            h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
         time.sleep(15)
 
     def cleanup(self):

@@ -1,48 +1,44 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-from tornado.platform.twisted import TwistedIOLoop
-from twisted.internet import reactor
-TwistedIOLoop(reactor).install()
-from twisted.internet.task import LoopingCall
+import logging, os, random, time
 
-import logging, time, os
-from threading import Thread
-from resources.emu_config import logging_config
+from resources.emu_config import logging_config, basedir
+from Experiment import Experiment
+from topologies.BriteTopology import BriteTopology, applyBriteFile
+from utils.MiscUtils import pypath
 
 
-def performDuty():
-    logging.info("duty")
+class BlubExperiment(Experiment):
+    def __init__(self):
+        super(BlubExperiment, self).__init__()
+
+    def _setup(self):
+        super(BlubExperiment, self)._setup()
+        for node in self.topology.nodes:
+            self.overlord.addHost(node.name)
+        self.topology = BriteTopology(self.mininet)
+        applyBriteFile(os.path.join(basedir, "resources/topdown.brite"), [self.topology])
+
+        nodes = set(self.topology.nodes)
+        assert len(nodes) >= 28
+        self.setNodes("bots", random.sample(nodes, 25))
+        nodes -= self.getNodes("bots")
+        self.setNodes("non-bots", random.sample(3))
+        self.setNodes("nodes", self.getNodes("bots") | self.getNodes("non-bots"))
+
+    def _start(self):
+        self.topology.start()
+        for h in self.getNodes("nodes"):
+            h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
+        time.sleep(15)
+
+    def _stop(self):
+        self.overlord.stopEverything()
+        self.topology.stop()
 
 
-def errback(failure):
-    logging.error(failure)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     logging.basicConfig(**logging_config)
 
-    lc = LoopingCall(performDuty)
-    lcDeferred = lc.start(0.5)
-    lcDeferred.addErrback(errback)
-
-    reactorThread = Thread(target=reactor.run, kwargs={"installSignalHandlers": 0})
-    reactorThread.start()
-    time.sleep(3)
-    reactor.callFromThread(reactor.stop)
-
-    #
-    # newServent = Bla.NewServent()
-    # regular = Bla.Regular("Regular")
-    #
-    # reactor.callFromThread(newServent.start)
-    # time.sleep(3)
-    # os.system("netstat -tulpen | grep 8888")
-    # reactor.callFromThread(regular.start)
-    # time.sleep(2)
-    # print "newServent.stop"
-    # reactor.callFromThread(newServent.stop)
-    # time.sleep(1)
-    # reactor.callFromThread(regular.stop)
-    # os.system("netstat -tulpen | grep 8888")
-    # reactor.callFromThread(reactor.stop)
-    # print "reactor should have been stopped"
-    #
+    experiment = BlubExperiment()
+    experiment.executeExperiment()

@@ -10,7 +10,7 @@ import numpy
 from resources import emu_config
 
 #: Environment variable that contains the searchpath for python modules/packages. Needed for the imports in Host.py to work.
-_pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
+pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
 
 def mkdir_p(path):
     """Creates all directories in this path that did not exist beforehand. Silently skips existing directories.

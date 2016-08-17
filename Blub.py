@@ -14,9 +14,9 @@ class BlubExperiment(Experiment):
 
     def _setup(self):
         super(BlubExperiment, self)._setup()
+        self.topology = BriteTopology(self.mininet)
         for node in self.topology.nodes:
             self.overlord.addHost(node.name)
-        self.topology = BriteTopology(self.mininet)
         applyBriteFile(os.path.join(basedir, "resources/topdown.brite"), [self.topology])
 
         nodes = set(self.topology.nodes)

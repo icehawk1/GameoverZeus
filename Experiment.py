@@ -49,7 +49,7 @@ class Experiment(object):
             return []
 
     def setNodes(self, category, nodes):
-        assert isinstance(nodes, set), "nodes is a %s"%type(nodes)
+        assert isinstance(nodes, set) or isinstance(nodes,frozenset), "nodes is a %s"%type(nodes)
         self._nodedict[category] = nodes
 
     @abstractmethod

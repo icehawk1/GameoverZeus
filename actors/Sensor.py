@@ -6,6 +6,9 @@ from timeit import timeit
 from datetime import datetime
 import requests
 from threading import Thread
+import matplotlib
+# Force matplotlib to not use any Xwindows backend. Needed to run the botnet emulator over SSH.
+matplotlib.use('PDF')
 from matplotlib import pyplot
 import numpy
 
@@ -75,7 +78,7 @@ class Sensor(CommandExecutor):
             pageloadTime = float(splited[1])
             result[splited[0]].append((logtimestamp, pageloadTime))
 
-        logging.debug("Measured the following loading times: %s" % result)
+#        logging.debug("Measured the following loading times: %s" % result)
         return result
 
     def _createPlotOfLoadingTimes(self, loadingTimesDict):

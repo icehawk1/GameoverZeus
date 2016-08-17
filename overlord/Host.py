@@ -6,7 +6,7 @@ control all hosts."""
 from tornado.platform.twisted import TwistedIOLoop
 from twisted.internet import reactor, threads
 
-TwistedIOLoop(reactor).install()
+TwistedIOLoop().install()
 from twisted.python import log
 
 import logging, json, os, importlib, time, sys, socket, tempfile

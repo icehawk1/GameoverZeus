@@ -61,6 +61,7 @@ class Experiment(object):
     def _start(self):
         pass
 
+    @abstractmethod
     def _executeStep(self, num):
         assert len(self.getNodes("bots")) > 0, "The key bots must be set"
 

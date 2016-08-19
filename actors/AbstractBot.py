@@ -1,9 +1,8 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """Defines abstract base classes for all kinds of clients"""
-import logging, string, json, socket
+import logging, string, json
 from abc import ABCMeta, abstractmethod, abstractproperty
-from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.python import log
 import tornado.web
@@ -12,7 +11,8 @@ from resources import emu_config
 
 
 class Runnable(object):
-    """A class that executes code, similar to the Java class of the same name"""
+    """A runnable is a class that encapsulates a process that can be run in its own thread and that can be started
+    and stopped at any time. It was inspired by the Java standard library class with the same name."""
     __metaclass__ = ABCMeta
 
     def __init__(self, name=""):

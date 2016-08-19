@@ -1,6 +1,9 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""This file defines a topology that reads a random network generated with BRITE and creates a mn topology from it."""
+"""This file defines a topology that reads a random network generated with BRITE and creates a Mininet topology from it.
+It first executes the random network generator BRITE and parses its output file. Those information is used to create a Mininet network.
+The BriteTopology module also contains functionality to plot the generated network.
+Each autonomous system from the BRITE output file runs in its own subnet."""
 import logging, random, re, time
 from abc import abstractmethod, ABCMeta
 from mininet.node import CPULimitedHost
@@ -205,6 +208,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
             self.autonomousSystems[asid] = autsys
 
         self.autonomousSystems[asid].botdict[nodeid] = bot
+        # TODO: Use the bandwidth given by BRITE instead of random values
         self._addLinkBetweenNodes(bot, self.autonomousSystems[asid].switch)
 
     def _addHost(self, nodeid):

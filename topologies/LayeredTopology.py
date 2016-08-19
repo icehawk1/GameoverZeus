@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # coding=UTF-8
-"""This file defines a layered Topology. See class LayeredTopology for details."""
+"""This file defines a layered Topology.
+
+The LayeredTopology which structures the nodes into layers where each layer has its own switch and the switches are connected linearly.
+The LayeredTopology is not used in the currently implemented experiments, but is an earlier attempt in implementing the Gameover Zeus
+experiment that has been kept because it might be helpful for testing purposes."""
 
 import random, time
 from mininet.net import Mininet, Controller

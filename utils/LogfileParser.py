@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""This file contains utilities to parse the machine readable logfile,
-which is used to collect the results of a Runnable for later analysis"""
+"""This module defines a machine readable 'log file' where the observations done by actors are stored and provides functionality
+to parse and write this log file. For example: When the sensor node has retrieved a web page from the server it monitors,
+it will add an entry to the log file containing the time it took to load the page. The author of this thesis did not want to use
+the Python logging module, because he is already using that for informational logging and it would conflict."""
 import string, os
 from datetime import datetime
 from utils.MiscUtils import mkdir_p

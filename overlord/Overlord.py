@@ -66,7 +66,7 @@ class Overlord(object):
         # By default, start runnable on all known hosts
         if hostlist is None:
             hostlist = self.knownHosts.keys()
-        assert isinstance(hostlist, list) or isinstance(hostlist, set)
+        assert isinstance(hostlist, list) or isinstance(hostlist, set) or isinstance(hostlist, frozenset)
 
         for hostid in hostlist:
             try:

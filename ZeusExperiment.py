@@ -74,7 +74,7 @@ class ZeusExperiment(Experiment):
         logging.debug("wget: %s"%result)
 
     def _executeStep(self, num):
-        super(ZeusExperiment, self)._executeStep(num)
+        return super(ZeusExperiment, self)._executeStep(num)
 
     def _stop(self):
         self.overlord.stopEverything()

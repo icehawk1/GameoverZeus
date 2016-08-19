@@ -58,7 +58,7 @@ class HostActionHandler(object):
     def stopRunnable(self, command="*"):
         """Stops the runnable representing the given command string. Does nothing if that runnable does not exist or is not running.
         :param command: Which runnable should be stopped. The same string as has been given to startRunnable(). Give * to stop all runnables."""
-        logging.debug("%s.stopRunnable(%s)" % (self.hostid, command))
+        logging.debug("%s.stopRunnable(%s)"%(self.hostid, command))
         if self.currentRunnables.has_key(command):
             runnable, defer = self.currentRunnables[command]
             threads.blockingCallFromThread(reactor, runnable.stop)
@@ -74,7 +74,7 @@ class HostActionHandler(object):
                     defer.cancel()
         else:
             logging.debug("Runnable %s not found" % command)
-	logging.debug("runnables should have been stopped by now")
+        logging.debug("runnables should have been stopped by now")
 
     def getID(self):
         """Returns the host id"""

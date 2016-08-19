@@ -23,7 +23,7 @@ class BlubExperiment(Experiment):
         assert len(nodes) >= 28
         self.setNodes("bots", set(random.sample(nodes, 25)))
         nodes -= self.getNodes("bots")
-        self.setNodes("non-bots", set(random.sample(nodes,3)))
+        self.setNodes("non-bots", set(random.sample(nodes, 3)))
         self.setNodes("nodes", set(self.topology.nodes))
 
     def _start(self):

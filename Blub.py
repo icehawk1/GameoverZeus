@@ -15,16 +15,16 @@ class BlubExperiment(Experiment):
     def _setup(self):
         super(BlubExperiment, self)._setup()
         self.topology = BriteTopology(self.mininet)
+        applyBriteFile(os.path.join(basedir, "resources/topdown.brite"), [self.topology])
         for node in self.topology.nodes:
             self.overlord.addHost(node.name)
-        applyBriteFile(os.path.join(basedir, "resources/topdown.brite"), [self.topology])
 
         nodes = set(self.topology.nodes)
         assert len(nodes) >= 28
         self.setNodes("bots", set(random.sample(nodes, 25)))
         nodes -= self.getNodes("bots")
-        self.setNodes("non-bots", set(random.sample(3)))
-        self.setNodes("nodes", self.getNodes("bots") | self.getNodes("non-bots"))
+        self.setNodes("non-bots", set(random.sample(nodes,3)))
+        self.setNodes("nodes", set(self.topology.nodes))
 
     def _start(self):
         self.topology.start()

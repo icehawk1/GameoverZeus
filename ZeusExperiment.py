@@ -35,10 +35,9 @@ class ZeusExperiment(Experiment):
         self.setNodes("victim", set(random.sample(nodes, 1)))
         nodes -= self.getNodes("victim")
         self.setNodes("sensor", set(random.sample(nodes, 1)))
-        self.setNodes("nodes",
-                      self.getNodes("bots") | self.getNodes("cncserver") | self.getNodes("victim") | self.getNodes("sensor"))
+        self.setNodes("nodes", self.topology.nodes)
 
-        assert len(self.getNodes("nodes")) == len(self.getNodes("bots")) + 3, "nodes: %s"%self.getNodes("nodes")
+        assert len(self.getNodes("nodes")) >= len(self.getNodes("bots")) + 3, "nodes: %s"%self.getNodes("nodes")
 
     def _start(self):
         self.topology.start()
@@ -46,11 +45,13 @@ class ZeusExperiment(Experiment):
             h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
         time.sleep(15)
 
-        victim = next(iter(self.getNodes("victim")))  # Get one element from a set ...
+	assert len(self.getNodes("victim")) == 1
+	assert len(self.getNodes("cncserver")) == 1
+        victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...
         cncserver = next(iter(self.getNodes("cncserver")))
 
         # Start the necessary runnables
-        self.overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
+        self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
         self.overlord.startRunnable("Sensor", "Sensor",
                                     {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
                                     hostlist=[h.name for h in self.getNodes("sensor")])

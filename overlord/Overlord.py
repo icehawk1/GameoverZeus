@@ -29,7 +29,7 @@ class Overlord(object):
     def addHost(self, hostid):
         """Adds a host to the network"""
         self.knownHosts[hostid] = _HostConnector(hostid)
-        logging.debug("added host %s" % hostid)
+        #logging.debug("added host %s" % hostid)
 
     def getIDsOfAllKnownHosts(self):
         """Return a set of the IDs of all hosts that are currently controlled by this Overlord"""

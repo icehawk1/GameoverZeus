@@ -8,13 +8,13 @@ from mininet.util import custom
 from mininet.net import Mininet
 
 from AbstractTopology import AbstractTopology
-from utils import Floodlight
 
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
 
 def applyBriteFile(inputfilename, accepters):
     """Reads a BRITE output file and passes its contents to the accepters.
+    :param inputfilename: The path to the BRITE output file
     :type accepters: list of BriteGraphAccepter"""
     # An example input file can be found in testfiles/flatrouter.brite
 
@@ -171,7 +171,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     It will have a number of interconnected autonomous systems and each AS will have one external_switch and a number of
     hosts. Each host in an AS is connected to that external_switch."""
 
-    def __init__(self, mininet, opts=dict(), **kwargs):
+    def __init__(self, mininet, opts=None, **kwargs):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
@@ -181,7 +181,7 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         self.started = False
         self.autonomousSystems = dict()
         self.modelname = None
-        self.opts = opts
+        self.opts = opts if opts is not None else dict()
         self.cpulimitedhost = custom(CPULimitedHost)
 
     def writeHeader(self, num_nodes, num_edges, modelname):

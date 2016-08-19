@@ -98,8 +98,7 @@ def _readEdges(inputfile, accepters):
 
     # Matches one of the lines describing an edge
     edgeRe = re.compile(
-        r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+"
-        r"(-?\d+\.\d+)\s+([\d-]+)\s+([\d-]+)\s+([\w_-]+)\s+([-_\w]+)\s*")
+        r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(-?\d+\.\d+)\s+([\d-]+)\s+([\d-]+)\s+([\w_-]+)\s+([-_\w]+)\s*")
 
     # Skip over beginning
     while True:
@@ -123,7 +122,7 @@ def _readEdges(inputfile, accepters):
             # All nodes were parsed
             break
         else:
-            logging.warning("File %s contained invalid edge description: %s" % (inputfile.name, line))
+            logging.warning("File %s contained invalid edge description: %s"%(inputfile.name, line))
             continue
 
 

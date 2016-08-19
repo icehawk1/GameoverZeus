@@ -60,14 +60,13 @@ class Experiment(object):
     def _setup(self):
         self.mininet, self.overlord, self.switch = self.initMininet()
 
-
     @abstractmethod
     def _start(self):
         pass
 
     @abstractmethod
     def _executeStep(self, num):
-        assert len(self.getNodes("bots")) > 0, "The key bots must be set"
+        assert len(self.getNodes("bots")) > 0, "The setup() method should have set a node category (with setNodes()) called bots1"
 
         disinfected = set(self.overlord.desinfectRandomBots(0.3, [h.name for h in self.getNodes("bots")]))
         bots = {h for h in self.getNodes("bots") if not h.name in disinfected}

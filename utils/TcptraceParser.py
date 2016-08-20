@@ -1,5 +1,11 @@
 #!/usr/bin/env python2
 # coding=UTF-8
+"""The TcpTraceParser module is responsible for analyzing network traffic dumps generated during experiments.
+It executes the tcptrace tool and plots the page loading times found in the given pcap file.
+It then plots the result against the time the connection was initiated.
+
+Tcptrace is a tool that takes pcap files as produced by Wireshark, extracts individual TCP connections
+and prints information on each connection."""
 import shlex, logging, os, re, fnmatch
 from subprocess import Popen, PIPE
 from datetime import datetime, timedelta

@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 # coding=UTF-8
+"""The BotCommands module contains a number of methods each of which may be used as a command and can be executed by bots."""
 import logging, subprocess, shlex, json
 import requests
 import validators

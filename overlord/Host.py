@@ -1,8 +1,9 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """This file implements a script that can run any Runnable in a separate Thread. It can start and stop it any time.
-It is intended to be run on every mn host to help the architecture being flexible and to allow the overlord to
-control all hosts."""
+It is intended to be run on every Mininet host to help the architecture being flexible and to allow the overlord to
+control all hosts.
+It is responsible for managing the runnables running on that particular mininet host."""
 from tornado.platform.twisted import TwistedIOLoop
 from twisted.internet import reactor, threads
 

@@ -35,9 +35,6 @@ class ZeusExperiment(Experiment):
         self.setNodes("victim", set(random.sample(nodes, 1)))
         nodes -= self.getNodes("victim")
         self.setNodes("sensor", set(random.sample(nodes, 1)))
-        self.setNodes("nodes", self.topology.nodes)
-
-        assert len(self.getNodes("nodes")) >= len(self.getNodes("bots")) + 3, "nodes: %s"%self.getNodes("nodes")
 
     def _start(self):
         self.topology.start()
@@ -80,6 +77,8 @@ class ZeusExperiment(Experiment):
         self.overlord.stopEverything()
         self.topology.stop()
 
+    def _produceOutputFiles(self):
+        pass
 
 if __name__ == '__main__':
     logging.basicConfig(**logging_config)

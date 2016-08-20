@@ -2,7 +2,15 @@
 # coding=UTF-8
 """This file defines a class that centrally controls every Host in the network. This includes all sorts of actors.
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
-It uses unix sockets to communicate with the clients because they are independent of the network communication in mn."""
+It uses unix sockets to communicate with the clients because they are independent of the network communication in Mininet.
+
+The Overlord communicates with the hosts via remote procedure call (RPC) over Unix (file) sockets.
+Unix sockets are files that allow to separate processes to communicate similar to a network connection but without using the
+actual network infrastructure of the operating system. It was necessary to have the Experiment and Hosts separated in this way,
+because mininet only allows to run separate processes in its nodes. It is not possible to run threads on mininet hosts.
+RPC allows a smooth integration with regular Python code. Unix sockets were chosen because they do not interfere with the Mininet
+network and they will still be working, even if the particular host is unable to use the network,
+which may happen during some experiments."""
 
 import logging, json, re, random, time, os, pkgutil
 from thrift.protocol import TBinaryProtocol
@@ -68,7 +76,7 @@ class Overlord(object):
         # By default, start runnable on all known hosts
         if hostlist is None:
             hostlist = self.knownHosts.keys()
-        assert isinstance(hostlist, list) or isinstance(hostlist, set)
+        assert isinstance(hostlist, list) or isinstance(hostlist, set) or isinstance(hostlist, frozenset)
 
         for hostid in hostlist:
             try:

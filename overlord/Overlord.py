@@ -64,6 +64,8 @@ class Overlord(object):
         assert isinstance(runnable, str)
         assert isinstance(kwargs, dict)
 
+	logging.info("start runnable %s on hosts %s"%(runnable,hostlist))
+
         # Test if importmodule exists and has a runnable with the given name
         try:
             runnableLoader = pkgutil.find_loader('actors.%s'%importmodule)

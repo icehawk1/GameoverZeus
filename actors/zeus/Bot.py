@@ -10,11 +10,11 @@ class Bot(CommandExecutor):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
     and renews its registration with said server. The possible commands are defined in BotCommands.py."""
 
-    def __init__(self, peerlist=[], **kwargs):
+    def __init__(self, peerlist=None, **kwargs):
         super(Bot, self).__init__(**kwargs)
         self.current_command = None
         self.threads = []
-        self.peerlist = peerlist
+        self.peerlist = peerlist if peerlist is not None else []
 
     def performDuty(self):
         logging.debug("Doing duties")

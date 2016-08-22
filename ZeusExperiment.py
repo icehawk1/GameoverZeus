@@ -7,6 +7,7 @@ from resources.emu_config import logging_config, PORT, basedir
 from Experiment import Experiment
 from topologies.BriteTopology import BriteTopology, applyBriteFile
 from utils.MiscUtils import pypath, datetimeToEpoch, mkdir_p
+from utils.TcptraceParser import TcptraceParser
 
 
 class ZeusExperiment(Experiment):
@@ -78,7 +79,8 @@ class ZeusExperiment(Experiment):
         self.topology.stop()
 
     def _produceOutputFiles(self):
-        pass
+        ttparser = TcptraceParser()
+	stats = ttparser.plotConnectionStatisticsFromPcap(self.pcapfile)
 
 if __name__ == '__main__':
     logging.basicConfig(**logging_config)

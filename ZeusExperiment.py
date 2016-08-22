@@ -59,7 +59,7 @@ class ZeusExperiment(Experiment):
             self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
                                         kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
 
-        victim.cmd("tshark -i any -F pcap -w %s port http or port https &"%self.pcapfile)
+	victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")
         time.sleep(25)
 
@@ -75,7 +75,7 @@ class ZeusExperiment(Experiment):
         return super(ZeusExperiment, self)._executeStep(num)
 
     def _stop(self):
-        self.overlord.stopEverything()
+	self.overlord.stopEverything()
         self.topology.stop()
 
     def _produceOutputFiles(self):

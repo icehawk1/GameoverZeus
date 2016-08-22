@@ -5,7 +5,7 @@
 # !/usr/bin/env python2
 # coding=UTF-8
 
-import json, logging
+import json, logging, random
 from tornado.web import RequestHandler, Application
 from twisted.internet import reactor, defer
 from twisted.names import dns, error, server
@@ -13,7 +13,8 @@ from twisted.names import dns, error, server
 from resources import emu_config
 from actors.AbstractBot import Runnable
 
-known_hosts = {}
+known_hosts = {"lokaler_horst": {"127.0.0.1", "127.0.0.2"}}
+cncdomain = "cncserver"
 protocol = None
 
 class DynamicResolver(object):
@@ -28,9 +29,8 @@ class DynamicResolver(object):
         logging.debug("Received query for %s" % requested_hostname)
 
         if known_hosts.has_key(requested_hostname):
-            answer = dns.RRHeader(name=requested_hostname,
-                                  payload=dns.Record_A(address=known_hosts[requested_hostname]))
-            answers = [answer]
+            ip = random.sample(known_hosts[requested_hostname], 1)[0]  # This works with sets, random.choice doesn't
+            answers = [dns.RRHeader(name=requested_hostname, payload=dns.Record_A(address=ip))]
             authority = []
             additional = []
             return defer.succeed((answers, authority, additional))
@@ -41,7 +41,7 @@ class DynamicResolver(object):
 def rrUpdate(hostname="", address=""):
     """Updates the address of the given hostname"""
 
-    known_hosts[hostname] = address
+    known_hosts[hostname] = [address] if isinstance(address, str) else address
     logging.debug("Hostname %s is now known under address %s" % (hostname, address))
 
 
@@ -100,8 +100,10 @@ def stopWebserver():
 class Nameserver(Runnable):
     """Runs a nameserver that answers dns queries on the given port and accepts new domains via a web interface."""
 
-    def __init__(self, name=""):
+    def __init__(self, name="", peerlist=None):
         Runnable.__init__(self, name)
+        if peerlist is not None:
+            known_hosts[cncdomain] = peerlist
 
     def start(self, dnsport=10053):
         reactor.callInThread(runWebserver)

@@ -37,6 +37,8 @@ class ZeusExperiment(Experiment):
         self.setNodes("sensor", set(random.sample(nodes, 1)))
 
     def _start(self):
+        # Do not call default implementation, as it would circumvent the topology
+
         self.topology.start()
         for h in self.getNodes("nodes"):
             h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
@@ -44,16 +46,14 @@ class ZeusExperiment(Experiment):
 
         assert len(self.getNodes("victim")) == 1
         assert len(self.getNodes("cncserver")) == 1
-        victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...
+        victim = next(iter(self.getNodes("victim")))  # Get a sets only element ... yeah, Python is ugly
         cncserver = next(iter(self.getNodes("cncserver")))
 
         # Start the necessary runnables
         self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
-        self.overlord.startRunnable("Sensor", "Sensor",
-                                    {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
+        self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
                                     hostlist=[h.name for h in self.getNodes("sensor")])
-        self.overlord.startRunnable("zeus.CnCServer", "CnCServer", {"host": "10.0.0.6"},
-                                    hostlist=[h.name for h in self.getNodes("cncserver")])
+        self.overlord.startRunnable("zeus.CnCServer", "CnCServer", hostlist=[h.name for h in self.getNodes("cncserver")])
         for h in self.getNodes("bots"):
             self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
                                         kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})

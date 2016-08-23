@@ -2,21 +2,12 @@
 # coding=UTF-8
 """This file defines a class that centrally controls every Host in the network. This includes all sorts of actors.
 It is also responsible for triggering random events such as bot desinfections, traffic generation, etc.
-It uses unix sockets to communicate with the clients because they are independent of the network communication in Mininet.
+It uses unix sockets to communicate with the clients because they are independent of the network communication in mn."""
 
-The Overlord communicates with the hosts via remote procedure call (RPC) over Unix (file) sockets.
-Unix sockets are files that allow to separate processes to communicate similar to a network connection but without using the
-actual network infrastructure of the operating system. It was necessary to have the Experiment and Hosts separated in this way,
-because mininet only allows to run separate processes in its nodes. It is not possible to run threads on mininet hosts.
-RPC allows a smooth integration with regular Python code. Unix sockets were chosen because they do not interfere with the Mininet
-network and they will still be working, even if the particular host is unable to use the network,
-which may happen during some experiments."""
-
-import logging, json, re, random, time, os, pkgutil
+import logging, json, re, random, time, os
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 from thrift.transport.TTransport import TTransportException
-from mininet.node import Node
 
 from HostActions import OverlordClient
 from resources.emu_config import SOCKET_DIR
@@ -30,14 +21,10 @@ class Overlord(object):
         self.knownHosts = dict()
         mkdir_p(SOCKET_DIR)
 
-        # Remove machine readable logfile from previous runs
-        if os.path.exists(LogfileParser.logfile):
-            os.remove(LogfileParser.logfile)
-
     def addHost(self, hostid):
         """Adds a host to the network"""
         self.knownHosts[hostid] = _HostConnector(hostid)
-        # logging.debug("added host %s" % hostid)
+        logging.debug("added host %s"%hostid)
 
     def getIDsOfAllKnownHosts(self):
         """Return a set of the IDs of all hosts that are currently controlled by this Overlord"""
@@ -49,6 +36,7 @@ class Overlord(object):
         return result
 
     def startRunnable(self, importmodule, runnable, kwargs=None, hostlist=None):
+        # TODO: Keep track of running Runnables
         """Instruct the given hosts to run a certain Runnable.
         :param runnable: The name of a subclass of RandomTrafficReceiver.Runnable that does the work that the hosts shall be doing.
         :type runnable: str
@@ -58,31 +46,16 @@ class Overlord(object):
         :type kwargs: dict
         :param hostlist: A list of hosts that will execute the runnable. Defaults to all currently known hosts.
         :type hostlist: list"""
+        if hostlist is None: hostlist = self.knownHosts.keys()
         if kwargs is None: kwargs = dict()
 
         assert isinstance(importmodule, str)
         assert isinstance(runnable, str)
         assert isinstance(kwargs, dict)
-
-	logging.info("start runnable %s on hosts %s"%(runnable,hostlist))
-
-        # Test if importmodule exists and has a runnable with the given name
-        try:
-            runnableLoader = pkgutil.find_loader('actors.%s'%importmodule)
-            assert runnableLoader is not None, "The runnable %s does not exist in module %s"%(runnable, importmodule)
-        except ImportError as ex:
-            logging.error("The module actors.%s does not exist"%importmodule)
-
-        # By default, start runnable on all known hosts
-        if hostlist is None:
-            hostlist = self.knownHosts.keys()
-        assert isinstance(hostlist, list) or isinstance(hostlist, set) or isinstance(hostlist, frozenset)
+        assert isinstance(hostlist, list)
 
         for hostid in hostlist:
             try:
-                if isinstance(hostid, Node):
-                    hostid = hostid.name
-
                 assert isinstance(hostid, str)
                 assert self.knownHosts.has_key(hostid)
                 connector = self.knownHosts[hostid]
@@ -92,6 +65,7 @@ class Overlord(object):
                 connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
             except TTransportException as ex:
+                logging.debug("ls /tmp/overlordsockets: %s"%os.listdir("/tmp/overlordsockets"))
                 logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
 
     def stopRunnable(self, runnable="*", hostlist=None):
@@ -107,9 +81,6 @@ class Overlord(object):
 
         for hostid in hostlist:
             try:
-                if isinstance(hostid, Node):
-                    hostid = hostid.name
-
                 assert isinstance(hostid, str)
                 connector = self.knownHosts[str(hostid)]
                 assert isinstance(connector, _HostConnector)
@@ -149,10 +120,10 @@ class Overlord(object):
             :type hostlist: list of strings
             :type probability: a float between 0 and 1
             :return: the clients that were desinfected"""
-        desinfected = self.removeRandomBots(probability, hostlist)
-        time.sleep(3)
-        self.startRunnable("Victim", "Victim", hostlist=desinfected)
-        return desinfected
+        toDesinfect = self.removeRandomBots(probability, hostlist)
+        time.sleep(1)
+        self.startRunnable("Victim", "Victim", hostlist=toDesinfect)
+        return toDesinfect
 
 class _HostConnector(object):
     """Encapsulates the communication channel to the given host"""
@@ -168,6 +139,7 @@ class _HostConnector(object):
         protocol = TBinaryProtocol.TBinaryProtocol(transport)
         # Create a client that will be used to remotely invoke commands on the host
         self.client = OverlordClient.Client(protocol)
+        logging.debug("Use socket %s, File exists: %s"%(socketfile, os.path.exists(socketfile)))
 
     def startCommunication(self):
         """Opens the communication channel, so that self.client can be used."""

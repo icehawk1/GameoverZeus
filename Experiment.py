@@ -33,7 +33,7 @@ class Experiment(object):
         if os.path.exists(self.outputdir):
             shutil.rmtree(self.outputdir)
         mkdir_p(self.outputdir)
-        self.tsharkCommand = "tshark -i any -F pcap -w %s port http or port " + str(emu_config.PORT) + " &"
+        self.tsharkCommand = "tshark -i any -F pcap -w %%s port http or port %d &"%emu_config.PORT
 
     def executeExperiment(self):
         """This method implements the execution strategy of all botnet experiments. It corresponds to the execute() method

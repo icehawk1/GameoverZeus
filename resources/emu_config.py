@@ -16,4 +16,4 @@ kademlia_default_port = 8468  #: Default port number where Kademlia servers list
 botcommand_timeout = 15
 #: Logging setting used throughout the emulator. Will be passed to logging.basicConfig()
 logging_config = {'format': "[%(module)s.py:%(lineno)d (thread: %(threadName)s)]:%(levelname)s: %(message)s",
-                  'level' : logging.DEBUG}
+                  'level': logging.INFO}

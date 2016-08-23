@@ -4,6 +4,8 @@
 import os, errno, random, logging
 from marshmallow import Schema, fields, post_load
 from datetime import datetime
+import matplotlib
+matplotlib.use('pdf')
 from matplotlib import pyplot
 import numpy
 

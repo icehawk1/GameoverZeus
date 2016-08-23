@@ -68,7 +68,8 @@ def datetimeToEpoch(datetimeObj):
     :return: A positive or negative integer"""
     return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
 
-def createLoadtimePlot(x,y,outputfile):
+
+def createLoadtimePlot(x, y, outputfile):
     """Writes a pdf to the given path that contains a plot of the given values.
     :param x: The values of the X-Axis
     :param y: The values on the Y-Axis

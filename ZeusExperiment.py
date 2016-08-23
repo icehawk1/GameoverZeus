@@ -2,6 +2,7 @@
 # coding=UTF-8
 import os, time, logging, sys, json
 from datetime import datetime
+
 sys.path.append(os.path.dirname(__file__))
 from mininet import net
 from mininet.cli import CLI
@@ -13,8 +14,7 @@ from utils.MiscUtils import addHostToMininet, mkdir_p, datetimeToEpoch
 from utils.TcptraceParser import TcptraceParser
 from utils.LogfileParser import writeLogentry, logfile
 
-pypath = "PYTHONPATH=$PYTHONPATH:%s " % emu_config.basedir
-
+pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     hosts = []
     for i in range(1, 6):
-        current_host = addHostToMininet(net, switch, "host%d" % i, overlord, bw=25)
+        current_host = addHostToMininet(net, switch, "host%d"%i, overlord, bw=25)
         hosts.append(current_host)
     cncserver = addHostToMininet(net, switch, "cnc1", overlord)
     victim = addHostToMininet(net, switch, "victim1", overlord, bw=90)
@@ -42,11 +42,11 @@ if __name__ == '__main__':
     # net.pingAll()
 
     for node in hosts + [victim, cncserver, sensor]:
-        node.cmd(pypath + " python2 overlord/Host.py %s &" % node.name)
+        node.cmd(pypath + " python2 overlord/Host.py %s &"%node.name)
     time.sleep(5)
 
     overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
-    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432" % victim.IP()]},
+    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432"%victim.IP()]},
                            hostlist=[sensor.name])
     overlord.startRunnable("CnCServer", "CnCServer", {"host": "10.0.0.6"}, hostlist=[cncserver.name])
     for h in hosts:
@@ -61,9 +61,9 @@ if __name__ == '__main__':
 
     writeLogentry(runnable="ZeusExperiment", message="issued command ddos_server")
     result = cncserver.cmd("curl -X POST --data 'command=ddos_server&kwargs=%s' '%s'"
-                           % (json.dumps({"url": "http://%s:%d/ddos_me" % (victim.IP(), emu_config.PORT)}),
-                              "http://%s:%d/current_command" % (cncserver.IP(), emu_config.PORT)), verbose=True)
-    logging.debug("curl: %s" % result)
+                           %(json.dumps({"url": "http://%s:%d/ddos_me"%(victim.IP(), emu_config.PORT)}),
+                             "http://%s:%d/current_command"%(cncserver.IP(), emu_config.PORT)), verbose=True)
+    logging.debug("curl: %s"%result)
     time.sleep(45)
     overlord.desinfectRandomBots(0.3, [h.name for h in hosts])
     time.sleep(45)

@@ -24,7 +24,7 @@ class Overlord(object):
     def addHost(self, hostid):
         """Adds a host to the network"""
         self.knownHosts[hostid] = _HostConnector(hostid)
-        logging.debug("added host %s" % hostid)
+        logging.debug("added host %s"%hostid)
 
     def getIDsOfAllKnownHosts(self):
         """Return a set of the IDs of all hosts that are currently controlled by this Overlord"""
@@ -65,7 +65,7 @@ class Overlord(object):
                 connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
             except TTransportException as ex:
-                logging.debug("ls /tmp/overlordsockets: %s" % os.listdir("/tmp/overlordsockets"))
+                logging.debug("ls /tmp/overlordsockets: %s"%os.listdir("/tmp/overlordsockets"))
                 logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
 
     def stopRunnable(self, runnable="*", hostlist=None):
@@ -139,7 +139,7 @@ class _HostConnector(object):
         protocol = TBinaryProtocol.TBinaryProtocol(transport)
         # Create a client that will be used to remotely invoke commands on the host
         self.client = OverlordClient.Client(protocol)
-        logging.debug("Use socket %s, File exists: %s" % (socketfile, os.path.exists(socketfile)))
+        logging.debug("Use socket %s, File exists: %s"%(socketfile, os.path.exists(socketfile)))
 
     def startCommunication(self):
         """Opens the communication channel, so that self.client can be used."""

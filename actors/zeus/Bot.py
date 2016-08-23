@@ -34,12 +34,12 @@ class Bot(CommandExecutor):
         The CnC-Server does not need to keep track of their addresses because they pull from it and reverse proxies
         can be used, so that the clients do not need to know the identity of the CnC-Server. """
 
-        response = requests.get("http://%s:%s/current_command" % (cncserver, emu_config.PORT),
+        response = requests.get("http://%s:%s/current_command"%(cncserver, emu_config.PORT),
                                 headers={"Accept": "application/json"})
         if response.status_code == 200:
             newCmd = json.loads(response.text)
             if newCmd != self.current_command:
-                logging.debug("Replaced command %s with %s" % (self.current_command, newCmd))
+                logging.debug("Replaced command %s with %s"%(self.current_command, newCmd))
                 writeLogentry(runnable=type(self).__name__, message="received command: {'bot':%s, 'newcmd':%s, 'oldcmd':%s}"
                                                                     %json.dumps(
                     {"bot": self.name, "newcmd": newCmd, "oldcmd": self.current_command}))

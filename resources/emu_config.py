@@ -13,7 +13,7 @@ PORT = 8080  #: The port CnC Servers and proxies listen on per default
 SOCKET_DIR = "/tmp/overlordsockets/"
 kademlia_default_port = 8468  #: Default port number where Kademlia servers listen for traffic
 #: Number of seconds to sleep before a bot checks for new commands. Can be overriden in individual bot instances
-botcommand_timeout = 15
+botcommand_timeout = 5
 #: Logging setting used throughout the emulator. Will be passed to logging.basicConfig()
-logging_config = {'format': "[%(module)s.py:%(lineno)d (thread: %(threadName)s)]:%(levelname)s: %(message)s",
-                  'level': logging.INFO}
+logging_config = {'format': "[%(asctime)s %(module)s.py:%(lineno)d (thread: %(threadName)s)]:%(levelname)s: %(message)s",
+                  'level' : logging.DEBUG}

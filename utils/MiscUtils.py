@@ -1,18 +1,17 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """Some utility functions that fit nowhere else"""
-import os, errno, random, logging
+import os, errno, random, sys, re, shlex
+from subprocess import Popen, PIPE
+import validators
+from mininet.net import Mininet
+from mininet.node import Switch
 from marshmallow import Schema, fields, post_load
 from datetime import datetime
-import matplotlib
-matplotlib.use('pdf')
 from matplotlib import pyplot
 import numpy
 
 from resources import emu_config
-
-#: Environment variable that contains the searchpath for python modules/packages. Needed for the imports in Host.py to work.
-pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
 
 def mkdir_p(path):
     """Creates all directories in this path that did not exist beforehand. Silently skips existing directories.
@@ -43,53 +42,73 @@ class NetworkAddressSchema(Schema):
     def make_address(self, data):
         return NetworkAddress(**data)
 
-def datetimeToEpoch(datetimeObj):
-    """Takes the given datetime object and returns the number of seconds since Epoch
-    :return: A positive or negative integer"""
-    return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
-
-
-def createLinePlot(x, xlabel, y, ylabel, outputfile):
-    """Creates a line plot.
-    :param xlabel: Label on the x-axis
-    :param ylabel: Label on the y-axis
-    :type x: list of float
-    :type xlabel: str
-    :type y: list of float
-    :type ylabel: str
-    :type outputfile: str"""
-    pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
-    pyplot.plot(numpy.array(x), numpy.array(y))
-    pyplot.xlabel("experiment runtime in seconds")
-    pyplot.ylabel('loading time in seconds')
-    logging.debug("saving line plot to %s"%outputfile)
-    pyplot.savefig(outputfile)
-    pyplot.clf()  # Discard values of this figure, so we can start with a fresh one
-
-def removeSuffixes(text, suffixes):
-    """If text ends with one of the given suffixes, returns text without this suffix, else returns text unchanged
-    :type text: str
-    :type suffixes: list or str"""
-    assert isinstance(text, str), "text has wrong type %s"%type(text)
-
-    if isinstance(suffixes, str):
-        if not text.endswith(suffixes) or len(suffixes) == 0:
-            return text
-        else:
-            return text[:-len(suffixes)]
-    elif isinstance(suffixes, list):
-        for sfx in suffixes:
-            if not len(sfx) == 0 and text.endswith(sfx):
-                return text[:-len(sfx)]
-        return text
-    else:
-        assert False, "suffixes has wrong type %s"%type(suffixes)
-
 
 def createRandomDPID():
     """Creates one of those strange number mininet needs"""
     dpidLen = 16
     return ''.join([random.choice('0123456789ABCDEF') for x in range(dpidLen)])
+
+
+def addHostToMininet(mn, switch, hostname, overlord, **linkopts):
+    """Creates a new host in the mininet network that is connected to the given switch and to the overlord"""
+    assert isinstance(mn, Mininet)
+    assert isinstance(switch, Switch)
+    assert isinstance(hostname, str)
+
+    result = mn.addHost(hostname, dpid=createRandomDPID())
+    overlord.addHost(result.name)
+    link = mn.addLink(result, switch)
+    link.intf1.config(**linkopts)
+    link.intf2.config(**linkopts)
+    return result
+
+
+def datetimeToEpoch(datetimeObj):
+    """Takes the given datetime object and returns the number of seconds since Epoch
+    :return: A positive or negative integer"""
+    return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
+
+def createLoadtimePlot(x,y,outputfile):
+    """Writes a pdf to the given path that contains a plot of the given values.
+    :param x: The values of the X-Axis
+    :param y: The values on the Y-Axis
+    :param outputfile: Where the plot should be written to."""
+    assert len(x) == len(y)
+
+    pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
+    pyplot.plot(numpy.array(x), numpy.array(y))
+    pyplot.xlabel("time")
+    pyplot.ylabel('loading time')
+    pyplot.savefig(outputfile)
+
+
+def createTcpResetPlot(pcapfile, outputfile="/tmp/resetsVsTime.pdf"):
+    """Creates a pdf file that contains a plot that shows how many packets
+    with TCP reset flag are seen every second in the given pcap file.
+    :param pcapfile: The file containing the network traffic dump to analyse
+    :param outputfile: Where the plot should be written to."""
+    pathRE = "[\w-/]+"
+    assert re.match(pathRE, pcapfile) and os.path.isfile(pcapfile)
+    assert re.match(pathRE, outputfile)
+
+    proc = Popen(shlex.split('tshark -r %s "tcp.flags.reset == 1"'%pcapfile))
+    stdout, stderr = proc.communicate()
+
+    data = {}
+    for line in stdout.splitlines():
+        match = re.search("\d+\s+(\d+)\.*\d*\s+[\d.]+ -> [\d.]+.*\[RST.*", line)
+        if match:
+            tick = int(match.group(1))
+            if data.has_key(tick):
+                data[tick] += 1
+            else:
+                data[tick] = 1
+
+    maxkey = max(data.keys())
+    x = [tick for tick in range(maxkey)]
+    y = [data[tick] if data.has_key(tick) else 0 for tick in range(maxkey)]
+
+    createLoadtimePlot(x, y, outputfile)
 
 
 def average(seq):

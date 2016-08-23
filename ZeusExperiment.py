@@ -1,91 +1,83 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import logging, os, random, time, json
+import os, time, logging, sys, json
 from datetime import datetime
+sys.path.append(os.path.dirname(__file__))
+from mininet import net
+from mininet.cli import CLI
 
-from resources.emu_config import logging_config, PORT, basedir
-from Experiment import Experiment
-from topologies.BriteTopology import BriteTopology, applyBriteFile
-from utils.MiscUtils import pypath, datetimeToEpoch, mkdir_p
+from utils import Floodlight
+from resources import emu_config
+from overlord.Overlord import Overlord
+from utils.MiscUtils import addHostToMininet, mkdir_p, datetimeToEpoch
 from utils.TcptraceParser import TcptraceParser
+from utils.LogfileParser import writeLogentry, logfile
 
+pypath = "PYTHONPATH=$PYTHONPATH:%s " % emu_config.basedir
 
-class ZeusExperiment(Experiment):
-    def __init__(self):
-        super(ZeusExperiment, self).__init__()
-        self.britefile = os.path.join(basedir, "resources/topdown.brite")
-        self.pcapfile = os.path.join(self.outputdir, "tcptrace/victim.pcap")
-        mkdir_p(os.path.dirname(self.pcapfile))
-
-    def _setup(self):
-        super(ZeusExperiment, self)._setup()
-        self.topology = BriteTopology(self.mininet)
-        applyBriteFile(self.britefile, [self.topology])
-        assert len(self.topology.nodes) > 0
-        logging.debug("Adding %d nodes from %s"%(len(self.topology.nodes), self.britefile))
-        for node in self.topology.nodes:
-            self.overlord.addHost(node.name)
-
-        nodes = set(self.topology.nodes)
-        assert len(nodes) >= 28
-        # Create all the hosts that make up the experimental network and assign them to groups
-        self.setNodes("bots", set(random.sample(nodes, 25)))
-        nodes -= self.getNodes("bots")
-        self.setNodes("cncserver", set(random.sample(nodes, 1)))
-        nodes -= self.getNodes("cncserver")
-        self.setNodes("victim", set(random.sample(nodes, 1)))
-        nodes -= self.getNodes("victim")
-        self.setNodes("sensor", set(random.sample(nodes, 1)))
-
-    def _start(self):
-        # Do not call default implementation, as it would circumvent the topology
-
-        self.topology.start()
-        for h in self.getNodes("nodes"):
-            h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
-        time.sleep(15)
-
-        assert len(self.getNodes("victim")) == 1
-        assert len(self.getNodes("cncserver")) == 1
-        victim = next(iter(self.getNodes("victim")))  # Get a sets only element ... yeah, Python is ugly
-        cncserver = next(iter(self.getNodes("cncserver")))
-	logging.debug("IP of Victim: %s; IP of CnC server: %s"%(victim.IP(), cncserver.IP()))
-
-        # Start the necessary runnables
-        self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
-        self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
-                                    hostlist=[h.name for h in self.getNodes("sensor")])
-        self.overlord.startRunnable("zeus.CnCServer", "CnCServer", hostlist=[h.name for h in self.getNodes("cncserver")])
-        for h in self.getNodes("bots"):
-            self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
-                                        kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
-
-	victim.cmd(self.tsharkCommand%self.pcapfile)
-        logging.debug("Runnables wurden gestartet")
-        time.sleep(25)
-
-        # Initiate DDoS attack
-        kwargs = json.dumps(
-            {"url": "http://%s:%d/ddos_me?composite=%d"%(victim.IP(), PORT, 9999123456789012345678901456780L),
-	     "timeout":10})
-        urlOfCnCServer = "http://%s:%d/current_command"%(cncserver.IP(), PORT)
-        result = cncserver.cmd("timeout 60s wget -q -O - --post-data 'command=ddos_server&timestamp=%d&kwargs=%s' '%s'"
-                               %(datetimeToEpoch(datetime.now()), kwargs, urlOfCnCServer), verbose=True)
-        assert result.strip() == "OK", "Could not send the DDoS-command to the CnC server: %s"%result
-
-    def _executeStep(self, num):
-        return super(ZeusExperiment, self)._executeStep(num)
-
-    def _stop(self):
-	self.overlord.stopEverything()
-        self.topology.stop()
-
-    def _produceOutputFiles(self):
-        ttparser = TcptraceParser()
-	stats = ttparser.plotConnectionStatisticsFromPcap(self.pcapfile)
 
 if __name__ == '__main__':
-    logging.basicConfig(**logging_config)
+    logging.basicConfig(**emu_config.logging_config)
+    # Remove machine readable logfile from previous runs
+    if os.path.exists(logfile):
+        os.remove(logfile)
+    print datetimeToEpoch(datetime.now())
+    writeLogentry(runnable="ZeusExperiment", message="Experiment started")
 
-    experiment = ZeusExperiment()
-    experiment.executeExperiment()
+    net = net.Mininet(controller=Floodlight.Controller)
+    net.addController("controller1")
+
+    overlord = Overlord()
+    switch = net.addSwitch("switch1")
+
+    hosts = []
+    for i in range(1, 6):
+        current_host = addHostToMininet(net, switch, "host%d" % i, overlord, bw=25)
+        hosts.append(current_host)
+    cncserver = addHostToMininet(net, switch, "cnc1", overlord)
+    victim = addHostToMininet(net, switch, "victim1", overlord, bw=90)
+    sensor = addHostToMininet(net, switch, "sensor1", overlord)
+
+    net.start()
+    # net.pingAll()
+
+    for node in hosts + [victim, cncserver, sensor]:
+        node.cmd(pypath + " python2 overlord/Host.py %s &" % node.name)
+    time.sleep(5)
+
+    overlord.startRunnable("TestWebsite", "TestWebsite", hostlist=[victim.name])
+    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432" % victim.IP()]},
+                           hostlist=[sensor.name])
+    overlord.startRunnable("CnCServer", "CnCServer", {"host": "10.0.0.6"}, hostlist=[cncserver.name])
+    for h in hosts:
+        overlord.startRunnable("Bot", "Bot",
+                               {"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1},
+                               hostlist=[h.name])
+    pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"
+    mkdir_p(os.path.dirname(pcapfile))
+    victim.cmd("tshark -i any -F pcap -w %s  &"%pcapfile)
+    logging.debug("Runnables wurden gestartet")
+    time.sleep(25)
+
+    writeLogentry(runnable="ZeusExperiment", message="issued command ddos_server")
+    result = cncserver.cmd("curl -X POST --data 'command=ddos_server&kwargs=%s' '%s'"
+                           % (json.dumps({"url": "http://%s:%d/ddos_me" % (victim.IP(), emu_config.PORT)}),
+                              "http://%s:%d/current_command" % (cncserver.IP(), emu_config.PORT)), verbose=True)
+    logging.debug("curl: %s" % result)
+    time.sleep(45)
+    overlord.desinfectRandomBots(0.3, [h.name for h in hosts])
+    time.sleep(45)
+    overlord.desinfectRandomBots(0.2, [h.name for h in hosts])
+    time.sleep(45)
+    overlord.desinfectRandomBots(1, [h.name for h in hosts])
+    time.sleep(45)
+
+    # CLI(net)
+    print "tshark: ", victim.cmd("jobs")
+    overlord.stopEverything()
+    net.stop()
+
+    ttparser = TcptraceParser(host="victim")
+    stats = ttparser.extractConnectionStatisticsFromPcap(pcapfile)
+
+    writeLogentry(runnable="ZeusExperiment", message="Experiment ended")

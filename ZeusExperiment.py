@@ -47,6 +47,7 @@ class ZeusExperiment(Experiment):
         assert len(self.getNodes("cncserver")) == 1
         victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...
         cncserver = next(iter(self.getNodes("cncserver")))
+	logging.debug("IP of Victim: %s; IP of CnC server: %s"%(victim.IP(), cncserver.IP()))
 
         # Start the necessary runnables
         self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
@@ -65,11 +66,12 @@ class ZeusExperiment(Experiment):
 
         # Initiate DDoS attack
         kwargs = json.dumps(
-            {"url": "http://%s:%d/ddos_me?composite=%d"%(victim.IP(), PORT, 9999123456789012345678901456780L)})
+            {"url": "http://%s:%d/ddos_me?composite=%d"%(victim.IP(), PORT, 9999123456789012345678901456780L),
+	     "timeout":10})
         urlOfCnCServer = "http://%s:%d/current_command"%(cncserver.IP(), PORT)
         result = cncserver.cmd("timeout 60s wget -q -O - --post-data 'command=ddos_server&timestamp=%d&kwargs=%s' '%s'"
                                %(datetimeToEpoch(datetime.now()), kwargs, urlOfCnCServer), verbose=True)
-        logging.debug("wget: %s"%result)
+        assert result.strip() == "OK", "Could not send the DDoS-command to the CnC server: %s"%result
 
     def _executeStep(self, num):
         return super(ZeusExperiment, self)._executeStep(num)

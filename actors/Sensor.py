@@ -30,7 +30,7 @@ def measureLoadingTime(url):
 class Sensor(CommandExecutor):
     """Helper class to let this sensor be run in a thread"""
 
-    def __init__(self, pagesToWatch=None, outputdir="/tmp/botnetemulator/sensor", **kwargs):
+    def __init__(self, pagesToWatch=[], outputdir="/tmp/botnetemulator/sensor", **kwargs):
         """:param pagesToWatch: A list of URLs whose loading time shall be measured
         :param outputdir: Directory to store the resulting graphs
         :param pauseBetweenDuties: How long to wait between invocations of performDuty()"""
@@ -41,7 +41,7 @@ class Sensor(CommandExecutor):
 
         super(Sensor, self).__init__(**kwargs)
         self.outputdir = outputdir
-        self.pagesToWatch = pagesToWatch if pagesToWatch is not None else list()
+        self.pagesToWatch = pagesToWatch
 
     def performDuty(self):
         """Implements method from superclass"""

@@ -43,10 +43,8 @@ class Experiment(object):
         logging.debug("Initialise experiment %s"%name)
         self._setup()
         self.setNodes("nodes", frozenset(self.mininet.hosts))  # Category that includes all Mininet hosts
-        time.sleep(1)
         logging.info("Starting experiment %s"%name)
         self._start()
-        time.sleep(1)
 
         doNextStep = True
         currentIteration = 0
@@ -89,7 +87,7 @@ class Experiment(object):
         """This starts the actual execution of the experiment. When this method has returned,
         the class should be ready for _executeStep() to be called. Usually, this method starts Mininet, the Overlord,
         the Host scripts, and all the necessary runnables."""
-        self.startMininet()
+        pass
 
     @abstractmethod
     def _executeStep(self, num):
@@ -123,25 +121,22 @@ class Experiment(object):
         switch = mininet.addSwitch("switch1")
         return mininet, overlord, switch
 
-    def addHostToMininet(self, switch, hostname, **linkopts):
+    def addHostToMininet(self, mn, switch, hostname, overlord, **linkopts):
         """Creates a new host in the mininet network that is connected to the given switch and to the overlord"""
-        assert isinstance(self.mininet, Mininet)
+        assert isinstance(mn, Mininet)
         assert isinstance(switch, Switch)
         assert isinstance(hostname, str)
 
-        result = self.mininet.addHost(hostname, dpid=createRandomDPID())
-        self.overlord.addHost(result.name)
-        link = self.mininet.addLink(result, switch)
+        result = mn.addHost(hostname, dpid=createRandomDPID())
+        overlord.addHost(result.name)
+        link = mn.addLink(result, switch)
         link.intf1.config(**linkopts)
         link.intf2.config(**linkopts)
         return result
 
-    def startMininet(self, mininet=None, nodeSet=None):
+    def startMininet(self, mininet, nodeSet):
         """Starts the given Mininet instance and the Host scripts on the given nodes"""
-        mn = mininet if mininet is not None else self.mininet
-        nodeSet = nodeSet if nodeSet is not None else self.getNodes("nodes")
-
-        mn.start()
+        mininet.start()
         for h in nodeSet:
             h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
         time.sleep(15)

@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-"""This file defines a topology that reads a random network generated with BRITE and creates a mn topology from it."""
-
+"""This file defines a topology that reads a random network generated with BRITE and creates a Mininet topology from it.
+It first executes the random network generator BRITE and parses its output file. Those information is used to create a Mininet network.
+The BriteTopology module also contains functionality to plot the generated network.
+Each autonomous system from the BRITE output file runs in its own subnet."""
 import logging, random, re, time
 from abc import abstractmethod, ABCMeta
 from mininet.node import CPULimitedHost
@@ -9,13 +11,13 @@ from mininet.util import custom
 from mininet.net import Mininet
 
 from AbstractTopology import AbstractTopology
-from utils import Floodlight
 
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
 
-def createGraphFromBriteFile(inputfilename, accepters):
+def applyBriteFile(inputfilename, accepters):
     """Reads a BRITE output file and passes its contents to the accepters.
+    :param inputfilename: The path to the BRITE output file
     :type accepters: list of BriteGraphAccepter"""
     # An example input file can be found in testfiles/flatrouter.brite
 
@@ -99,8 +101,7 @@ def _readEdges(inputfile, accepters):
 
     # Matches one of the lines describing an edge
     edgeRe = re.compile(
-        r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+"
-        r"(\d+\.\d+)\s+([\d-]+)\s+([\d-]+)\s+([\w_-]+)\s+([-_\w]+)\s*")
+        r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(-?\d+\.\d+)\s+([\d-]+)\s+([\d-]+)\s+([\w_-]+)\s+([-_\w]+)\s*")
 
     # Skip over beginning
     while True:
@@ -124,13 +125,13 @@ def _readEdges(inputfile, accepters):
             # All nodes were parsed
             break
         else:
-            logging.warning("File %s contained invalid node description: %s"%(inputfile.name, line))
+            logging.warning("File %s contained invalid edge description: %s"%(inputfile.name, line))
             continue
 
 
 class BriteGraphAccepter(object):
-    """This is the base class for all objects where createGraphFromBriteFile will write its output to.
-    It defines some callbacks that are invoked by createGraphFromBriteFile."""
+    """This is the base class for all objects where applyBriteFile will write its output to.
+    It defines some callbacks that are invoked by applyBriteFile."""
     __metaclass__ = ABCMeta
     wroteHeader = False
 
@@ -173,19 +174,17 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
     It will have a number of interconnected autonomous systems and each AS will have one external_switch and a number of
     hosts. Each host in an AS is connected to that external_switch."""
 
-    def __init__(self, mininet=None, opts=None, **kwargs):
+    def __init__(self, mininet, opts=None, **kwargs):
         """
         Initialises the LayeredTopology, so that layers can be added.
         :type mininet: Mininet
         :param kwargs: A number of keyword arguments to be given to AbstractTopology.__init__()
         """
-        mininet = mininet if mininet is not None else Mininet(controller=Floodlight.Controller)
         AbstractTopology.__init__(self, mininet, **kwargs)
         self.started = False
         self.autonomousSystems = dict()
         self.modelname = None
         self.opts = opts if opts is not None else dict()
-        self.firewallRules = []
         self.cpulimitedhost = custom(CPULimitedHost)
 
     def writeHeader(self, num_nodes, num_edges, modelname):
@@ -209,23 +208,23 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
             self.autonomousSystems[asid] = autsys
 
         self.autonomousSystems[asid].botdict[nodeid] = bot
+        # TODO: Use the bandwidth given by BRITE instead of random values
         self._addLinkBetweenNodes(bot, self.autonomousSystems[asid].switch)
 
     def _addHost(self, nodeid):
         """Adds a mininet host to the topology"""
         if random.uniform(0, 1) < self.probability_of_cpulimitation:
-            self.mininet.addHost(_createBotname(nodeid), host=self.cpulimitedhost, opts=self.opts)
+            bot = self.mininet.addHost(_createBotname(nodeid), host=self.cpulimitedhost, opts=self.opts)
         else:
-            self.mininet.addHost(_createBotname(nodeid), opts=self.opts)
+            bot = self.mininet.addHost(_createBotname(nodeid), opts=self.opts)
 
-        bot = self.mininet.getNodeByName(_createBotname(nodeid))
+        super(BriteTopology, self)._addHost(bot)
         return bot
 
     def addEdge(self, edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype):
         """Invoked for every edge in the BRITE output file. Converts that edge into a connection between two mn hosts."""
-        super(BriteTopology, self).addEdge(edgeid, fromNode, toNode, communicationDelay, bandwidth,
-                                           fromAS, toAS, edgetype)
         assert not self.started
+        super(BriteTopology, self).addEdge(edgeid, fromNode, toNode, communicationDelay, bandwidth, fromAS, toAS, edgetype)
 
     def writeFooter(self):
         """Invoked after fully reading the BRITE output file"""
@@ -256,20 +255,6 @@ class BriteTopology(AbstractTopology, BriteGraphAccepter):
         for autsys in self.autonomousSystems.values():
             for bot in autsys.botdict.values():
                 self._addLinkBetweenNodes(autsys.switch, bot)
-
-
-class _FirewallRule(object):
-    """A rule for the firewall that forbids or allows communication between two hosts"""
-
-    def __init__(self, fromHost, toHost, action="ALLOW"):
-        self.fromHost = fromHost
-        self.toHost = toHost
-        self.action = action
-
-    def toJSON(self, mininet):
-        fromBot = mininet.getNodeByName(_createBotname(self.fromHost))
-        toBot = mininet.getNodeByName(_createBotname(self.toHost))
-        return '{"src-ip":"%s", "dst-ip":"%s", "action":"%s"}'%(fromBot.IP(), toBot.IP(), self.action)
 
 class _AutonomousSystem(object):
     """A value class for an autonomous system as generated by BRITE"""

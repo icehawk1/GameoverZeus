@@ -47,20 +47,20 @@ class ZeusExperiment(Experiment):
         assert len(self.getNodes("cncserver")) == 1
         victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...
         cncserver = next(iter(self.getNodes("cncserver")))
-	logging.debug("IP of Victim: %s; IP of CnC server: %s"%(victim.IP(), cncserver.IP()))
+        logging.debug("IP of Victim: %s; IP of CnC server: %s"%(victim.IP(), cncserver.IP()))
 
         # Start the necessary runnables
         self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
         self.overlord.startRunnable("Sensor", "Sensor",
                                     {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
                                     hostlist=[h.name for h in self.getNodes("sensor")])
-        self.overlord.startRunnable("zeus.CnCServer", "CnCServer", {"host": "10.0.0.6"},
+        self.overlord.startRunnable("zeus.CnCServer", "CnCServer", {"host": cncserver.IP()},
                                     hostlist=[h.name for h in self.getNodes("cncserver")])
         for h in self.getNodes("bots"):
             self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
                                         kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
 
-	victim.cmd(self.tsharkCommand%self.pcapfile)
+        victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")
         time.sleep(25)
 
@@ -77,12 +77,12 @@ class ZeusExperiment(Experiment):
         return super(ZeusExperiment, self)._executeStep(num)
 
     def _stop(self):
-	self.overlord.stopEverything()
+        self.overlord.stopEverything()
         self.topology.stop()
 
     def _produceOutputFiles(self):
         ttparser = TcptraceParser()
-	stats = ttparser.plotConnectionStatisticsFromPcap(self.pcapfile)
+        stats = ttparser.plotConnectionStatisticsFromPcap(self.pcapfile)
 
 if __name__ == '__main__':
     logging.basicConfig(**logging_config)

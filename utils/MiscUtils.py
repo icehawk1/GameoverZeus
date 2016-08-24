@@ -13,6 +13,8 @@ import numpy
 
 from resources import emu_config
 
+pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
+
 def mkdir_p(path):
     """Creates all directories in this path that did not exist beforehand. Silently skips existing directories.
     (i.e. Behaves like mkdir -p in Linux.)"""

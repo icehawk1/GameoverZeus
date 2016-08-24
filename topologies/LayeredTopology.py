@@ -33,7 +33,7 @@ class LayeredTopology(AbstractTopology):
         self.layers = dict()
         self.started = False
 
-    def addLayer(self, layername, num_bots=0, command=None, opts=None):
+    def addLayer(self, layername, num_bots=0, command=None, opts={}):
         """Adds a layer to the topology.
         :param layername: The name of this layer. Used to give the mn hosts some meaningful names. Should not be long.
         :param num_bots: The number of clients in this layer.
@@ -43,7 +43,6 @@ class LayeredTopology(AbstractTopology):
         :type command: str
         :type opts: dict"""
         assert not self.started, "You can't add new layers after the network has been started"
-        if opts is None: opts = dict()
 
         current_layer = _Layer(layername, num_bots, command)
         self.layers[layername] = current_layer
@@ -81,11 +80,14 @@ class LayeredTopology(AbstractTopology):
 class _Layer(object):
     """Base class for value objects that each describe one _Layer in the layered topology."""
 
-    def __init__(self, name, num_bots=0, command=None, opts=None):
+    def __init__(self, name, num_bots=0, command=None, opts={}):
         self.name = name
         self.num_bots = num_bots
-        self.command = command if command is not None else ("echo %s"%self.name)
-        self.opts = opts if opts is not None else dict()
+        if command is not None:
+            self.command = command
+        else:
+            self.command = "echo %s" % self.name
+        self.opts = opts
 
         self.botlist = []
         self.switchname = _constructNameOfSwitch(name)

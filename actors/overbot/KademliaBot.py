@@ -52,14 +52,14 @@ class KademliaBot(Runnable):
     """Allows the KademliaBot to be run in its own thread."""
 
     def __init__(self, name="KademliaBot%d" % random.randint(1, 1000),
-                 port=emu_config.kademlia_default_port, peerlist=[]):
+                 port=emu_config.kademlia_default_port, peerlist=None):
         super(KademliaBot, self).__init__(name=name)
         self.kademliaServer = Server()
         handlers = [("/current_command", KademliaCommandHandler, {"kademliaServer": self.kademliaServer})]
         app = tornado.web.Application(handlers, autoreload=False)
         self.httpserver = tornado.httpserver.HTTPServer(app)
         self.port = port
-        self.peerlist = peerlist
+        self.peerlist = peerlist if peerlist is not None else []
 
     def start(self):
         """Implements start() from the superclass."""

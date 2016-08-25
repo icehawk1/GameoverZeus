@@ -11,6 +11,8 @@ basedir = os.path.join(basedir, os.pardir)  #: Start path should be the parent o
 PORT = 8080  #: The port CnC Servers and proxies listen on per default
 #: Directory where the Overlord looks for sockets that he then uses to connect to the clients
 SOCKET_DIR = "/tmp/overlordsockets/"
+#: Timeout for communication if a host script does not respond in milliseconds
+SOCKET_TIMEOUT = 25*1000
 kademlia_default_port = 8468  #: Default port number where Kademlia servers listen for traffic
 #: Number of seconds to sleep before a bot checks for new commands. Can be overriden in individual bot instances
 botcommand_timeout = 15

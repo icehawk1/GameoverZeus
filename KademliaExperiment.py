@@ -11,15 +11,19 @@ from utils.TcptraceParser import TcptraceParser
 
 
 def sendDDoSCommand(hostList, victimip):
+    if len(hostList)==0:
+	logging.warn("Could not send ddos command to empty host list")
+	return
+
     botToIssueCommandFrom = random.sample(hostList, 1)[0]
     writeLogentry(runnable="KademliaExperiment", message="Send command %s to bot %s"%("ddos_server", botToIssueCommandFrom))
 
     kwargsStr = json.dumps({"url": "http://%s:%d/ddos_me"%(victimip, PORT)})
     urlToAttack = "http://%s:%d/current_command"%(botToIssueCommandFrom.IP(), PORT)
-    result = botToIssueCommandFrom.cmd("timeout 60s curl -X POST --data 'command=ddos_server&kwargs=%s&timestamp=%d' '%s'"
+    result = botToIssueCommandFrom.cmd("timeout 60s wget -q -O - --post-data 'command=ddos_server&kwargs=%s&timestamp=%d' '%s'"
                                        %(kwargsStr, datetimeToEpoch(datetime.now()), urlToAttack), verbose=True)
 
-    assert result.strip() == "OK", "Could not send the DDoS-command to the bot %s: |%s|"%(botToIssueCommandFrom, result)
+    assert "OK" in result.strip(), "Could not send the DDoS-command to the bot %s: |%s|"%(botToIssueCommandFrom, result)
 
 
 class KademliaExperiment(BriteExperiment):
@@ -44,7 +48,7 @@ class KademliaExperiment(BriteExperiment):
         super(KademliaExperiment, self)._start()
 
         pingresult = self.mininet.pingPair()
-        logging.debug("pingpair: %s"%pingresult)
+        assert int(pingresult) == 0, "pingpair: %s"%pingresult
 
         assert len(self.getNodes("victim")) >= 1
         victim = random.sample(self.getNodes("victim"), 1)[0]  # Get a random element from a set

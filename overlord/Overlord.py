@@ -19,7 +19,7 @@ from thrift.transport.TTransport import TTransportException
 from mininet.node import Node
 
 from HostActions import OverlordClient
-from resources.emu_config import SOCKET_DIR
+from resources.emu_config import SOCKET_DIR,SOCKET_TIMEOUT
 from utils.MiscUtils import mkdir_p
 from utils import LogfileParser
 
@@ -91,8 +91,14 @@ class Overlord(object):
                 connector.startCommunication()
                 connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
                 connector.stopCommunication()
+
+	    #NOTE: The timeout/exceptions are considered errors here, because this is startup, so we will need it to work
             except TTransportException as ex:
                 logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
+	    except Exception as ex:
+		logging.error("An %s occured when sending a stopRunnable command to connector %s: %s"%(type(ex).__name__,hostid, ex.message))
+	    except:
+		logging.error("An unspecified error occured when sending a stopRunnable command to connector %s. Its probably a socket timeout."%hostid)
 
     def stopRunnable(self, runnable="*", hostlist=None):
         """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.
@@ -117,8 +123,15 @@ class Overlord(object):
                 logging.debug("Stopping runnable %s of host %s" % (runnable, connector.id))
                 connector.client.stopRunnable(runnable)
                 connector.stopCommunication()
+
+	     #NOTE: The timeout/exceptions are only warnings here, because this is shutdown, so we don't actually need the runnable anymore.
+	     #      But we still want the process not to linger in the OS
             except TTransportException as ex:
-                logging.error("Could not send stopRunnable command to connector %s: %s" % (hostid, ex.message))
+                logging.warn("Could not send stopRunnable command to connector %s: %s" % (hostid, ex.message))
+	    except Exception as ex:
+		logging.warn("An %s occured when sending a stopRunnable command to connector %s: %s"%(type(ex).__name__,hostid, ex.message))
+	    except:
+		logging.warn("An unspecified error occured when sending a stopRunnable command to connector %s. Its probably a socket timeout."%hostid)
 
     def stopEverything(self, hostlist=None):
         """Stops everything that is running on the given hosts. Called before the program exits."""
@@ -163,6 +176,7 @@ class _HostConnector(object):
 
         socketfile = SOCKET_DIR + self.id
         transport = TSocket.TSocket(unix_socket=socketfile)
+	transport.setTimeout(SOCKET_TIMEOUT)
         # Buffering is critical. Raw sockets are very slow
         self.transport = TTransport.TBufferedTransport(transport)
         protocol = TBinaryProtocol.TBinaryProtocol(transport)

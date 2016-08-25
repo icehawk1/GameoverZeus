@@ -42,7 +42,7 @@ class Experiment(object):
         from the strategy pattern."""
         name = self.__class__.__name__  # Name of the subclass
 
-        writeLogentry(runnable=name, message="Experiment ended")
+        writeLogentry(runnable=name, message="Experiment started")
 
         logging.debug("Initialise experiment %s"%name)
         self._setup()

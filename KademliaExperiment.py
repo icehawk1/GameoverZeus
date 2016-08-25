@@ -1,71 +1,83 @@
 #!/usr/bin/env python2
 # coding=UTF-8
-import os, time, logging, sys, json, random
+import os, logging, random, time, json
+from datetime import datetime
 
-sys.path.append(os.path.dirname(__file__))
-from mininet import net
-from mininet.cli import CLI
-
-from utils import Floodlight
-from resources import emu_config
-from overlord.Overlord import Overlord
-from utils.MiscUtils import addHostToMininet, mkdir_p
+from resources.emu_config import logging_config, PORT
+from utils.MiscUtils import mkdir_p, datetimeToEpoch
+from Experiment import BriteExperiment
+from utils.LogfileParser import writeLogentry
 from utils.TcptraceParser import TcptraceParser
 
-pypath = "PYTHONPATH=$PYTHONPATH:%s "%emu_config.basedir
+
+def sendDDoSCommand(hostList, victimip):
+    botToIssueCommandFrom = random.sample(hostList, 1)[0]
+    writeLogentry(runnable="KademliaExperiment", message="Send command %s to bot %s"%("ddos_server", botToIssueCommandFrom))
+
+    kwargsStr = json.dumps({"url": "http://%s:%d/ddos_me"%(victimip, PORT)})
+    urlToAttack = "http://%s:%d/current_command"%(botToIssueCommandFrom.IP(), PORT)
+    result = botToIssueCommandFrom.cmd("timeout 60s curl -X POST --data 'command=ddos_server&kwargs=%s&timestamp=%d' '%s'"
+                                       %(kwargsStr, datetimeToEpoch(datetime.now()), urlToAttack), verbose=True)
+
+    assert result.strip() == "OK", "Could not send the DDoS-command to the bot %s: |%s|"%(botToIssueCommandFrom, result)
+
+
+class KademliaExperiment(BriteExperiment):
+    def __init__(self):
+        super(KademliaExperiment, self).__init__()
+        self.pcapfile = os.path.join(self.outputdir, "tcptrace/victim.pcap")
+        mkdir_p(os.path.dirname(self.pcapfile))
+
+    def _setup(self):
+        """Creates all the hosts that make up the experimental network and assign them to groups"""
+        super(KademliaExperiment, self)._setup()
+
+        nodes = set(self.topology.nodes)
+        assert len(nodes) >= 28
+        self.setNodes("bots", set(random.sample(nodes, 25)))
+        nodes -= self.getNodes("bots")
+        self.setNodes("victim", set(random.sample(nodes, 1)))
+        nodes -= self.getNodes("victim")
+        self.setNodes("sensor", set(random.sample(nodes, 1)))
+
+    def _start(self):
+        super(KademliaExperiment, self)._start()
+
+        pingresult = self.mininet.pingPair()
+        logging.debug("pingpair: %s"%pingresult)
+
+        assert len(self.getNodes("victim")) >= 1
+        victim = random.sample(self.getNodes("victim"), 1)[0]  # Get a random element from a set
+        logging.debug("IP of Victim: %s"%(victim.IP()))
+
+        # Start the necessary runnables
+        self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
+        self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
+                                    hostlist=[h.name for h in self.getNodes("sensor")])
+        for h in self.getNodes("bots"):
+            current_peerlist = random.sample([x.IP() for x in self.getNodes("bots") if not x == h], 3)
+            self.overlord.startRunnable("overbot.KademliaBot", "KademliaBot",
+                                        {"name": h.name, "peerlist": current_peerlist}, hostlist=[h.name])
+
+        victim.cmd(self.tsharkCommand%self.pcapfile)
+        logging.debug("Runnables wurden gestartet")
+        time.sleep(25)
+
+    def _executeStep(self, num):
+        result = super(KademliaExperiment, self)._executeStep(num)
+
+        victim = random.sample(self.getNodes("victim"), 1)[0]
+        sendDDoSCommand(self.getNodes("bots"), victim.IP())
+        time.sleep(35)
+
+        return result
+
+    def _produceOutputFiles(self):
+        ttparser = TcptraceParser()
+        stats = ttparser.plotConnectionStatisticsFromPcap(self.pcapfile)
+
 
 if __name__ == '__main__':
-    logging.basicConfig(**emu_config.logging_config)
-
-    net = net.Mininet(controller=Floodlight.Controller)
-    net.addController("controller1")
-    switch = net.addSwitch("switch1")
-    overlord = Overlord()
-
-    hosts = []
-    for i in range(1, 6):
-        current_host = addHostToMininet(net, switch, "host%d"%i, overlord, bw=25)
-        hosts.append(current_host)
-    victim = addHostToMininet(net, switch, "victim1", overlord, bw=90)
-    sensor = addHostToMininet(net, switch, "sensor1", overlord)
-
-    net.start()
-    # net.pingAll()
-
-    for node in hosts + [victim, sensor]:
-        node.cmd(pypath + " python2 overlord/Host.py %s &"%node.name)
-    time.sleep(5)
-
-    overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
-    overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s/?root=432"%victim.IP()]},
-                           hostlist=[sensor.name])
-    for h in hosts:
-        current_peerlist = [random.sample([x.IP() for x in hosts if not x == h], 2)]
-        overlord.startRunnable("overbot.KademliaBot", "KademliaBot", {"name": h.name,
-                                                              "peerlist"    : current_peerlist}, hostlist=[h.name])
-    pcapfile = "/tmp/botnetemulator/tcptrace/victim.pcap"
-    mkdir_p(os.path.dirname(pcapfile))
-    victim.cmd("tshark -F pcap -w %s port http or port https &"%pcapfile)
-    logging.debug("Runnables wurden gestartet")
-    time.sleep(25)
-
-    chosenOne = random.choice(hosts)
-    result = chosenOne.cmd("curl -X POST --data 'command=ddos_server&kwargs=%s' '%s'"
-                           %(json.dumps({"url": "http://%s:%d/ddos_me"%(victim.IP(), emu_config.PORT)}),
-                             "http://%s:%d/current_command"%(chosenOne.IP(), emu_config.PORT)), verbose=True)
-    logging.debug("curl: %s"%result)
-    time.sleep(25)
-    overlord.desinfectRandomBots(0.3, [h.name for h in hosts])
-    time.sleep(15)
-    overlord.desinfectRandomBots(0.2, [h.name for h in hosts])
-    time.sleep(15)
-    overlord.desinfectRandomBots(1, [h.name for h in hosts])
-    time.sleep(25)
-
-    # CLI(net)
-    print "tshark: ", victim.cmd("jobs")
-    overlord.stopEverything()
-    net.stop()
-
-    ttparser = TcptraceParser(host="victim")
-    stats = ttparser.plotConnectionStatisticsFromPcap(pcapfile)
+    logging.basicConfig(**logging_config)
+    experiment = KademliaExperiment()
+    experiment.executeExperiment()

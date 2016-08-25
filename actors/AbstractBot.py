@@ -102,6 +102,8 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
     def post(self):
         """Changes the current command to the value given in the request body"""
         self.set_header("Content-Type", "text/plain")
+        assert self.current_command is not None
+        assert self.current_command.has_key("timestamp")
 
         try:
             # Note: Don't use self.current_command['key'] = value here, because the setter would not be invoked

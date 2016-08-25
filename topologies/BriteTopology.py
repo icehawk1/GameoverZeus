@@ -15,6 +15,28 @@ from AbstractTopology import AbstractTopology
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
 
 
+def createBriteFile(configFile):
+    """Runs the BRITE random network generator with the given config file and returns the path to its output file.
+    The output file contains a randomly generated network topology and can be parsed by applyBriteFile().
+    :param configFile: Path to the BRITE configuration file. Syntax as described in the BRITE manual.
+    :type configFile: str"""
+
+    assert os.path.isfile(configFile), "The given config file (%s) does not exist or is not a file"%configFile
+    outfile = tempfile.mkstemp(suffix=".brite")[1]  # Get filename of temporary file
+    workdir = os.path.join(basedir, "resources/BRITE/Java")
+    assert os.path.isdir(workdir)
+    seedfile = os.path.join(basedir, "resources/brite.seed")
+    assert os.path.isfile(seedfile)
+
+    # BRITE has the annoying habit of adding a file extension to the output file given
+    retcode = subprocess.call("java Main.Brite %s %s %s"%(configFile, outfile.replace(".brite", ""), seedfile), shell=True,
+                              cwd=workdir)
+    if retcode != 0:
+        logging.warning("BRITE returned with exit code %d"%retcode)
+
+    assert os.path.getsize(outfile) > 1, "BRITE output file was not populated with a network topology"
+    return outfile
+
 def applyBriteFile(inputfilename, accepters):
     """Reads a BRITE output file and passes its contents to the accepters.
     :param inputfilename: The path to the BRITE output file

@@ -75,6 +75,7 @@ class Overlord(object):
 
         for hostid in hostlist:
             try:
+                # The method should accept host instances as well as their names
                 if isinstance(hostid, Node):
                     hostid = hostid.name
 
@@ -102,6 +103,7 @@ class Overlord(object):
 
         for hostid in hostlist:
             try:
+                # The method should accept host instances as well as their names
                 if isinstance(hostid, Node):
                     hostid = hostid.name
 

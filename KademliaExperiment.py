@@ -12,8 +12,8 @@ from utils.TcptraceParser import TcptraceParser
 
 def sendDDoSCommand(hostList, victimip):
     if len(hostList)==0:
-	logging.warn("Could not send ddos command to empty host list")
-	return
+        logging.warn("Could not send ddos command to empty host list")
+        return
 
     botToIssueCommandFrom = random.sample(hostList, 1)[0]
     writeLogentry(runnable="KademliaExperiment", message="Send command %s to bot %s"%("ddos_server", botToIssueCommandFrom))

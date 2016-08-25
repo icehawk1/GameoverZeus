@@ -13,6 +13,8 @@ from overlord.Overlord import Overlord
 from utils import Floodlight
 from utils.MiscUtils import mkdir_p, pypath, createRandomDPID, datetimeToEpoch
 from resources import emu_config
+from topologies.BriteTopology import BriteTopology, applyBriteFile
+from utils.LogfileParser import writeLogentry
 
 class Experiment(object):
     """The Experiment class is the central component of the botnet emulators architecture.
@@ -40,6 +42,8 @@ class Experiment(object):
         from the strategy pattern."""
         name = self.__class__.__name__  # Name of the subclass
 
+        writeLogentry(runnable=name, message="Experiment ended")
+
         logging.debug("Initialise experiment %s"%name)
         self._setup()
         self.setNodes("nodes", frozenset(self.mininet.hosts))  # Category that includes all Mininet hosts
@@ -57,6 +61,8 @@ class Experiment(object):
         self._stop()
         logging.info("Produce output files")
         self._produceOutputFiles()
+
+        writeLogentry(runnable=name, message="Experiment ended")
 
     def getNodes(self, category):
         """Get all Mininet hosts that belong to the given category."""
@@ -97,8 +103,7 @@ class Experiment(object):
         assert len(self.getNodes("bots")) > 0, "The setup() method should have set a node category (with setNodes()) called bots1"
 
         disinfected = set(self.overlord.desinfectRandomBots(0.3, [h.name for h in self.getNodes("bots")]))
-        bots = {h for h in self.getNodes("bots") if not h.name in disinfected}
-        self.setNodes("bots", bots)
+        self.setNodes("bots", {h for h in self.getNodes("bots") if not h.name in disinfected})
         time.sleep(15)
         logging.debug("len(bots) == %d"%len(self.getNodes("bots")))
         return len(self.getNodes("bots")) > 0
@@ -147,3 +152,37 @@ class Experiment(object):
         logging.info("Deleting files created by previous experiment. Includes the result from that experiment.")
         os.system("fuser -kn tcp 6633")
         os.system("rm -rf /tmp/overlordsockets/ /tmp/loading_times/ /tmp/*.log /tmp/botnetemulator /tmp/pymp-*")
+        os.system("mn -c")
+
+
+class BriteExperiment(Experiment):
+    """An experiment on the BriteTopology"""
+    __metaclass__ = ABCMeta
+
+    def __init__(self, britefile="resources/topdown.brite"):
+        super(BriteExperiment, self).__init__()
+        self.britefile = os.path.join(emu_config.basedir, britefile)
+
+    @abstractmethod
+    def _setup(self):
+        super(BriteExperiment, self)._setup()
+
+        self.topology = BriteTopology(self.mininet)
+        applyBriteFile(self.britefile, [self.topology])
+        assert len(self.topology.nodes) > 0
+        logging.debug("Adding %d nodes from %s"%(len(self.topology.nodes), self.britefile))
+        for node in self.topology.nodes:
+            self.overlord.addHost(node.name)
+
+    @abstractmethod
+    def _start(self):
+        super(BriteExperiment, self)._start()
+
+        self.topology.start()
+        for h in self.getNodes("nodes"):
+            h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
+        time.sleep(15)
+
+    def _stop(self):
+        self.overlord.stopEverything()
+        self.topology.stop()

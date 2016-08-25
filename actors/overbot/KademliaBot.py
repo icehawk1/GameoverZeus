@@ -2,10 +2,7 @@
 # coding=UTF-8
 """This file implements a bot that uses the Kademlia protocol to receive and distribute commands."""
 import tornado.platform.twisted
-
-tornado.platform.twisted.install()
 from twisted.internet import reactor
-from twisted.python import log
 
 import logging, random, json, socket, time
 from threading import Thread
@@ -23,10 +20,10 @@ iface_searchterm = "eth"
 
 # noinspection PyAbstractClass
 class KademliaCommandHandler(CurrentCommandHandler):
-    def __init__(self, kserver, *args, **kwargs):
-        super(KademliaCommandHandler, self).__init__(*args, **kwargs)
-        self._current_command = {"command": "default_command", "kwargs": {}}
-        self.kserver = kserver
+    def initialize(self, kserver):
+        logging.debug("KademliaCommandHandler: %s"%(kserver))
+        self._current_command = {"command": "default_command", "kwargs": {}, "timestamp": 0}
+        self.kademliaServer = kserver
 
     @property
     def current_command(self):
@@ -36,7 +33,7 @@ class KademliaCommandHandler(CurrentCommandHandler):
     def current_command(self, current_command):
         self._current_command = current_command
         logging.debug("The KademliaBot has received a new command: "%self.current_command)
-        self.kserver.set("current_command", json.dumps(self.current_command)) \
+        self.kademliaServer.set("current_command", json.dumps(self.current_command)) \
             .addCallbacks(self._setSuccess, self._setFailure)
 
     def _setSuccess(self, result):
@@ -55,7 +52,7 @@ class KademliaBot(Runnable):
                  port=emu_config.kademlia_default_port, peerlist=None):
         super(KademliaBot, self).__init__(name=name)
         self.kademliaServer = Server()
-        handlers = [("/current_command", KademliaCommandHandler, {"kademliaServer": self.kademliaServer})]
+        handlers = [("/current_command", KademliaCommandHandler, {"kserver": self.kademliaServer})]
         app = tornado.web.Application(handlers, autoreload=False)
         self.httpserver = tornado.httpserver.HTTPServer(app)
         self.port = port
@@ -76,9 +73,6 @@ class KademliaBot(Runnable):
 
 
     def _startKademlia(self):
-        observer = log.PythonLoggingObserver()
-        observer.start()
-
         possible_interfaces = [iface for iface in netifaces.interfaces() if iface_searchterm in iface
                                and netifaces.ifaddresses(iface).has_key(netifaces.AF_INET)]
         if len(possible_interfaces) == 0:
@@ -88,16 +82,14 @@ class KademliaBot(Runnable):
         logging.debug("Node %s starts with %s on %s"%(self.name, self.peerlist, ipAddr))
 
         self.kademliaServer.listen(self.port, interface=ipAddr)
-        serverDeferred = self.kademliaServer.bootstrap(
-            [(peer, emu_config.kademlia_default_port) for peer in self.peerlist])
+        serverDeferred = self.kademliaServer.bootstrap([(peer, emu_config.kademlia_default_port) for peer in self.peerlist])
         serverDeferred.addCallback(self.executeBot)
         serverDeferred.addErrback(self.errback)
 
-    def executeBot(self, peersfound=[]):
+    def executeBot(self, peersfound=None):
         """Method that is called regularly and checks for new commands"""
         self.kademliaServer.get("current_command").addCallbacks(self.handleCommand, self.errback)
-        if not self.stopthread:
-            reactor.callLater(emu_config.botcommand_timeout, self.executeBot)
+        reactor.callLater(emu_config.botcommand_timeout, self.executeBot)
 
     def handleCommand(self, command):
         """If the bot received a new command, this method executes the command"""

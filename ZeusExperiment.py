@@ -3,28 +3,21 @@
 import logging, os, random, time, json
 from datetime import datetime
 
-from resources.emu_config import logging_config, PORT, basedir
-from Experiment import Experiment
-from topologies.BriteTopology import BriteTopology, applyBriteFile
+from resources.emu_config import logging_config, PORT
+from Experiment import BriteExperiment
 from utils.MiscUtils import pypath, datetimeToEpoch, mkdir_p
 from utils.TcptraceParser import TcptraceParser
 
 
-class ZeusExperiment(Experiment):
+class ZeusExperiment(BriteExperiment):
     def __init__(self):
         super(ZeusExperiment, self).__init__()
-        self.britefile = os.path.join(basedir, "resources/topdown.brite")
         self.pcapfile = os.path.join(self.outputdir, "tcptrace/victim.pcap")
         mkdir_p(os.path.dirname(self.pcapfile))
 
     def _setup(self):
+        """Creates all the hosts that make up the experimental network and assign them to groups"""
         super(ZeusExperiment, self)._setup()
-        self.topology = BriteTopology(self.mininet)
-        applyBriteFile(self.britefile, [self.topology])
-        assert len(self.topology.nodes) > 0
-        logging.debug("Adding %d nodes from %s"%(len(self.topology.nodes), self.britefile))
-        for node in self.topology.nodes:
-            self.overlord.addHost(node.name)
 
         nodes = set(self.topology.nodes)
         assert len(nodes) >= 28
@@ -38,10 +31,9 @@ class ZeusExperiment(Experiment):
         self.setNodes("sensor", set(random.sample(nodes, 1)))
 
     def _start(self):
-        self.topology.start()
-        for h in self.getNodes("nodes"):
-            h.cmd(pypath + " python2 overlord/Host.py %s &"%h.name)
-        time.sleep(15)
+        super(ZeusExperiment, self)._start()
+        pingresult = self.mininet.pingPair()
+        logging.debug("pingpair: %s"%pingresult)
 
         assert len(self.getNodes("victim")) == 1
         assert len(self.getNodes("cncserver")) == 1
@@ -75,10 +67,6 @@ class ZeusExperiment(Experiment):
 
     def _executeStep(self, num):
         return super(ZeusExperiment, self)._executeStep(num)
-
-    def _stop(self):
-        self.overlord.stopEverything()
-        self.topology.stop()
 
     def _produceOutputFiles(self):
         ttparser = TcptraceParser()

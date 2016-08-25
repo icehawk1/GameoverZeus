@@ -15,7 +15,7 @@ logfile = "/tmp/botnetemulator/machine_readable.log"
 
 
 def writeLogentry(runnable, message, timeissued=datetime.now()):
-    """Appends an entry to the machine readable logfile
+    """Appends an entry to the machine readable logfile. If the file does not exist, it is created.
     :param runnable: The runnable that issued the log entry.
             Should be the name of the class and can be used for searching entries.
     :param message: An explanatory message to be included with the entry

@@ -21,7 +21,6 @@ from mininet.node import Node
 from HostActions import OverlordClient
 from resources.emu_config import SOCKET_DIR,SOCKET_TIMEOUT
 from utils.MiscUtils import mkdir_p
-from utils import LogfileParser
 
 class Overlord(object):
     """Central controller for everything."""
@@ -29,10 +28,6 @@ class Overlord(object):
     def __init__(self):
         self.knownHosts = dict()
         mkdir_p(SOCKET_DIR)
-
-        # Remove machine readable logfile from previous runs
-        if os.path.exists(LogfileParser.logfile):
-            os.remove(LogfileParser.logfile)
 
     def addHost(self, hostid):
         """Adds a host to the network"""

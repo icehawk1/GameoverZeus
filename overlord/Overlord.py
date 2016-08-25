@@ -74,29 +74,9 @@ class Overlord(object):
         assert isinstance(hostlist, list) or isinstance(hostlist, set) or isinstance(hostlist, frozenset)
 
         for hostid in hostlist:
-            try:
-                # The method should accept host instances as well as their names
-                if isinstance(hostid, Node):
-                    hostid = hostid.name
-
-                assert isinstance(hostid, str)
-                assert self.knownHosts.has_key(hostid)
-                connector = self.knownHosts[hostid]
-                assert isinstance(connector, _HostConnector)
-
-                connector.startCommunication()
-                connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
-                connector.stopCommunication()
-
-            # NOTE: The timeout/exceptions are considered errors here, because this is startup, so we will need it to work
-            except TTransportException as ex:
-                logging.error("Could not send startRunnable command to connector %s: %s" % (hostid, ex.message))
-            except Exception as ex:
-                logging.error("An %s occured when sending a stopRunnable command to connector %s: %s"%(
-                type(ex).__name__, hostid, ex.message))
-            except:
-                logging.error(
-                    "An unspecified error occured when sending a stopRunnable command to connector %s. Its probably a socket timeout."%hostid)
+            logging.debug("Starting runnable %s of host %s"%(runnable, hostid))
+            self._executeOperationOnHost(hostid, lambda connector: connector.client.startRunnable(importmodule, runnable,
+                                                                                                  json.dumps(kwargs)))
 
     def stopRunnable(self, runnable="*", hostlist=None):
         """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.
@@ -110,29 +90,35 @@ class Overlord(object):
             hostlist = self.knownHosts.keys()
 
         for hostid in hostlist:
-            try:
-                # The method should accept host instances as well as their names
-                if isinstance(hostid, Node):
-                    hostid = hostid.name
+            logging.debug("Stopping runnable %s of host %s"%(runnable, hostid))
+            self._executeOperationOnHost(hostid, lambda connector: connector.client.stopRunnable(runnable))
 
-                assert isinstance(hostid, str)
-                connector = self.knownHosts[str(hostid)]
-                assert isinstance(connector, _HostConnector)
-                connector.startCommunication()
-                logging.debug("Stopping runnable %s of host %s" % (runnable, connector.id))
-                connector.client.stopRunnable(runnable)
-                connector.stopCommunication()
+    def _executeOperationOnHost(self, hostid, operation):
+        """Executes the given lambda on the given hosts (i.e. this lambda may make an RPC request) and catches errors.
+        :type hostid: Node or str
+        :type operation: A lambda with one parameter. The parameter is a connector to a host script."""
+        assert isinstance(operation, type(lambda: 0)), "operation is not a lambda or function but a %s"%type(operation)
 
-            # NOTE: The timeout/exceptions are only warnings here, because this is shutdown, so we don't actually need the runnable anymore.
-            #      But we still want the process not to linger in the OS
-            except TTransportException as ex:
-                logging.warn("Could not send stopRunnable command to connector %s: %s"%(hostid, ex.message))
-            except Exception as ex:
-                logging.warn("An %s occured when sending a stopRunnable command to connector %s: %s"%(
+        try:
+            # The method should accept host instances as well as their names
+            if isinstance(hostid, Node):
+                hostid = hostid.name
+
+            assert isinstance(hostid, str)
+            connector = self.knownHosts[str(hostid)]
+            assert isinstance(connector, _HostConnector)
+            connector.startCommunication()
+            operation(connector)
+            connector.stopCommunication()
+
+        except TTransportException as ex:
+            logging.error("Could not send command to connector %s: %s"%(hostid, ex.message))
+        except Exception as ex:
+            logging.error("An %s occured when sending a command to connector %s: %s"%(
                 type(ex).__name__, hostid, ex.message))
-            except:
-                logging.warn(
-                    "An unspecified error occured when sending a stopRunnable command to connector %s. Its probably a socket timeout."%hostid)
+        except:
+            logging.error(
+                "An unspecified error occured when sending a command to connector %s. Its probably a socket timeout."%hostid)
 
     def stopEverything(self, hostlist=None):
         """Stops everything that is running on the given hosts. Called before the program exits."""

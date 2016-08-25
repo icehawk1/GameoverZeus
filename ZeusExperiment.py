@@ -35,6 +35,9 @@ class ZeusExperiment(BriteExperiment):
         pingresult = self.mininet.pingPair()
         logging.debug("pingpair: %s"%pingresult)
 
+#	pingresult = self.mininet.pingPair()
+#        logging.debug("pingpair: %s"%pingresult)
+
         assert len(self.getNodes("victim")) == 1
         assert len(self.getNodes("cncserver")) == 1
         victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...

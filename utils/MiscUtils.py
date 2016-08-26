@@ -60,8 +60,8 @@ def createLinePlot(x, xlabel, y, ylabel, outputfile):
     :type outputfile: str"""
     pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
     pyplot.plot(numpy.array(x), numpy.array(y))
-    pyplot.xlabel("experiment runtime in seconds")
-    pyplot.ylabel('loading time in seconds')
+    pyplot.xlabel(xlabel)
+    pyplot.ylabel(ylabel)
     logging.debug("saving line plot to %s"%outputfile)
     pyplot.savefig(outputfile)
     pyplot.clf()  # Discard values of this figure, so we can start with a fresh one

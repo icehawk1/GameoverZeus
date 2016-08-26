@@ -57,7 +57,7 @@ class ZeusExperiment(BriteExperiment):
 
         victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")
-        time.sleep(25)
+        time.sleep(35)
 
         # Initiate DDoS attack
         kwargs = json.dumps(

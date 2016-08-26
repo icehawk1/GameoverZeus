@@ -52,6 +52,10 @@ class PingExperiment(BriteExperiment):
             self.overlord.startRunnable("ping.Client", "Client", {"peerlist": peerlist, "pauseBetweenDuties": 5},
                                         hostlist=[h.name])
 
+        victim.cmd(self.tsharkCommand%self.pcapfile)
+        logging.debug("Runnables wurden gestartet")
+        time.sleep(25)
+
         chosenOne = random.sample(self.getNodes("servents"), 1)[0]
         kwargsStr = json.dumps({"url": "http://%s:%d/ddos_me"%(victim.IP(), PORT)})
         curlcmd = "timeout 60s wget -q -O - --post-data 'command=ddos_server&kwargs=%s&timestamp=%d' '%s'"%(
@@ -59,9 +63,6 @@ class PingExperiment(BriteExperiment):
         result = chosenOne.cmd(curlcmd, verbose=True)
         assert result.strip() == "OK", "Could not send the DDoS-command to the bot %s: |%s|"%(chosenOne, result)
 
-        victim.cmd(self.tsharkCommand%self.pcapfile)
-        logging.debug("Runnables wurden gestartet")
-        time.sleep(25)
 
     def _executeStep(self, num):
         result = super(PingExperiment, self)._executeStep(num)

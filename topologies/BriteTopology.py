@@ -4,12 +4,13 @@
 It first executes the random network generator BRITE and parses its output file. Those information is used to create a Mininet network.
 The BriteTopology module also contains functionality to plot the generated network.
 Each autonomous system from the BRITE output file runs in its own subnet."""
-import logging, random, re, time
+import logging, random, re, time, os, tempfile, subprocess
 from abc import abstractmethod, ABCMeta
 from mininet.node import CPULimitedHost
 from mininet.util import custom
 from mininet.net import Mininet
 
+from resources.emu_config import basedir
 from AbstractTopology import AbstractTopology
 
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line

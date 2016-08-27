@@ -49,7 +49,7 @@ def datetimeToEpoch(datetimeObj):
     return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
 
 
-def createLinePlot(x, xlabel, y, ylabel, outputfile):
+def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None):
     """Creates a line plot.
     :param xlabel: Label on the x-axis
     :param ylabel: Label on the y-axis
@@ -57,11 +57,17 @@ def createLinePlot(x, xlabel, y, ylabel, outputfile):
     :type xlabel: str
     :type y: list of float
     :type ylabel: str
-    :type outputfile: str"""
+    :type outputfile: str
+    :param title: A title to be printed above the graph
+    :type title: str"""
+
     pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
-    pyplot.plot(numpy.array(x), numpy.array(y))
+    if title is not None: pyplot.title(title)
     pyplot.xlabel(xlabel)
     pyplot.ylabel(ylabel)
+    pyplot.axvline(35, color="red")
+
+    pyplot.plot(numpy.array(x), numpy.array(y))
     logging.debug("saving line plot to %s"%outputfile)
     pyplot.savefig(outputfile)
     pyplot.clf()  # Discard values of this figure, so we can start with a fresh one

@@ -49,7 +49,7 @@ def _replaceNumberOfSubnetsInConfigFile(configFile, numNodes):
     """Returns a copy of the given config file, in which the number of subnets to generate is replaced by the given amount"""
 
     # Use default configuration if parameter was not given
-    tmpfile = tempfile.mkstemp(suffix=".conf")
+    tmpfile = tempfile.mkstemp(suffix=".conf")[0]
     with open(configFile, mode="r") as conf_fp:
         with open(tmpfile, mode="w") as tmp_fp:
             for line in conf_fp.readlines():

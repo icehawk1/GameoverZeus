@@ -49,7 +49,7 @@ def datetimeToEpoch(datetimeObj):
     return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
 
 
-def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None):
+def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None, clear=True):
     """Creates a line plot.
     :param xlabel: Label on the x-axis
     :param ylabel: Label on the y-axis
@@ -59,19 +59,20 @@ def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None):
     :type ylabel: str
     :type outputfile: str
     :param title: A title to be printed above the graph
-    :type title: str"""
+    :type title: str
+    :param clear: If True the matplotlib figure gets cleared, otherwise it will reappear in the next plot"""
     mkdir_p(os.path.dirname(outputfile))
 
     pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
     if title is not None: pyplot.title(title)
     pyplot.xlabel(xlabel)
     pyplot.ylabel(ylabel)
-    pyplot.axvline(35, color="red")
+    # pyplot.axvline(35, color="red")
 
     pyplot.plot(numpy.array(x), numpy.array(y))
     logging.debug("saving line plot to %s"%outputfile)
     pyplot.savefig(outputfile)
-    pyplot.clf()  # Discard values of this figure, so we can start with a fresh one
+    if clear: pyplot.clf()  # Discard values of this figure, so we can start with a fresh one
 
 def removeSuffixes(text, suffixes):
     """If text ends with one of the given suffixes, returns text without this suffix, else returns text unchanged

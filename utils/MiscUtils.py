@@ -60,6 +60,7 @@ def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None):
     :type outputfile: str
     :param title: A title to be printed above the graph
     :type title: str"""
+    mkdir_p(os.path.dirname(outputfile))
 
     pyplot.ioff()  # Ensure that matplotlib does not try to show a gui
     if title is not None: pyplot.title(title)

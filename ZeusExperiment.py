@@ -5,9 +5,8 @@ from datetime import datetime
 
 from resources.emu_config import logging_config, PORT
 from Experiment import BriteExperiment
-from utils.MiscUtils import pypath, datetimeToEpoch, mkdir_p
+from utils.MiscUtils import datetimeToEpoch, mkdir_p
 from utils.TcptraceParser import TcptraceParser
-
 
 class ZeusExperiment(BriteExperiment):
     def __init__(self):

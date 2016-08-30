@@ -5,6 +5,7 @@ import json, logging, random, requests
 from actors import BotCommands
 from actors.AbstractBot import CommandExecutor
 from resources import emu_config
+from utils.LogfileParser import writeLogentry
 
 class Bot(CommandExecutor):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
@@ -36,6 +37,9 @@ class Bot(CommandExecutor):
         if isinstance(self.current_command, dict) and self.current_command.has_key("command") \
                 and self.current_command["command"] != "":
             try:
+                writeLogentry(runnable=type(self).__name__, message="received_command: %s"
+                                                                    %json.dumps(
+                    {"bot": self.name, "newcmd": self.current_command}))
                 BotCommands.executeCurrentCommand(self.current_command)
             except TypeError as ex:
                 logging.warning("Command %s got invalid parameters %s: %s"

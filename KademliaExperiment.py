@@ -9,7 +9,6 @@ from Experiment import BriteExperiment
 from utils.LogfileParser import writeLogentry
 from utils.TcptraceParser import TcptraceParser
 
-
 def sendDDoSCommand(hostList, victimip):
     if len(hostList)==0:
         logging.warn("Could not send ddos command to empty host list")

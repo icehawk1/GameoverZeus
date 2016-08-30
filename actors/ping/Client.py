@@ -3,7 +3,7 @@
 import random, json, logging
 from actors.AbstractBot import CommandExecutor
 from actors.BotCommands import executeCurrentCommand, fetchCurrentCommand
-
+from utils.LogfileParser import writeLogentry
 
 class Client(CommandExecutor):
     def __init__(self, peerlist, *args, **kwargs):
@@ -25,6 +25,8 @@ class Client(CommandExecutor):
     def _executeCurrentCommand(self, current_command):
         """Executes the last command that has been fetched from the Servent"""
         try:
+            writeLogentry(runnable=type(self).__name__, message="received_command: %s"
+                                                                %json.dumps({"bot": self.name, "newcmd": current_command}))
             executeCurrentCommand(current_command)
         except TypeError as ex:
             logging.warning("Command %s got invalid parameters %s: %s"

@@ -8,7 +8,7 @@ from twisted.python import log
 import tornado.web
 
 from resources import emu_config
-
+from utils.LogfileParser import writeLogentry
 
 class Runnable(object):
     """A runnable is a class that encapsulates a process that can be run in its own thread and that can be started
@@ -90,6 +90,9 @@ class CurrentCommandHandler(tornado.web.RequestHandler):
 
     def get(self):
         """Returns the currently set command"""
+        writeLogentry(runnable=type(self).__name__, message="received_command_request: %s"
+                                                            %json.dumps({"newcmd": self.current_command}))
+
         if "json" in string.lower(self.request.headers.get("Accept")):
             self.set_header("Content-Type", "application/json")
             self.write(json.dumps(self.current_command))

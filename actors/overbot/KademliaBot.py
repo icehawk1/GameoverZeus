@@ -15,6 +15,7 @@ from tornado.ioloop import IOLoop
 from actors.AbstractBot import Runnable, CurrentCommandHandler
 from resources import emu_config
 from actors.BotCommands import executeCurrentCommand
+from utils.LogfileParser import writeLogentry
 
 iface_searchterm = "eth"
 
@@ -91,11 +92,14 @@ class KademliaBot(Runnable):
         self.kademliaServer.get("current_command").addCallbacks(self.handleCommand, self.errback)
         reactor.callLater(emu_config.botcommand_timeout, self.executeBot)
 
-    def handleCommand(self, command):
-        """If the bot received a new command, this method executes the command"""
-        logging.debug("Got (new?) command: %s"%command)
-        if command is not None:
-            executeCurrentCommand(json.loads(command))
+    def handleCommand(self, encoded_command):
+        """If the bot received a new encoded_command, this method executes the encoded_command"""
+        logging.debug("Got (new?) encoded_command: %s"%encoded_command)
+        if encoded_command is not None:
+            command = json.loads(encoded_command)
+            writeLogentry(runnable=type(self).__name__, message="received_command: %s"
+                                                                %json.dumps({"bot": self.name, "newcmd": command}))
+            executeCurrentCommand(command)
 
     def errback(self, failure):
         """Given to defereds to report errors"""

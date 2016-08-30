@@ -69,8 +69,6 @@ class PingExperiment(BriteExperiment):
         return result
 
     def _stop(self):
-        print "jobs servent: ", random.sample(self.getNodes("servents"), 1)[0].cmd("jobs")
-        print "jobs victim: ", random.sample(self.getNodes("victim"), 1)[0].cmd("jobs")
         super(PingExperiment, self)._stop()
 
     def _produceOutputFiles(self):
@@ -79,6 +77,7 @@ class PingExperiment(BriteExperiment):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(**logging_config)
+    logging.basicConfig(filename='/tmp/botnetemulator.log', filemode="w", **logging_config)
+
     experiment = PingExperiment()
     experiment.executeExperiment()

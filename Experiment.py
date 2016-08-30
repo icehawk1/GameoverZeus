@@ -49,10 +49,12 @@ class Experiment(object):
         self.setNodes("nodes", frozenset(self.mininet.hosts))  # Category that includes all Mininet hosts
         logging.info("Starting %s"%name)
         self._start()
+        writeLogentry(runnable=type(self).__name__, message="Experiment fully started")
 
         doNextStep = True
         currentIteration = 0
         while doNextStep:
+            writeLogentry(runnable=type(self).__name__, message="Iteration: %d %d"%(currentIteration, len(self.getNodes("bots"))))
             logging.info("Step %d on %d "%(currentIteration, datetimeToEpoch(datetime.now())))
             doNextStep = self._executeStep(currentIteration)
             currentIteration += 1

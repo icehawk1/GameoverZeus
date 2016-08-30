@@ -163,18 +163,21 @@ class TcptraceParser(object):
                 insertInto[key] = []
             insertInto[key].append(con)
 
-        y1 = []  # Number of incomplete connections per second
-        y2 = []  # Number of completed connections per second
+        y_failed = []  # Number of incomplete connections per second
+        y_completed = []  # Number of completed connections per second
         for second in x:
-            y1.append(
+            y_failed.append(
                 len(failedConnectionsGroupedByStarttime[second]) if failedConnectionsGroupedByStarttime.has_key(second) else 0)
-            y2.append(len(completeConnectionsGroupedByStarttime[second]) if completeConnectionsGroupedByStarttime.has_key(
+            y_completed.append(
+                len(completeConnectionsGroupedByStarttime[second]) if completeConnectionsGroupedByStarttime.has_key(
                 second) else 0)
 
-        createLinePlot(x, "experiment runtime in seconds", y1, "loading time in seconds",
-                       os.path.join(outputdir, "failed_connections.pdf"))
-        createLinePlot(x, "experiment runtime in seconds", y2, "loading time in seconds",
-                       os.path.join(outputdir, "completed_connections.pdf"))
+        createLinePlot(x, "experiment runtime in seconds", y_failed, "loading time in seconds",
+                       os.path.join(outputdir, "failed_connections.pdf"), clear=False, plotlabel="failed")
+        createLinePlot(x, "experiment runtime in seconds", y_completed, "loading time in seconds",
+                       os.path.join(outputdir, "completedVSfailed_connections.pdf"), clear=True, plotlabel="completed")
+        createLinePlot(x, "experiment runtime in seconds", y_completed, "loading time in seconds",
+                       os.path.join(outputdir, "completed_connections.pdf"), clear=True, plotlabel="completed")
 
     def _extractXAxis(self, connection_statistics):
         x_raw = {datetimeToEpoch(conn.startTime) for conn in connection_statistics}

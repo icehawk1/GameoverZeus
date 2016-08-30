@@ -75,8 +75,8 @@ class Overlord(object):
 
         for hostid in hostlist:
             logging.debug("Starting runnable %s of host %s"%(runnable, hostid))
-            self._executeOperationOnHost(hostid, lambda connector: connector.client.startRunnable(importmodule, runnable,
-                                                                                                  json.dumps(kwargs)))
+            startOperation = lambda connector: connector.client.startRunnable(importmodule, runnable, json.dumps(kwargs))
+            self._executeOperationOnHost(hostid, startOperation)
 
     def stopRunnable(self, runnable="*", hostlist=None):
         """Stops the given runnable on the given hosts. Hosts that do not run a runnable with the given name are silently skipped.

@@ -49,7 +49,7 @@ def datetimeToEpoch(datetimeObj):
     return int((datetimeObj - datetime(1970, 1, 1)).total_seconds())
 
 
-def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None, clear=True):
+def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None, clear=True, plotlabel=None):
     """Creates a line plot.
     :param xlabel: Label on the x-axis
     :param ylabel: Label on the y-axis
@@ -69,7 +69,7 @@ def createLinePlot(x, xlabel, y, ylabel, outputfile, title=None, clear=True):
     pyplot.ylabel(ylabel)
     # pyplot.axvline(35, color="red")
 
-    pyplot.plot(numpy.array(x), numpy.array(y))
+    pyplot.plot(numpy.array(x), numpy.array(y), label=plotlabel)
     logging.debug("saving line plot to %s"%outputfile)
     pyplot.savefig(outputfile)
     if clear: pyplot.clf()  # Discard values of this figure, so we can start with a fresh one

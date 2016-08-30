@@ -82,5 +82,7 @@ class KademliaExperiment(BriteExperiment):
 
 if __name__ == '__main__':
     logging.basicConfig(**logging_config)
+    # filename='/tmp/botnetemulator.log', filemode="w"
+
     experiment = KademliaExperiment()
     experiment.executeExperiment()

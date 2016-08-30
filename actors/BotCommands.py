@@ -72,7 +72,7 @@ def executeCurrentCommand(command):
         retval = methodToCall(cmdobject, **command["kwargs"])
         return retval
     except TypeError:
-	logging.warning("Command %s(**%s) could not be executed: %s"%(command["command"], command["kwargs"], ex))
+        logging.warning("Command %s(**%s) could not be executed: %s"%(command["command"], command["kwargs"], ex))
 
 if __name__ == '__main__':
     logging.basicConfig(**emu_config.logging_config)

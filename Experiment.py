@@ -44,10 +44,10 @@ class Experiment(object):
 
         writeLogentry(runnable=name, message="Experiment started")
 
-        logging.debug("Initialise experiment %s"%name)
+        logging.debug("Initialise %s"%name)
         self._setup()
         self.setNodes("nodes", frozenset(self.mininet.hosts))  # Category that includes all Mininet hosts
-        logging.info("Starting experiment %s"%name)
+        logging.info("Starting %s"%name)
         self._start()
 
         doNextStep = True
@@ -57,7 +57,7 @@ class Experiment(object):
             doNextStep = self._executeStep(currentIteration)
             currentIteration += 1
 
-        logging.info("Stoping experiment %s after %d iterations"%(name, currentIteration))
+        logging.info("Stoping %s after %d iterations"%(name, currentIteration))
         self._stop()
         logging.info("Produce output files")
         self._produceOutputFiles()
@@ -85,7 +85,7 @@ class Experiment(object):
     def _setup(self):
         """Initialises the experiment and creates the necessary object. Usually, this is the method were one puts the
         Mininet hosts into categories. At least the bots category is needed."""
-        self.mininet, self.overlord, self.switch = self.initMininet()
+        self.mininet, self.overlord, self.switch = self._initMininet()
 
 
     @abstractmethod
@@ -118,7 +118,7 @@ class Experiment(object):
         """Produces the files that are used to report the results of this experiment to the researcher."""
         pass
 
-    def initMininet(self, ctrl=Floodlight.Controller):
+    def _initMininet(self, ctrl=Floodlight.Controller):
         """Initialise a default configuration of Mininet"""
         mininet = Mininet(controller=ctrl)
         mininet.addController("controller1")

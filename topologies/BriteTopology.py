@@ -4,29 +4,36 @@
 It first executes the random network generator BRITE and parses its output file. Those information is used to create a Mininet network.
 The BriteTopology module also contains functionality to plot the generated network.
 Each autonomous system from the BRITE output file runs in its own subnet."""
-import logging, random, re, time
+import logging, random, re, time, os, tempfile, subprocess
 from abc import abstractmethod, ABCMeta
 from mininet.node import CPULimitedHost
 from mininet.util import custom
 from mininet.net import Mininet
 
+from resources.emu_config import basedir
 from AbstractTopology import AbstractTopology
 
 emptyLineRe = re.compile(r"^\s*$")  # Matches an empty line
+numberOfNodesPerSubnet = 10
 
 
-def createBriteFile(configFile):
+def createBriteFile(configFile=None, numNodes=None):
     """Runs the BRITE random network generator with the given config file and returns the path to its output file.
     The output file contains a randomly generated network topology and can be parsed by applyBriteFile().
     :param configFile: Path to the BRITE configuration file. Syntax as described in the BRITE manual.
-    :type configFile: str"""
+    :type configFile: str
+    :param numNodes: The number of nodes that the resulting network should contain"""
 
+    if configFile is None: configFile = os.path.join(basedir, "resources/brite.conf")
     assert os.path.isfile(configFile), "The given config file (%s) does not exist or is not a file"%configFile
     outfile = tempfile.mkstemp(suffix=".brite")[1]  # Get filename of temporary file
     workdir = os.path.join(basedir, "resources/BRITE/Java")
     assert os.path.isdir(workdir)
     seedfile = os.path.join(basedir, "resources/brite.seed")
     assert os.path.isfile(seedfile)
+
+    if numNodes is not None:
+        configFile = _replaceNumberOfSubnetsInConfigFile(configFile, numNodes)
 
     # BRITE has the annoying habit of adding a file extension to the output file given
     retcode = subprocess.call("java Main.Brite %s %s %s"%(configFile, outfile.replace(".brite", ""), seedfile), shell=True,
@@ -36,6 +43,22 @@ def createBriteFile(configFile):
 
     assert os.path.getsize(outfile) > 1, "BRITE output file was not populated with a network topology"
     return outfile
+
+
+def _replaceNumberOfSubnetsInConfigFile(configFile, numNodes):
+    """Returns a copy of the given config file, in which the number of subnets to generate is replaced by the given amount"""
+
+    # Use default configuration if parameter was not given
+    tmpfile = tempfile.mkstemp(suffix=".conf")[1]
+    with open(configFile, mode="r") as conf_fp:
+        with open(tmpfile, mode="w") as tmp_fp:
+            for line in conf_fp.readlines():
+                if re.match(r"\s*N = \d+\s*#\s*Number of subnets in graph.*", line):
+                    tmp_fp.write("N = %d"%int(numNodes/numberOfNodesPerSubnet))
+                else:
+                    tmp_fp.write(line)
+    return tmpfile
+
 
 def applyBriteFile(inputfilename, accepters):
     """Reads a BRITE output file and passes its contents to the accepters.

@@ -75,8 +75,7 @@ class ZeusExperiment(BriteExperiment):
         stats = ttparser.plotConnectionStatisticsFromPcap(self.pcapfile)
 
 if __name__ == '__main__':
-    logging.basicConfig(**logging_config)
-    # filename='/tmp/botnetemulator.log', filemode="w"
+    logging.basicConfig(filename='/tmp/botnetemulator.log', filemode="w", **logging_config)
 
     experiment = ZeusExperiment()
     experiment.executeExperiment()

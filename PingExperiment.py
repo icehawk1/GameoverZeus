@@ -77,8 +77,7 @@ class PingExperiment(BriteExperiment):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(**logging_config)
-    # filename='/tmp/botnetemulator.log', filemode="w"
+    logging.basicConfig(filename='/tmp/botnetemulator.log', filemode="w", **logging_config)
 
     experiment = PingExperiment()
     experiment.executeExperiment()

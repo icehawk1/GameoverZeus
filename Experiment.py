@@ -106,8 +106,8 @@ class Experiment(object):
 
         disinfected = set(self.overlord.desinfectRandomBots(0.3, [h.name for h in self.getNodes("bots")]))
         self.setNodes("bots", {h for h in self.getNodes("bots") if not h.name in disinfected})
-        time.sleep(15)
         logging.debug("len(bots) == %d"%len(self.getNodes("bots")))
+        time.sleep(15)
         return len(self.getNodes("bots")) > 0
 
     @abstractmethod

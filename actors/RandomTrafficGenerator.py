@@ -9,13 +9,8 @@ from utils.LogfileParser import writeLogentry
 class RandomTrafficReceiver(Runnable):
     """The abstract base class for all clients in the simulated botnets"""
 
-    def __init__(self, peerlist=None, **kwargs):
+    def __init__(self, **kwargs):
         super(RandomTrafficReceiver, self).__init__(**kwargs)
-        if peerlist is None: peerlist = []
-        assert isinstance(peerlist, list) or isinstance(peerlist, set) or isinstance(peerlist, frozenset), \
-            "type(current_peerlist): %s"%type(peerlist)
-
-        self.peerlist = peerlist
         self.id = random.randint(1, 100000)
 
     def start(self):

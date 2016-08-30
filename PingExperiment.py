@@ -69,8 +69,6 @@ class PingExperiment(BriteExperiment):
         return result
 
     def _stop(self):
-        print "jobs servent: ", random.sample(self.getNodes("servents"), 1)[0].cmd("jobs")
-        print "jobs victim: ", random.sample(self.getNodes("victim"), 1)[0].cmd("jobs")
         super(PingExperiment, self)._stop()
 
     def _produceOutputFiles(self):

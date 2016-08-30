@@ -54,7 +54,7 @@ class PingExperiment(BriteExperiment):
 
         victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")
-        time.sleep(25)
+        time.sleep(35)
 
         chosenOne = random.sample(self.getNodes("servents"), 1)[0]
         kwargsStr = json.dumps({"url": "http://%s:%d/ddos_me"%(victim.IP(), PORT)})

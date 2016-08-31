@@ -9,6 +9,7 @@ import json, logging, random
 from tornado.web import RequestHandler, Application
 from twisted.internet import reactor, defer
 from twisted.names import dns, error, server
+from tornado.httpserver import HTTPServer
 
 from resources import emu_config
 from actors.AbstractBot import Runnable
@@ -94,7 +95,8 @@ def runWebserver():
     logging.debug("Webserver starts on port %d"%emu_config.PORT)
 
     app = Application([("/register-host", HostRegisterHandler)], autoreload=False)
-    app.listen(emu_config.PORT)
+    httpserver = HTTPServer(app)
+    server.listen(emu_config.PORT)
 
 
 def stopWebserver():

@@ -28,6 +28,8 @@ class ZeusExperiment(BriteExperiment):
         self.setNodes("victim", set(random.sample(nodes, 1)))
         nodes -= self.getNodes("victim")
         self.setNodes("sensor", set(random.sample(nodes, 1)))
+        nodes -= self.getNodes("sensor")
+        self.setNodes("nameserver", set(random.sample(nodes, 1)))
 
     def _start(self):
         super(ZeusExperiment, self)._start()
@@ -41,6 +43,7 @@ class ZeusExperiment(BriteExperiment):
         assert len(self.getNodes("cncserver")) == 1
         victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...
         cncserver = next(iter(self.getNodes("cncserver")))
+        nameserver = next(iter(self.getNodes("nameserver")))
         logging.debug("IP of Victim: %s; IP of CnC server: %s"%(victim.IP(), cncserver.IP()))
 
         # Start the necessary runnables
@@ -53,6 +56,7 @@ class ZeusExperiment(BriteExperiment):
         for h in self.getNodes("bots"):
             self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
                                         kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
+        self.overlord.startRunnable("nameserver", "Nameserver", hostlist=[nameserver.name])
 
         victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")

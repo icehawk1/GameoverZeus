@@ -19,7 +19,7 @@ class ZeusExperiment(BriteExperiment):
         super(ZeusExperiment, self)._setup()
 
         nodes = set(self.topology.nodes)
-        assert len(nodes) >= 28
+        assert len(nodes) >= 29
         # Create all the hosts that make up the experimental network and assign them to groups
         self.setNodes("bots", set(random.sample(nodes, 25)))
         nodes -= self.getNodes("bots")
@@ -28,19 +28,19 @@ class ZeusExperiment(BriteExperiment):
         self.setNodes("victim", set(random.sample(nodes, 1)))
         nodes -= self.getNodes("victim")
         self.setNodes("sensor", set(random.sample(nodes, 1)))
+        nodes -= self.getNodes("sensor")
+        self.setNodes("nameserver", set(random.sample(nodes, 1)))
 
     def _start(self):
         super(ZeusExperiment, self)._start()
         pingresult = self.mininet.pingPair()
         logging.debug("pingpair: %s"%pingresult)
 
-#	pingresult = self.mininet.pingPair()
-#        logging.debug("pingpair: %s"%pingresult)
-
         assert len(self.getNodes("victim")) == 1
         assert len(self.getNodes("cncserver")) == 1
         victim = next(iter(self.getNodes("victim")))  # Get a sets only element ...
         cncserver = next(iter(self.getNodes("cncserver")))
+        nameserver = next(iter(self.getNodes("nameserver")))
         logging.debug("IP of Victim: %s; IP of CnC server: %s"%(victim.IP(), cncserver.IP()))
 
         # Start the necessary runnables
@@ -52,7 +52,8 @@ class ZeusExperiment(BriteExperiment):
                                     hostlist=[h.name for h in self.getNodes("cncserver")])
         for h in self.getNodes("bots"):
             self.overlord.startRunnable("zeus.Bot", "Bot", hostlist=[h.name],
-                                        kwargs={"name": h.name, "peerlist": [cncserver.IP()], "pauseBetweenDuties": 1})
+                                        kwargs={"name": h.name, "peerlist": [nameserver.IP()], "pauseBetweenDuties": 1})
+        self.overlord.startRunnable("nameserver", "Nameserver", {"peerlist": [cncserver.IP()]}, hostlist=[nameserver.name])
 
         victim.cmd(self.tsharkCommand%self.pcapfile)
         logging.debug("Runnables wurden gestartet")

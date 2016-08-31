@@ -5,7 +5,7 @@
 # !/usr/bin/env python2
 # coding=UTF-8
 
-import json, logging
+import json, logging, random
 from tornado.web import RequestHandler, Application
 from twisted.internet import reactor, defer
 from twisted.names import dns, error, server
@@ -15,6 +15,7 @@ from actors.AbstractBot import Runnable
 
 known_hosts = {}
 protocol = None
+DNS_PORT = 53
 
 class DynamicResolver(object):
     """
@@ -27,9 +28,10 @@ class DynamicResolver(object):
         requested_hostname = query.name.name
         logging.debug("Received query for %s" % requested_hostname)
 
-        if known_hosts.has_key(requested_hostname):
+        if known_hosts.has_key(requested_hostname) and len(known_hosts[requested_hostname]) >= 1:
+            resultingIP = random.sample(known_hosts[requested_hostname], 1)[0]
             answer = dns.RRHeader(name=requested_hostname,
-                                  payload=dns.Record_A(address=known_hosts[requested_hostname]))
+                                  payload=dns.Record_A(address=resultingIP))
             answers = [answer]
             authority = []
             additional = []
@@ -41,7 +43,11 @@ class DynamicResolver(object):
 def rrUpdate(hostname="", address=""):
     """Updates the address of the given hostname"""
 
-    known_hosts[hostname] = address
+    if known_hosts.has_key(hostname):
+        assert isinstance(known_hosts[hostname], list), "known_hosts[%s] is a %s"%(hostname, type(known_hosts[hostname]))
+        known_hosts[hostname].append(address)
+    else:
+        known_hosts[hostname] = [address]
     logging.debug("Hostname %s is now known under address %s" % (hostname, address))
 
 
@@ -100,10 +106,10 @@ def stopWebserver():
 class Nameserver(Runnable):
     """Runs a nameserver that answers dns queries on the given port and accepts new domains via a web interface."""
 
-    def __init__(self, name=""):
+    def __init__(self, name="", peerlist=None):
         Runnable.__init__(self, name)
 
-    def start(self, dnsport=10053):
+    def start(self, dnsport=DNS_PORT):
         reactor.callInThread(runWebserver)
         reactor.callInThread(runNameserver, dnsport)
 

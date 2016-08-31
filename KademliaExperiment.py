@@ -36,9 +36,11 @@ class KademliaExperiment(BriteExperiment):
         super(KademliaExperiment, self)._setup()
 
         nodes = set(self.topology.nodes)
-        assert len(nodes) >= 28
+        assert len(nodes) >= 37
         self.setNodes("bots", set(random.sample(nodes, 25)))
         nodes -= self.getNodes("bots")
+        self.setNodes("users", set(random.sample(nodes, 25)))
+        nodes -= self.getNodes("users")
         self.setNodes("victim", set(random.sample(nodes, 1)))
         nodes -= self.getNodes("victim")
         self.setNodes("sensor", set(random.sample(nodes, 1)))
@@ -57,8 +59,12 @@ class KademliaExperiment(BriteExperiment):
         self.overlord.startRunnable("Victim", "Victim", hostlist=[victim.name])
         self.overlord.startRunnable("Sensor", "Sensor", {"pagesToWatch": ["http://%s:%d/?root=1234"%(victim.IP(), PORT)]},
                                     hostlist=[h.name for h in self.getNodes("sensor")])
+        for h in self.getNodes("users"):
+            current_peerlist = random.sample([x.IP() for x in self.getNodes("users") | self.getNodes("bots") if not x == h], 3)
+            self.overlord.startRunnable("overbot.KademliaUser", "KademliaUser",
+                                        {"name": h.name, "peerlist": current_peerlist}, hostlist=[h.name])
         for h in self.getNodes("bots"):
-            current_peerlist = random.sample([x.IP() for x in self.getNodes("bots") if not x == h], 3)
+            current_peerlist = random.sample([x.IP() for x in self.getNodes("users") | self.getNodes("bots") if not x == h], 3)
             self.overlord.startRunnable("overbot.KademliaBot", "KademliaBot",
                                         {"name": h.name, "peerlist": current_peerlist}, hostlist=[h.name])
 

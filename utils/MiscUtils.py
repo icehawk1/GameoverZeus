@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # coding=UTF-8
 """Some utility functions that fit nowhere else"""
-import os, errno, random, logging
+import os, errno, random, logging, string
 from marshmallow import Schema, fields, post_load
 from datetime import datetime
 import matplotlib
@@ -107,3 +107,8 @@ def average(seq):
         return float(sum(seq))/len(seq)
     else:
         return 0  # Mathematically not true, but OK for our purposes
+
+
+def generateRandomString(length=8):
+    result = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
+    return result

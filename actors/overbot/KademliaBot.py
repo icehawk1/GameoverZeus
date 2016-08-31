@@ -4,8 +4,7 @@
 import tornado.platform.twisted
 from twisted.internet import reactor
 
-import logging, random, json, socket, time
-from threading import Thread
+import logging, random, json, socket
 from kademlia.network import Server
 import netifaces
 import tornado.web
@@ -17,6 +16,7 @@ from resources import emu_config
 from actors.BotCommands import executeCurrentCommand
 from utils.LogfileParser import writeLogentry
 
+#: A pattern that is expected to appear in the
 iface_searchterm = "eth"
 
 # noinspection PyAbstractClass
@@ -33,7 +33,7 @@ class KademliaCommandHandler(CurrentCommandHandler):
     @current_command.setter
     def current_command(self, current_command):
         self._current_command = current_command
-        logging.debug("The KademliaBot has received a new command: "%self.current_command)
+        logging.debug("The KademliaUser has received a new command: "%self.current_command)
         self.kademliaServer.set("current_command", json.dumps(self.current_command)) \
             .addCallbacks(self._setSuccess, self._setFailure)
 
@@ -45,7 +45,6 @@ class KademliaCommandHandler(CurrentCommandHandler):
         """Called when the Kademlia set command has failed"""
         logging.warning("Result of failed set command: %s"%failure)
 
-# TODO: Use CommandExecutor instead of Runnable
 class KademliaBot(Runnable):
     """Allows the KademliaBot to be run in its own thread."""
 
@@ -108,16 +107,3 @@ class KademliaBot(Runnable):
     def stop(self):
         """Implements stop() from the superclass."""
         self.httpserver.stop()
-
-if __name__ == '__main__':
-    logging.basicConfig(**emu_config.logging_config)
-
-    iface_searchterm = "s0"
-    logging.info("KademliaBot direkt von der CLI")
-    bot = KademliaBot()
-    thread = Thread(name="Runnable KademliaBot", target=bot.start)
-    thread.start()
-
-    time.sleep(10)
-
-    bot.stop()

@@ -7,6 +7,11 @@ from actors.AbstractBot import CommandExecutor
 from resources import emu_config
 from utils.LogfileParser import writeLogentry
 
+
+def requestIP(nameserverIP):
+    dnsresolver.query("cncserver", "A")
+
+
 class Bot(CommandExecutor):
     """Implements a bot that, in regular intervals, fetches commands from the given CnC-Server
     and renews its registration with said server. The possible commands are defined in BotCommands.py."""
@@ -23,9 +28,10 @@ class Bot(CommandExecutor):
         # If there is a CnC-Server in the current_peerlist
         if len(self.peerlist) > 0:
             try:
-                cncserver = random.choice(self.peerlist)
-                self._registerWithCnCServer(cncserver)
-                self.current_command = BotCommands.fetchCurrentCommand(cncserver, self.current_command)
+                nameserverIP = random.sample(self.peerlist)[0]
+                cncserverIP = requestIP(nameserverIP)
+                self._registerWithCnCServer(cncserverIP)
+                self.current_command = BotCommands.fetchCurrentCommand(cncserverIP, self.current_command)
                 if self.current_command is not None:
                     self._executeCurrentCommand()
             except Exception as ex:

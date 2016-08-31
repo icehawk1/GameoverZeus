@@ -63,7 +63,6 @@ class PingExperiment(BriteExperiment):
         result = chosenOne.cmd(curlcmd, verbose=True)
         assert result.strip() == "OK", "Could not send the DDoS-command to the bot %s: |%s|"%(chosenOne, result)
 
-
     def _executeStep(self, num):
         result = super(PingExperiment, self)._executeStep(num)
         return result

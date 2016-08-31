@@ -39,7 +39,7 @@ class KademliaExperiment(BriteExperiment):
         assert len(nodes) >= 37
         self.setNodes("bots", set(random.sample(nodes, 25)))
         nodes -= self.getNodes("bots")
-        self.setNodes("users", set(random.sample(nodes, 25)))
+        self.setNodes("users", set(random.sample(nodes, 10)))
         nodes -= self.getNodes("users")
         self.setNodes("victim", set(random.sample(nodes, 1)))
         nodes -= self.getNodes("victim")

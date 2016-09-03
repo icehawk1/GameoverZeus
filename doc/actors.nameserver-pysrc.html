@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>actors.nameserver</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="actors-module.html">Package&nbsp;actors</a> ::
+        Module&nbsp;nameserver
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="actors.nameserver-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="actors.nameserver-module.html">Module actors.nameserver</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">"""This file implements a nameserver that can issue requests for an internal set of known domain names</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring"> and register new domains via a web interface. The nameserver answers DNS queries on port 66/67."""</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"># !/usr/bin/env python2</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">json</tt><tt class="py-op">,</tt> <tt class="py-name">logging</tt><tt class="py-op">,</tt> <tt class="py-name">random</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">tornado</tt><tt class="py-op">.</tt><tt class="py-name">web</tt> <tt class="py-keyword">import</tt> <tt class="py-name">RequestHandler</tt><tt class="py-op">,</tt> <tt class="py-name">Application</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">internet</tt> <tt class="py-keyword">import</tt> <tt class="py-name">reactor</tt><tt class="py-op">,</tt> <tt class="py-name">defer</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">twisted</tt><tt class="py-op">.</tt><tt class="py-name">names</tt> <tt class="py-keyword">import</tt> <tt class="py-name">dns</tt><tt class="py-op">,</tt> <tt class="py-name">error</tt><tt class="py-op">,</tt> <tt class="py-name">server</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">tornado</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Variable actors.nameserver.httpserver=actors.nameserver-module.html#httpserver"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-0', 'httpserver', 'link-0');">httpserver</a></tt> <tt class="py-keyword">import</tt> <tt class="py-name">HTTPServer</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Package resources=resources-module.html"><a title="resources" class="py-name" href="#" onclick="return doclink('link-1', 'resources', 'link-1');">resources</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Module resources.emu_config=resources.emu_config-module.html"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-2', 'emu_config', 'link-2');">emu_config</a></tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name" targets="Package actors=actors-module.html"><a title="actors" class="py-name" href="#" onclick="return doclink('link-3', 'actors', 'link-3');">actors</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module actors.AbstractBot=actors.AbstractBot-module.html"><a title="actors.AbstractBot" class="py-name" href="#" onclick="return doclink('link-4', 'AbstractBot', 'link-4');">AbstractBot</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class actors.AbstractBot.Runnable=actors.AbstractBot.Runnable-class.html"><a title="actors.AbstractBot.Runnable" class="py-name" href="#" onclick="return doclink('link-5', 'Runnable', 'link-5');">Runnable</a></tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt id="link-6" class="py-name" targets="Variable actors.nameserver.known_hosts=actors.nameserver-module.html#known_hosts"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-6', 'known_hosts', 'link-6');">known_hosts</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt id="link-7" class="py-name" targets="Variable actors.nameserver.protocol=actors.nameserver-module.html#protocol"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-7', 'protocol', 'link-7');">protocol</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt id="link-8" class="py-name" targets="Variable actors.nameserver.DNS_PORT=actors.nameserver-module.html#DNS_PORT"><a title="actors.nameserver.DNS_PORT" class="py-name" href="#" onclick="return doclink('link-8', 'DNS_PORT', 'link-8');">DNS_PORT</a></tt> <tt class="py-op">=</tt> <tt class="py-number">53</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="DynamicResolver"></a><div id="DynamicResolver-def"><a name="L21"></a><tt class="py-lineno"> 21</tt> <a class="py-toggle" href="#" id="DynamicResolver-toggle" onclick="return toggle('DynamicResolver');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="actors.nameserver.DynamicResolver-class.html">DynamicResolver</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DynamicResolver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="DynamicResolver-expanded"><a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">    A resolver which calculates the answers to certain queries based on an internal dictionary</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="DynamicResolver.query"></a><div id="DynamicResolver.query-def"><a name="L26"></a><tt class="py-lineno"> 26</tt> <a class="py-toggle" href="#" id="DynamicResolver.query-toggle" onclick="return toggle('DynamicResolver.query');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver.DynamicResolver-class.html#query">query</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">query</tt><tt class="py-op">,</tt> <tt class="py-param">timeout</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DynamicResolver.query-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="DynamicResolver.query-expanded"><a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">        <tt class="py-docstring">"""Calculate the response to the given DNS query."""</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-name">requested_hostname</tt> <tt class="py-op">=</tt> <tt id="link-9" class="py-name" targets="Method actors.nameserver.DynamicResolver.query()=actors.nameserver.DynamicResolver-class.html#query"><a title="actors.nameserver.DynamicResolver.query" class="py-name" href="#" onclick="return doclink('link-9', 'query', 'link-9');">query</a></tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">.</tt><tt class="py-name">name</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Received query for %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">requested_hostname</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-10" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-10', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt class="py-name">requested_hostname</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-11', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">[</tt><tt class="py-name">requested_hostname</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">            <tt class="py-name">resultingIP</tt> <tt class="py-op">=</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">sample</tt><tt class="py-op">(</tt><tt id="link-12" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-12', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">[</tt><tt class="py-name">requested_hostname</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">            <tt class="py-name">answer</tt> <tt class="py-op">=</tt> <tt class="py-name">dns</tt><tt class="py-op">.</tt><tt class="py-name">RRHeader</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">=</tt><tt class="py-name">requested_hostname</tt><tt class="py-op">,</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">                                  <tt class="py-name">payload</tt><tt class="py-op">=</tt><tt class="py-name">dns</tt><tt class="py-op">.</tt><tt class="py-name">Record_A</tt><tt class="py-op">(</tt><tt class="py-name">address</tt><tt class="py-op">=</tt><tt class="py-name">resultingIP</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">            <tt class="py-name">answers</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">answer</tt><tt class="py-op">]</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">            <tt class="py-name">authority</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">            <tt class="py-name">additional</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">defer</tt><tt class="py-op">.</tt><tt class="py-name">succeed</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">answers</tt><tt class="py-op">,</tt> <tt class="py-name">authority</tt><tt class="py-op">,</tt> <tt class="py-name">additional</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">defer</tt><tt class="py-op">.</tt><tt class="py-name">fail</tt><tt class="py-op">(</tt><tt class="py-name">error</tt><tt class="py-op">.</tt><tt class="py-name">DomainError</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
+<a name="rrUpdate"></a><div id="rrUpdate-def"><a name="L44"></a><tt class="py-lineno"> 44</tt> <a class="py-toggle" href="#" id="rrUpdate-toggle" onclick="return toggle('rrUpdate');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver-module.html#rrUpdate">rrUpdate</a><tt class="py-op">(</tt><tt class="py-param">hostname</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">,</tt> <tt class="py-param">address</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="rrUpdate-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="rrUpdate-expanded"><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt class="py-docstring">"""Updates the address of the given hostname"""</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-13" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-13', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt class="py-name">hostname</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt id="link-14" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-14', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">[</tt><tt class="py-name">hostname</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">list</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">"known_hosts[%s] is a %s"</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">hostname</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">(</tt><tt id="link-15" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-15', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">[</tt><tt class="py-name">hostname</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt id="link-16" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-16', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">[</tt><tt class="py-name">hostname</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">address</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt id="link-17" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-17', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">[</tt><tt class="py-name">hostname</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">address</tt><tt class="py-op">]</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">    <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Hostname %s is now known under address %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">hostname</tt><tt class="py-op">,</tt> <tt class="py-name">address</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"> </tt>
+<a name="runNameserver"></a><div id="runNameserver-def"><a name="L55"></a><tt class="py-lineno"> 55</tt> <a class="py-toggle" href="#" id="runNameserver-toggle" onclick="return toggle('runNameserver');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver-module.html#runNameserver">runNameserver</a><tt class="py-op">(</tt><tt class="py-param">dnsport</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="runNameserver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="runNameserver-expanded"><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt class="py-docstring">"""Run the DNS server.</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">    :param dnsport: The port on which to listen for dns requests"""</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">    <tt class="py-keyword">global</tt> <tt id="link-18" class="py-name"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-18', 'protocol', 'link-7');">protocol</a></tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">    <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Nameserver starts on port %d"</tt><tt class="py-op">%</tt><tt class="py-name">dnsport</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-name">factory</tt> <tt class="py-op">=</tt> <tt class="py-name">server</tt><tt class="py-op">.</tt><tt class="py-name">DNSServerFactory</tt><tt class="py-op">(</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">clients</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt id="link-19" class="py-name" targets="Class actors.nameserver.DynamicResolver=actors.nameserver.DynamicResolver-class.html"><a title="actors.nameserver.DynamicResolver" class="py-name" href="#" onclick="return doclink('link-19', 'DynamicResolver', 'link-19');">DynamicResolver</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt id="link-20" class="py-name"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-20', 'protocol', 'link-7');">protocol</a></tt> <tt class="py-op">=</tt> <tt class="py-name">dns</tt><tt class="py-op">.</tt><tt class="py-name">DNSDatagramProtocol</tt><tt class="py-op">(</tt><tt class="py-name">controller</tt><tt class="py-op">=</tt><tt class="py-name">factory</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">    <tt class="py-name">reactor</tt><tt class="py-op">.</tt><tt class="py-name">listenUDP</tt><tt class="py-op">(</tt><tt class="py-name">dnsport</tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-21', 'protocol', 'link-7');">protocol</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="stopNameserver"></a><div id="stopNameserver-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="stopNameserver-toggle" onclick="return toggle('stopNameserver');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver-module.html#stopNameserver">stopNameserver</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="stopNameserver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="stopNameserver-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">    <tt class="py-keyword">global</tt> <tt id="link-22" class="py-name"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-22', 'protocol', 'link-7');">protocol</a></tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-keyword">assert</tt> <tt id="link-23" class="py-name"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-23', 'protocol', 'link-7');">protocol</a></tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">    <tt id="link-24" class="py-name"><a title="actors.nameserver.protocol" class="py-name" href="#" onclick="return doclink('link-24', 'protocol', 'link-7');">protocol</a></tt><tt class="py-op">.</tt><tt class="py-name">stopProtocol</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"> </tt>
+<a name="HostRegisterHandler"></a><div id="HostRegisterHandler-def"><a name="L72"></a><tt class="py-lineno"> 72</tt> <a class="py-toggle" href="#" id="HostRegisterHandler-toggle" onclick="return toggle('HostRegisterHandler');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="actors.nameserver.HostRegisterHandler-class.html">HostRegisterHandler</a><tt class="py-op">(</tt><tt class="py-base-class">RequestHandler</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="HostRegisterHandler-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="HostRegisterHandler-expanded"><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">    <tt class="py-docstring">"""Allows the address of a given hostname to be set via HTTP POST and dumps all known domains on a HTTP GET"""</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">    <tt id="link-25" class="py-name" targets="Variable actors.nameserver.HostRegisterHandler.registered_bots=actors.nameserver.HostRegisterHandler-class.html#registered_bots,Variable actors.zeus.CnCServer.RegisterHandler.registered_bots=actors.zeus.CnCServer.RegisterHandler-class.html#registered_bots"><a title="actors.nameserver.HostRegisterHandler.registered_bots
+actors.zeus.CnCServer.RegisterHandler.registered_bots" class="py-name" href="#" onclick="return doclink('link-25', 'registered_bots', 'link-25');">registered_bots</a></tt> <tt class="py-op">=</tt> <tt class="py-name">dict</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="HostRegisterHandler.get"></a><div id="HostRegisterHandler.get-def"><a name="L77"></a><tt class="py-lineno"> 77</tt> <a class="py-toggle" href="#" id="HostRegisterHandler.get-toggle" onclick="return toggle('HostRegisterHandler.get');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver.HostRegisterHandler-class.html#get">get</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="HostRegisterHandler.get-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="HostRegisterHandler.get-expanded"><a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">set_header</tt><tt class="py-op">(</tt><tt class="py-string">"Content-Type"</tt><tt class="py-op">,</tt> <tt class="py-string">"application/json"</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method overlord.HostActions.OverlordClient.getID_args.write()=overlord.HostActions.OverlordClient.getID_args-class.html#write,Method overlord.HostActions.OverlordClient.getID_result.write()=overlord.HostActions.OverlordClient.getID_result-class.html#write,Method overlord.HostActions.OverlordClient.startRunnable_args.write()=overlord.HostActions.OverlordClient.startRunnable_args-class.html#write,Method overlord.HostActions.OverlordClient.startRunnable_result.write()=overlord.HostActions.OverlordClient.startRunnable_result-class.html#write,Method overlord.HostActions.OverlordClient.stopRunnable_args.write()=overlord.HostActions.OverlordClient.stopRunnable_args-class.html#write,Method overlord.HostActions.OverlordClient.stopRunnable_result.write()=overlord.HostActions.OverlordClient.stopRunnable_result-class.html#write,Method overlord.HostActions.ttypes.OverlordException.write()=overlord.HostActions.ttypes.OverlordException-class.html#write"><a title="overlord.HostActions.OverlordClient.getID_args.write
+overlord.HostActions.OverlordClient.getID_result.write
+overlord.HostActions.OverlordClient.startRunnable_args.write
+overlord.HostActions.OverlordClient.startRunnable_result.write
+overlord.HostActions.OverlordClient.stopRunnable_args.write
+overlord.HostActions.OverlordClient.stopRunnable_result.write
+overlord.HostActions.ttypes.OverlordException.write" class="py-name" href="#" onclick="return doclink('link-26', 'write', 'link-26');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">json</tt><tt class="py-op">.</tt><tt class="py-name">dumps</tt><tt class="py-op">(</tt><tt id="link-27" class="py-name"><a title="actors.nameserver.known_hosts" class="py-name" href="#" onclick="return doclink('link-27', 'known_hosts', 'link-6');">known_hosts</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="HostRegisterHandler.post"></a><div id="HostRegisterHandler.post-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="HostRegisterHandler.post-toggle" onclick="return toggle('HostRegisterHandler.post');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver.HostRegisterHandler-class.html#post">post</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="HostRegisterHandler.post-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="HostRegisterHandler.post-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">set_header</tt><tt class="py-op">(</tt><tt class="py-string">"Content-Type"</tt><tt class="py-op">,</tt> <tt class="py-string">"text/plain"</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-name">hostname</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">get_body_argument</tt><tt class="py-op">(</tt><tt class="py-string">"hostname"</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">address</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">get_body_argument</tt><tt class="py-op">(</tt><tt class="py-string">"address"</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt id="link-28" class="py-name" targets="Function actors.nameserver.rrUpdate()=actors.nameserver-module.html#rrUpdate"><a title="actors.nameserver.rrUpdate" class="py-name" href="#" onclick="return doclink('link-28', 'rrUpdate', 'link-28');">rrUpdate</a></tt><tt class="py-op">(</tt><tt class="py-name">hostname</tt><tt class="py-op">,</tt> <tt class="py-name">address</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="overlord.HostActions.OverlordClient.getID_args.write
+overlord.HostActions.OverlordClient.getID_result.write
+overlord.HostActions.OverlordClient.startRunnable_args.write
+overlord.HostActions.OverlordClient.startRunnable_result.write
+overlord.HostActions.OverlordClient.stopRunnable_args.write
+overlord.HostActions.OverlordClient.stopRunnable_result.write
+overlord.HostActions.ttypes.OverlordException.write" class="py-name" href="#" onclick="return doclink('link-29', 'write', 'link-26');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">"OK"</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt id="link-30" class="py-name"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-30', 'httpserver', 'link-0');">httpserver</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="runWebserver"></a><div id="runWebserver-def"><a name="L91"></a><tt class="py-lineno"> 91</tt> <a class="py-toggle" href="#" id="runWebserver-toggle" onclick="return toggle('runWebserver');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver-module.html#runWebserver">runWebserver</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="runWebserver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="runWebserver-expanded"><a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">    <tt class="py-docstring">"""Run a webserver that allows to register additonal domain names.</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">    Helper method so that the server can run in its own thread."""</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">    <tt class="py-keyword">global</tt> <tt id="link-31" class="py-name"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-31', 'httpserver', 'link-0');">httpserver</a></tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">    <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">debug</tt><tt class="py-op">(</tt><tt class="py-string">"Webserver starts on port %d"</tt><tt class="py-op">%</tt><tt id="link-32" class="py-name"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-32', 'emu_config', 'link-2');">emu_config</a></tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Variable resources.emu_config.PORT=resources.emu_config-module.html#PORT"><a title="resources.emu_config.PORT" class="py-name" href="#" onclick="return doclink('link-33', 'PORT', 'link-33');">PORT</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">    <tt class="py-name">app</tt> <tt class="py-op">=</tt> <tt class="py-name">Application</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-string">"/register-host"</tt><tt class="py-op">,</tt> <tt id="link-34" class="py-name" targets="Class actors.nameserver.HostRegisterHandler=actors.nameserver.HostRegisterHandler-class.html"><a title="actors.nameserver.HostRegisterHandler" class="py-name" href="#" onclick="return doclink('link-34', 'HostRegisterHandler', 'link-34');">HostRegisterHandler</a></tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">autoreload</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt id="link-35" class="py-name"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-35', 'httpserver', 'link-0');">httpserver</a></tt> <tt class="py-op">=</tt> <tt class="py-name">HTTPServer</tt><tt class="py-op">(</tt><tt class="py-name">app</tt><tt class="py-op">)</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-name">server</tt><tt class="py-op">.</tt><tt class="py-name">listen</tt><tt class="py-op">(</tt><tt id="link-36" class="py-name"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-36', 'emu_config', 'link-2');">emu_config</a></tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="resources.emu_config.PORT" class="py-name" href="#" onclick="return doclink('link-37', 'PORT', 'link-33');">PORT</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="stopWebserver"></a><div id="stopWebserver-def"><a name="L102"></a><tt class="py-lineno">102</tt> <a class="py-toggle" href="#" id="stopWebserver-toggle" onclick="return toggle('stopWebserver');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver-module.html#stopWebserver">stopWebserver</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="stopWebserver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="stopWebserver-expanded"><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-docstring">"""Stops the webserver"""</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">    <tt class="py-keyword">global</tt> <tt id="link-38" class="py-name"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-38', 'httpserver', 'link-0');">httpserver</a></tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">    <tt class="py-keyword">assert</tt> <tt id="link-39" class="py-name"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-39', 'httpserver', 'link-0');">httpserver</a></tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt id="link-40" class="py-name"><a title="actors.nameserver.httpserver" class="py-name" href="#" onclick="return doclink('link-40', 'httpserver', 'link-0');">httpserver</a></tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.stop()=actors.AbstractBot.CommandExecutor-class.html#stop,Method actors.AbstractBot.Runnable.stop()=actors.AbstractBot.Runnable-class.html#stop,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.stop()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#stop,Method actors.Sensor.Sensor.stop()=actors.Sensor.Sensor-class.html#stop,Method actors.TestRunnable.TestRunnable.stop()=actors.TestRunnable.TestRunnable-class.html#stop,Method actors.Victim.Victim.stop()=actors.Victim.Victim-class.html#stop,Method actors.nameserver.Nameserver.stop()=actors.nameserver.Nameserver-class.html#stop,Method actors.overbot.KademliaBot.KademliaBot.stop()=actors.overbot.KademliaBot.KademliaBot-class.html#stop,Method actors.ping.Servent.Servent.stop()=actors.ping.Servent.Servent-class.html#stop,Method actors.zeus.CnCServer.CnCServer.stop()=actors.zeus.CnCServer.CnCServer-class.html#stop,Method actors.zeus.Proxy.Proxy.stop()=actors.zeus.Proxy.Proxy-class.html#stop,Method topologies.BriteTopology.BriteTopology.stop()=topologies.BriteTopology.BriteTopology-class.html#stop,Method topologies.LayeredTopology.LayeredTopology.stop()=topologies.LayeredTopology.LayeredTopology-class.html#stop,Method utils.Floodlight.Controller.stop()=utils.Floodlight.Controller-class.html#stop"><a title="actors.AbstractBot.CommandExecutor.stop
+actors.AbstractBot.Runnable.stop
+actors.RandomTrafficGenerator.RandomTrafficReceiver.stop
+actors.Sensor.Sensor.stop
+actors.TestRunnable.TestRunnable.stop
+actors.Victim.Victim.stop
+actors.nameserver.Nameserver.stop
+actors.overbot.KademliaBot.KademliaBot.stop
+actors.ping.Servent.Servent.stop
+actors.zeus.CnCServer.CnCServer.stop
+actors.zeus.Proxy.Proxy.stop
+topologies.BriteTopology.BriteTopology.stop
+topologies.LayeredTopology.LayeredTopology.stop
+utils.Floodlight.Controller.stop" class="py-name" href="#" onclick="return doclink('link-41', 'stop', 'link-41');">stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="Nameserver"></a><div id="Nameserver-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="Nameserver-toggle" onclick="return toggle('Nameserver');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="actors.nameserver.Nameserver-class.html">Nameserver</a><tt class="py-op">(</tt><tt class="py-base-class">Runnable</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Nameserver-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Nameserver-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">    <tt class="py-docstring">"""Runs a nameserver that answers dns queries on the given port and accepts new domains via a web interface."""</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="Nameserver.__init__"></a><div id="Nameserver.__init__-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="Nameserver.__init__-toggle" onclick="return toggle('Nameserver.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver.Nameserver-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-string">""</tt><tt class="py-op">,</tt> <tt class="py-param">peerlist</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Nameserver.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Nameserver.__init__-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt id="link-42" class="py-name"><a title="actors.AbstractBot.Runnable" class="py-name" href="#" onclick="return doclink('link-42', 'Runnable', 'link-5');">Runnable</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Method Experiment.BriteExperiment.__init__()=Experiment.BriteExperiment-class.html#__init__,Method Experiment.Experiment.__init__()=Experiment.Experiment-class.html#__init__,Method OverbotExperiment.KademliaExperiment.__init__()=OverbotExperiment.KademliaExperiment-class.html#__init__,Method PerformanceExperiment.PerformanceExperiment.__init__()=PerformanceExperiment.PerformanceExperiment-class.html#__init__,Method PingExperiment.PingExperiment.__init__()=PingExperiment.PingExperiment-class.html#__init__,Method ZeusExperiment.ZeusExperiment.__init__()=ZeusExperiment.ZeusExperiment-class.html#__init__,Method actors.AbstractBot.CommandExecutor.__init__()=actors.AbstractBot.CommandExecutor-class.html#__init__,Method actors.AbstractBot.Runnable.__init__()=actors.AbstractBot.Runnable-class.html#__init__,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.__init__()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#__init__,Method actors.RandomTrafficGenerator.RandomTrafficSender.__init__()=actors.RandomTrafficGenerator.RandomTrafficSender-class.html#__init__,Method actors.Sensor.Sensor.__init__()=actors.Sensor.Sensor-class.html#__init__,Method actors.TestRunnable.TestRunnable.__init__()=actors.TestRunnable.TestRunnable-class.html#__init__,Method actors.Victim.Victim.__init__()=actors.Victim.Victim-class.html#__init__,Method actors.nameserver.Nameserver.__init__()=actors.nameserver.Nameserver-class.html#__init__,Method actors.overbot.KademliaBot.KademliaBot.__init__()=actors.overbot.KademliaBot.KademliaBot-class.html#__init__,Method actors.overbot.User.KademliaUser.__init__()=actors.overbot.User.KademliaUser-class.html#__init__,Method actors.ping.Client.Client.__init__()=actors.ping.Client.Client-class.html#__init__,Method actors.ping.Servent.Servent.__init__()=actors.ping.Servent.Servent-class.html#__init__,Method actors.zeus.Bot.Bot.__init__()=actors.zeus.Bot.Bot-class.html#__init__,Method actors.zeus.CnCServer.BotInformation.__init__()=actors.zeus.CnCServer.BotInformation-class.html#__init__,Method actors.zeus.CnCServer.CnCServer.__init__()=actors.zeus.CnCServer.CnCServer-class.html#__init__,Method actors.zeus.Proxy.Proxy.__init__()=actors.zeus.Proxy.Proxy-class.html#__init__,Method overlord.Host.HostActionHandler.__init__()=overlord.Host.HostActionHandler-class.html#__init__,Method overlord.HostActions.OverlordClient.Client.__init__()=overlord.HostActions.OverlordClient.Client-class.html#__init__,Method overlord.HostActions.OverlordClient.Processor.__init__()=overlord.HostActions.OverlordClient.Processor-class.html#__init__,Method overlord.HostActions.OverlordClient.getID_result.__init__()=overlord.HostActions.OverlordClient.getID_result-class.html#__init__,Method overlord.HostActions.OverlordClient.startRunnable_args.__init__()=overlord.HostActions.OverlordClient.startRunnable_args-class.html#__init__,Method overlord.HostActions.OverlordClient.startRunnable_result.__init__()=overlord.HostActions.OverlordClient.startRunnable_result-class.html#__init__,Method overlord.HostActions.OverlordClient.stopRunnable_args.__init__()=overlord.HostActions.OverlordClient.stopRunnable_args-class.html#__init__,Method overlord.HostActions.OverlordClient.stopRunnable_result.__init__()=overlord.HostActions.OverlordClient.stopRunnable_result-class.html#__init__,Method overlord.HostActions.ttypes.OverlordException.__init__()=overlord.HostActions.ttypes.OverlordException-class.html#__init__,Method overlord.Overlord.Overlord.__init__()=overlord.Overlord.Overlord-class.html#__init__,Method overlord.Overlord._HostConnector.__init__()=overlord.Overlord._HostConnector-class.html#__init__,Method topologies.AbstractTopology.AbstractTopology.__init__()=topologies.AbstractTopology.AbstractTopology-class.html#__init__,Method topologies.BriteTopology.BriteTopology.__init__()=topologies.BriteTopology.BriteTopology-class.html#__init__,Method topologies.LayeredTopology.LayeredTopology.__init__()=topologies.LayeredTopology.LayeredTopology-class.html#__init__,Method topologies.LayeredTopology._Layer.__init__()=topologies.LayeredTopology._Layer-class.html#__init__,Method utils.DotFileWriter.DotFileWriter.__init__()=utils.DotFileWriter.DotFileWriter-class.html#__init__,Method utils.LogfileParser.Logentry.__init__()=utils.LogfileParser.Logentry-class.html#__init__,Method utils.MiscUtils.NetworkAddress.__init__()=utils.MiscUtils.NetworkAddress-class.html#__init__,Method utils.TcptraceParser.TcptraceParser.__init__()=utils.TcptraceParser.TcptraceParser-class.html#__init__"><a title="Experiment.BriteExperiment.__init__
+Experiment.Experiment.__init__
+OverbotExperiment.KademliaExperiment.__init__
+PerformanceExperiment.PerformanceExperiment.__init__
+PingExperiment.PingExperiment.__init__
+ZeusExperiment.ZeusExperiment.__init__
+actors.AbstractBot.CommandExecutor.__init__
+actors.AbstractBot.Runnable.__init__
+actors.RandomTrafficGenerator.RandomTrafficReceiver.__init__
+actors.RandomTrafficGenerator.RandomTrafficSender.__init__
+actors.Sensor.Sensor.__init__
+actors.TestRunnable.TestRunnable.__init__
+actors.Victim.Victim.__init__
+actors.nameserver.Nameserver.__init__
+actors.overbot.KademliaBot.KademliaBot.__init__
+actors.overbot.User.KademliaUser.__init__
+actors.ping.Client.Client.__init__
+actors.ping.Servent.Servent.__init__
+actors.zeus.Bot.Bot.__init__
+actors.zeus.CnCServer.BotInformation.__init__
+actors.zeus.CnCServer.CnCServer.__init__
+actors.zeus.Proxy.Proxy.__init__
+overlord.Host.HostActionHandler.__init__
+overlord.HostActions.OverlordClient.Client.__init__
+overlord.HostActions.OverlordClient.Processor.__init__
+overlord.HostActions.OverlordClient.getID_result.__init__
+overlord.HostActions.OverlordClient.startRunnable_args.__init__
+overlord.HostActions.OverlordClient.startRunnable_result.__init__
+overlord.HostActions.OverlordClient.stopRunnable_args.__init__
+overlord.HostActions.OverlordClient.stopRunnable_result.__init__
+overlord.HostActions.ttypes.OverlordException.__init__
+overlord.Overlord.Overlord.__init__
+overlord.Overlord._HostConnector.__init__
+topologies.AbstractTopology.AbstractTopology.__init__
+topologies.BriteTopology.BriteTopology.__init__
+topologies.LayeredTopology.LayeredTopology.__init__
+topologies.LayeredTopology._Layer.__init__
+utils.DotFileWriter.DotFileWriter.__init__
+utils.LogfileParser.Logentry.__init__
+utils.MiscUtils.NetworkAddress.__init__
+utils.TcptraceParser.TcptraceParser.__init__" class="py-name" href="#" onclick="return doclink('link-43', '__init__', 'link-43');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"> </tt>
+<a name="Nameserver.start"></a><div id="Nameserver.start-def"><a name="L114"></a><tt class="py-lineno">114</tt> <a class="py-toggle" href="#" id="Nameserver.start-toggle" onclick="return toggle('Nameserver.start');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver.Nameserver-class.html#start">start</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">dnsport</tt><tt class="py-op">=</tt><tt id="link-44" class="py-name"><a title="actors.nameserver.DNS_PORT" class="py-name" href="#" onclick="return doclink('link-44', 'DNS_PORT', 'link-8');">DNS_PORT</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Nameserver.start-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Nameserver.start-expanded"><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-name">reactor</tt><tt class="py-op">.</tt><tt class="py-name">callInThread</tt><tt class="py-op">(</tt><tt id="link-45" class="py-name" targets="Function actors.nameserver.runWebserver()=actors.nameserver-module.html#runWebserver"><a title="actors.nameserver.runWebserver" class="py-name" href="#" onclick="return doclink('link-45', 'runWebserver', 'link-45');">runWebserver</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-name">reactor</tt><tt class="py-op">.</tt><tt class="py-name">callInThread</tt><tt class="py-op">(</tt><tt id="link-46" class="py-name" targets="Function actors.nameserver.runNameserver()=actors.nameserver-module.html#runNameserver"><a title="actors.nameserver.runNameserver" class="py-name" href="#" onclick="return doclink('link-46', 'runNameserver', 'link-46');">runNameserver</a></tt><tt class="py-op">,</tt> <tt class="py-name">dnsport</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"> </tt>
+<a name="Nameserver.stop"></a><div id="Nameserver.stop-def"><a name="L118"></a><tt class="py-lineno">118</tt> <a class="py-toggle" href="#" id="Nameserver.stop-toggle" onclick="return toggle('Nameserver.stop');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.nameserver.Nameserver-class.html#stop">stop</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Nameserver.stop-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Nameserver.stop-expanded"><a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt id="link-47" class="py-name" targets="Function actors.nameserver.stopWebserver()=actors.nameserver-module.html#stopWebserver"><a title="actors.nameserver.stopWebserver" class="py-name" href="#" onclick="return doclink('link-47', 'stopWebserver', 'link-47');">stopWebserver</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt id="link-48" class="py-name" targets="Function actors.nameserver.stopNameserver()=actors.nameserver-module.html#stopNameserver"><a title="actors.nameserver.stopNameserver" class="py-name" href="#" onclick="return doclink('link-48', 'stopNameserver', 'link-48');">stopNameserver</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

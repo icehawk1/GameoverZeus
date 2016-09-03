@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>topologies.GameoverTopologyTest</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="topologies-module.html">Package&nbsp;topologies</a> ::
+        Module&nbsp;GameoverTopologyTest
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="topologies.GameoverTopologyTest-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="topologies.GameoverTopologyTest-module.html">Module topologies.GameoverTopologyTest</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">"""This file tests a topology where 6 Bots talk to 2 CnC servers via a number of Proxies. The names are resolved via</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">one nameserver."""</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">logging</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">random</tt><tt class="py-op">,</tt> <tt class="py-name">time</tt><tt class="py-op">,</tt> <tt class="py-name">unittest</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">timeout_decorator</tt> <tt class="py-keyword">import</tt> <tt class="py-name">timeout</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module topologies.LayeredTopology=topologies.LayeredTopology-module.html,Class topologies.LayeredTopology.LayeredTopology=topologies.LayeredTopology.LayeredTopology-class.html"><a title="topologies.LayeredTopology
+topologies.LayeredTopology.LayeredTopology" class="py-name" href="#" onclick="return doclink('link-0', 'LayeredTopology', 'link-0');">LayeredTopology</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="topologies.LayeredTopology
+topologies.LayeredTopology.LayeredTopology" class="py-name" href="#" onclick="return doclink('link-1', 'LayeredTopology', 'link-0');">LayeredTopology</a></tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Package resources=resources-module.html"><a title="resources" class="py-name" href="#" onclick="return doclink('link-2', 'resources', 'link-2');">resources</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Module resources.emu_config=resources.emu_config-module.html"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-3', 'emu_config', 'link-3');">emu_config</a></tt> </tt>
+<a name="GameoverTopologyTest"></a><div id="GameoverTopologyTest-def"><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest-toggle" onclick="return toggle('GameoverTopologyTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html">GameoverTopologyTest</a><tt class="py-op">(</tt><tt class="py-base-class">unittest</tt><tt class="py-op">.</tt><tt class="py-base-class">TestCase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="GameoverTopologyTest-expanded"><a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">classmethod</tt> </tt>
+<a name="GameoverTopologyTest.setUpClass"></a><div id="GameoverTopologyTest.setUpClass-def"><a name="L15"></a><tt class="py-lineno">15</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.setUpClass-toggle" onclick="return toggle('GameoverTopologyTest.setUpClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#setUpClass">setUpClass</a><tt class="py-op">(</tt><tt class="py-param">cls</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.setUpClass-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.setUpClass-expanded"><a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">        <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name"><a title="topologies.LayeredTopology
+topologies.LayeredTopology.LayeredTopology" class="py-name" href="#" onclick="return doclink('link-4', 'LayeredTopology', 'link-0');">LayeredTopology</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">        <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method topologies.LayeredTopology.LayeredTopology.addLayer()=topologies.LayeredTopology.LayeredTopology-class.html#addLayer"><a title="topologies.LayeredTopology.LayeredTopology.addLayer" class="py-name" href="#" onclick="return doclink('link-5', 'addLayer', 'link-5');">addLayer</a></tt><tt class="py-op">(</tt><tt class="py-string">"CnC"</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-6', 'emu_config', 'link-3');">emu_config</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Variable resources.emu_config.basedir=resources.emu_config-module.html#basedir"><a title="resources.emu_config.basedir" class="py-name" href="#" onclick="return doclink('link-7', 'basedir', 'link-7');">basedir</a></tt> <tt class="py-op">+</tt> <tt class="py-string">"/actors/CnCServer.py"</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="topologies.LayeredTopology.LayeredTopology.addLayer" class="py-name" href="#" onclick="return doclink('link-8', 'addLayer', 'link-5');">addLayer</a></tt><tt class="py-op">(</tt><tt class="py-string">"Bot"</tt><tt class="py-op">,</tt> <tt class="py-number">6</tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-9', 'emu_config', 'link-3');">emu_config</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="resources.emu_config.basedir" class="py-name" href="#" onclick="return doclink('link-10', 'basedir', 'link-7');">basedir</a></tt> <tt class="py-op">+</tt> <tt class="py-string">"/actors/Bot.py"</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="topologies.LayeredTopology.LayeredTopology.addLayer" class="py-name" href="#" onclick="return doclink('link-11', 'addLayer', 'link-5');">addLayer</a></tt><tt class="py-op">(</tt><tt class="py-string">"DNS"</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-12', 'emu_config', 'link-3');">emu_config</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="resources.emu_config.basedir" class="py-name" href="#" onclick="return doclink('link-13', 'basedir', 'link-7');">basedir</a></tt> <tt class="py-op">+</tt> <tt class="py-string">"/actors/nameserver.py"</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">        <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.start()=actors.AbstractBot.CommandExecutor-class.html#start,Method actors.AbstractBot.Runnable.start()=actors.AbstractBot.Runnable-class.html#start,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.start()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#start,Method actors.TestRunnable.TestRunnable.start()=actors.TestRunnable.TestRunnable-class.html#start,Method actors.Victim.Victim.start()=actors.Victim.Victim-class.html#start,Method actors.nameserver.Nameserver.start()=actors.nameserver.Nameserver-class.html#start,Method actors.overbot.KademliaBot.KademliaBot.start()=actors.overbot.KademliaBot.KademliaBot-class.html#start,Method actors.overbot.User.KademliaUser.start()=actors.overbot.User.KademliaUser-class.html#start,Method actors.ping.Servent.Servent.start()=actors.ping.Servent.Servent-class.html#start,Method actors.zeus.CnCServer.CnCServer.start()=actors.zeus.CnCServer.CnCServer-class.html#start,Method actors.zeus.Proxy.Proxy.start()=actors.zeus.Proxy.Proxy-class.html#start,Method topologies.BriteTopology.BriteTopology.start()=topologies.BriteTopology.BriteTopology-class.html#start,Method topologies.LayeredTopology.LayeredTopology.start()=topologies.LayeredTopology.LayeredTopology-class.html#start,Method utils.Floodlight.Controller.start()=utils.Floodlight.Controller-class.html#start"><a title="actors.AbstractBot.CommandExecutor.start
+actors.AbstractBot.Runnable.start
+actors.RandomTrafficGenerator.RandomTrafficReceiver.start
+actors.TestRunnable.TestRunnable.start
+actors.Victim.Victim.start
+actors.nameserver.Nameserver.start
+actors.overbot.KademliaBot.KademliaBot.start
+actors.overbot.User.KademliaUser.start
+actors.ping.Servent.Servent.start
+actors.zeus.CnCServer.CnCServer.start
+actors.zeus.Proxy.Proxy.start
+topologies.BriteTopology.BriteTopology.start
+topologies.LayeredTopology.LayeredTopology.start
+utils.Floodlight.Controller.start" class="py-name" href="#" onclick="return doclink('link-14', 'start', 'link-14');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">classmethod</tt> </tt>
+<a name="GameoverTopologyTest.tearDownClass"></a><div id="GameoverTopologyTest.tearDownClass-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.tearDownClass-toggle" onclick="return toggle('GameoverTopologyTest.tearDownClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#tearDownClass">tearDownClass</a><tt class="py-op">(</tt><tt class="py-param">cls</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.tearDownClass-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.tearDownClass-expanded"><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-name">cls</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.stop()=actors.AbstractBot.CommandExecutor-class.html#stop,Method actors.AbstractBot.Runnable.stop()=actors.AbstractBot.Runnable-class.html#stop,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.stop()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#stop,Method actors.Sensor.Sensor.stop()=actors.Sensor.Sensor-class.html#stop,Method actors.TestRunnable.TestRunnable.stop()=actors.TestRunnable.TestRunnable-class.html#stop,Method actors.Victim.Victim.stop()=actors.Victim.Victim-class.html#stop,Method actors.nameserver.Nameserver.stop()=actors.nameserver.Nameserver-class.html#stop,Method actors.overbot.KademliaBot.KademliaBot.stop()=actors.overbot.KademliaBot.KademliaBot-class.html#stop,Method actors.ping.Servent.Servent.stop()=actors.ping.Servent.Servent-class.html#stop,Method actors.zeus.CnCServer.CnCServer.stop()=actors.zeus.CnCServer.CnCServer-class.html#stop,Method actors.zeus.Proxy.Proxy.stop()=actors.zeus.Proxy.Proxy-class.html#stop,Method topologies.BriteTopology.BriteTopology.stop()=topologies.BriteTopology.BriteTopology-class.html#stop,Method topologies.LayeredTopology.LayeredTopology.stop()=topologies.LayeredTopology.LayeredTopology-class.html#stop,Method utils.Floodlight.Controller.stop()=utils.Floodlight.Controller-class.html#stop"><a title="actors.AbstractBot.CommandExecutor.stop
+actors.AbstractBot.Runnable.stop
+actors.RandomTrafficGenerator.RandomTrafficReceiver.stop
+actors.Sensor.Sensor.stop
+actors.TestRunnable.TestRunnable.stop
+actors.Victim.Victim.stop
+actors.nameserver.Nameserver.stop
+actors.overbot.KademliaBot.KademliaBot.stop
+actors.ping.Servent.Servent.stop
+actors.zeus.CnCServer.CnCServer.stop
+actors.zeus.Proxy.Proxy.stop
+topologies.BriteTopology.BriteTopology.stop
+topologies.LayeredTopology.LayeredTopology.stop
+utils.Floodlight.Controller.stop" class="py-name" href="#" onclick="return doclink('link-15', 'stop', 'link-15');">stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">sleep</tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">system</tt><tt class="py-op">(</tt><tt class="py-string">"mn -c"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">timeout</tt><tt class="py-op">(</tt><tt class="py-number">10</tt><tt class="py-op">)</tt> </tt>
+<a name="GameoverTopologyTest.testPingAll"></a><div id="GameoverTopologyTest.testPingAll-def"><a name="L29"></a><tt class="py-lineno">29</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.testPingAll-toggle" onclick="return toggle('GameoverTopologyTest.testPingAll');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#testPingAll">testPingAll</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.testPingAll-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.testPingAll-expanded"><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-docstring">"""test if pingAll succeeds without packet loss"""</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">packet_loss</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">pingAll</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEquals</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">packet_loss</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"> </tt>
+<a name="GameoverTopologyTest.testCommunicationFromBotToCnCServer"></a><div id="GameoverTopologyTest.testCommunicationFromBotToCnCServer-def"><a name="L35"></a><tt class="py-lineno">35</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.testCommunicationFromBotToCnCServer-toggle" onclick="return toggle('GameoverTopologyTest.testCommunicationFromBotToCnCServer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#testCommunicationFromBotToCnCServer">testCommunicationFromBotToCnCServer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.testCommunicationFromBotToCnCServer-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.testCommunicationFromBotToCnCServer-expanded"><a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">bot</tt> <tt class="py-op">=</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">choice</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-string">"Bot"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">botlist</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">cncserver</tt> <tt class="py-op">=</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">choice</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">zeustopo</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-string">"CnC"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">botlist</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-name">wgetoutput</tt> <tt class="py-op">=</tt> <tt class="py-name">bot</tt><tt class="py-op">.</tt><tt class="py-name">cmd</tt><tt class="py-op">(</tt><tt class="py-string">"wget -O - %s:8080"</tt> <tt class="py-op">%</tt> <tt class="py-name">cncserver</tt><tt class="py-op">.</tt><tt class="py-name">IP</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-string">"200 OK"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">wgetoutput</tt><tt class="py-op">,</tt> <tt class="py-string">"wget: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">wgetoutput</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-string">"I am a CnC server"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">wgetoutput</tt><tt class="py-op">,</tt> <tt class="py-string">"wget: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">wgetoutput</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="GameoverTopologyTest.testMeasureStealthyness"></a><div id="GameoverTopologyTest.testMeasureStealthyness-def"><a name="L43"></a><tt class="py-lineno">43</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.testMeasureStealthyness-toggle" onclick="return toggle('GameoverTopologyTest.testMeasureStealthyness');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#testMeasureStealthyness">testMeasureStealthyness</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.testMeasureStealthyness-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.testMeasureStealthyness-expanded"><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"> </tt>
+<a name="GameoverTopologyTest.testMeasureEffectiveness"></a><div id="GameoverTopologyTest.testMeasureEffectiveness-def"><a name="L46"></a><tt class="py-lineno">46</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.testMeasureEffectiveness-toggle" onclick="return toggle('GameoverTopologyTest.testMeasureEffectiveness');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#testMeasureEffectiveness">testMeasureEffectiveness</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.testMeasureEffectiveness-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.testMeasureEffectiveness-expanded"><a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt>
+<a name="GameoverTopologyTest.testMeasureEfficiency"></a><div id="GameoverTopologyTest.testMeasureEfficiency-def"><a name="L49"></a><tt class="py-lineno">49</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.testMeasureEfficiency-toggle" onclick="return toggle('GameoverTopologyTest.testMeasureEfficiency');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#testMeasureEfficiency">testMeasureEfficiency</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.testMeasureEfficiency-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.testMeasureEfficiency-expanded"><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt>
+<a name="GameoverTopologyTest.testMeasureRobustness"></a><div id="GameoverTopologyTest.testMeasureRobustness-def"><a name="L52"></a><tt class="py-lineno">52</tt> <a class="py-toggle" href="#" id="GameoverTopologyTest.testMeasureRobustness-toggle" onclick="return toggle('GameoverTopologyTest.testMeasureRobustness');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.GameoverTopologyTest.GameoverTopologyTest-class.html#testMeasureRobustness">testMeasureRobustness</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GameoverTopologyTest.testMeasureRobustness-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="GameoverTopologyTest.testMeasureRobustness-expanded"><a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div></div><a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">    <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">basicConfig</tt><tt class="py-op">(</tt><tt class="py-name">format</tt><tt class="py-op">=</tt><tt class="py-string">"%(threadName)s: %(message)s"</tt><tt class="py-op">,</tt> <tt class="py-name">level</tt><tt class="py-op">=</tt><tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">DEBUG</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">    <tt class="py-name">unittest</tt><tt class="py-op">.</tt><tt class="py-name">main</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>utils.LogfileParserTest</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="utils-module.html">Package&nbsp;utils</a> ::
+        Module&nbsp;LogfileParserTest
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="utils.LogfileParserTest-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="utils.LogfileParserTest-module.html">Module utils.LogfileParserTest</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">unittest</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-0', 'utils', 'link-0');">utils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Module utils.LogfileParser=utils.LogfileParser-module.html"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-1', 'LogfileParser', 'link-1');">LogfileParser</a></tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Package resources=resources-module.html"><a title="resources" class="py-name" href="#" onclick="return doclink('link-2', 'resources', 'link-2');">resources</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module resources.emu_config=resources.emu_config-module.html"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-3', 'emu_config', 'link-3');">emu_config</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Variable resources.emu_config.logging_config=resources.emu_config-module.html#logging_config"><a title="resources.emu_config.logging_config" class="py-name" href="#" onclick="return doclink('link-4', 'logging_config', 'link-4');">logging_config</a></tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"> </tt>
+<a name="LogfileWritingTest"></a><div id="LogfileWritingTest-def"><a name="L8"></a><tt class="py-lineno"> 8</tt> <a class="py-toggle" href="#" id="LogfileWritingTest-toggle" onclick="return toggle('LogfileWritingTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileWritingTest-class.html">LogfileWritingTest</a><tt class="py-op">(</tt><tt class="py-base-class">unittest</tt><tt class="py-op">.</tt><tt class="py-base-class">TestCase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileWritingTest-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="LogfileWritingTest-expanded"><a name="LogfileWritingTest.tearDown"></a><div id="LogfileWritingTest.tearDown-def"><a name="L9"></a><tt class="py-lineno"> 9</tt> <a class="py-toggle" href="#" id="LogfileWritingTest.tearDown-toggle" onclick="return toggle('LogfileWritingTest.tearDown');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileWritingTest-class.html#tearDown">tearDown</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileWritingTest.tearDown-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="LogfileWritingTest.tearDown-expanded"><a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">        <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt id="link-5" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-5', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Variable utils.LogfileParser.logfile=utils.LogfileParser-module.html#logfile"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-6', 'logfile', 'link-6');">logfile</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"> </tt>
+<a name="LogfileWritingTest.testWriteLogentry"></a><div id="LogfileWritingTest.testWriteLogentry-def"><a name="L12"></a><tt class="py-lineno">12</tt> <a class="py-toggle" href="#" id="LogfileWritingTest.testWriteLogentry-toggle" onclick="return toggle('LogfileWritingTest.testWriteLogentry');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileWritingTest-class.html#testWriteLogentry">testWriteLogentry</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileWritingTest.testWriteLogentry-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="LogfileWritingTest.testWriteLogentry-expanded"><a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">        <tt id="link-7" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-7', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Function utils.LogfileParser.writeLogentry()=utils.LogfileParser-module.html#writeLogentry"><a title="utils.LogfileParser.writeLogentry" class="py-name" href="#" onclick="return doclink('link-8', 'writeLogentry', 'link-8');">writeLogentry</a></tt><tt class="py-op">(</tt><tt class="py-name">type</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt><tt class="py-op">,</tt> <tt class="py-string">"My entry :-)"</tt><tt class="py-op">)</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">exists</tt><tt class="py-op">(</tt><tt id="link-9" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-9', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-10', 'logfile', 'link-6');">logfile</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">getsize</tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-11', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-12', 'logfile', 'link-6');">logfile</a></tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">        <tt class="py-keyword">with</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt id="link-13" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-13', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-14', 'logfile', 'link-6');">logfile</a></tt><tt class="py-op">,</tt> <tt class="py-string">'r'</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">fp</tt><tt class="py-op">:</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">            <tt class="py-name">data</tt> <tt class="py-op">=</tt> <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method overlord.HostActions.OverlordClient.getID_args.read()=overlord.HostActions.OverlordClient.getID_args-class.html#read,Method overlord.HostActions.OverlordClient.getID_result.read()=overlord.HostActions.OverlordClient.getID_result-class.html#read,Method overlord.HostActions.OverlordClient.startRunnable_args.read()=overlord.HostActions.OverlordClient.startRunnable_args-class.html#read,Method overlord.HostActions.OverlordClient.startRunnable_result.read()=overlord.HostActions.OverlordClient.startRunnable_result-class.html#read,Method overlord.HostActions.OverlordClient.stopRunnable_args.read()=overlord.HostActions.OverlordClient.stopRunnable_args-class.html#read,Method overlord.HostActions.OverlordClient.stopRunnable_result.read()=overlord.HostActions.OverlordClient.stopRunnable_result-class.html#read,Method overlord.HostActions.ttypes.OverlordException.read()=overlord.HostActions.ttypes.OverlordException-class.html#read"><a title="overlord.HostActions.OverlordClient.getID_args.read
+overlord.HostActions.OverlordClient.getID_result.read
+overlord.HostActions.OverlordClient.startRunnable_args.read
+overlord.HostActions.OverlordClient.startRunnable_result.read
+overlord.HostActions.OverlordClient.stopRunnable_args.read
+overlord.HostActions.OverlordClient.stopRunnable_result.read
+overlord.HostActions.ttypes.OverlordException.read" class="py-name" href="#" onclick="return doclink('link-15', 'read', 'link-15');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'\n'</tt><tt class="py-op">,</tt> <tt class="py-string">''</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-string">"My entry :-)"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">data</tt><tt class="py-op">,</tt> <tt class="py-string">"Data: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">data</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
+<a name="LogfileParserTest"></a><div id="LogfileParserTest-def"><a name="L20"></a><tt class="py-lineno">20</tt> <a class="py-toggle" href="#" id="LogfileParserTest-toggle" onclick="return toggle('LogfileParserTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileParserTest-class.html">LogfileParserTest</a><tt class="py-op">(</tt><tt class="py-base-class">unittest</tt><tt class="py-op">.</tt><tt class="py-base-class">TestCase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileParserTest-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="LogfileParserTest-expanded"><a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">    <tt id="link-16" class="py-name" targets="Variable utils.LogfileParserTest.LogfileParserTest.mocklogfile=utils.LogfileParserTest.LogfileParserTest-class.html#mocklogfile"><a title="utils.LogfileParserTest.LogfileParserTest.mocklogfile" class="py-name" href="#" onclick="return doclink('link-16', 'mocklogfile', 'link-16');">mocklogfile</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"/tmp/blubdibla.log"</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="LogfileParserTest.setUp"></a><div id="LogfileParserTest.setUp-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="LogfileParserTest.setUp-toggle" onclick="return toggle('LogfileParserTest.setUp');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileParserTest-class.html#setUp">setUp</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileParserTest.setUp-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="LogfileParserTest.setUp-expanded"><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-keyword">with</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="utils.LogfileParserTest.LogfileParserTest.mocklogfile" class="py-name" href="#" onclick="return doclink('link-17', 'mocklogfile', 'link-16');">mocklogfile</a></tt><tt class="py-op">,</tt> <tt class="py-name">mode</tt><tt class="py-op">=</tt><tt class="py-string">"w"</tt><tt class="py-op">)</tt> <tt class="py-keyword">as</tt> <tt class="py-name">fp</tt><tt class="py-op">:</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">            <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method overlord.HostActions.OverlordClient.getID_args.write()=overlord.HostActions.OverlordClient.getID_args-class.html#write,Method overlord.HostActions.OverlordClient.getID_result.write()=overlord.HostActions.OverlordClient.getID_result-class.html#write,Method overlord.HostActions.OverlordClient.startRunnable_args.write()=overlord.HostActions.OverlordClient.startRunnable_args-class.html#write,Method overlord.HostActions.OverlordClient.startRunnable_result.write()=overlord.HostActions.OverlordClient.startRunnable_result-class.html#write,Method overlord.HostActions.OverlordClient.stopRunnable_args.write()=overlord.HostActions.OverlordClient.stopRunnable_args-class.html#write,Method overlord.HostActions.OverlordClient.stopRunnable_result.write()=overlord.HostActions.OverlordClient.stopRunnable_result-class.html#write,Method overlord.HostActions.ttypes.OverlordException.write()=overlord.HostActions.ttypes.OverlordException-class.html#write"><a title="overlord.HostActions.OverlordClient.getID_args.write
+overlord.HostActions.OverlordClient.getID_result.write
+overlord.HostActions.OverlordClient.startRunnable_args.write
+overlord.HostActions.OverlordClient.startRunnable_result.write
+overlord.HostActions.OverlordClient.stopRunnable_args.write
+overlord.HostActions.OverlordClient.stopRunnable_result.write
+overlord.HostActions.ttypes.OverlordException.write" class="py-name" href="#" onclick="return doclink('link-18', 'write', 'link-18');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">"2016-07-21 13:24:33.369|mychild|Ich bin eine Message\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">            <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="overlord.HostActions.OverlordClient.getID_args.write
+overlord.HostActions.OverlordClient.getID_result.write
+overlord.HostActions.OverlordClient.startRunnable_args.write
+overlord.HostActions.OverlordClient.startRunnable_result.write
+overlord.HostActions.OverlordClient.stopRunnable_args.write
+overlord.HostActions.OverlordClient.stopRunnable_result.write
+overlord.HostActions.ttypes.OverlordException.write" class="py-name" href="#" onclick="return doclink('link-19', 'write', 'link-18');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">"1333-12-01 03:24:33.00963|yeah|I am a message\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">            <tt class="py-name">fp</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="overlord.HostActions.OverlordClient.getID_args.write
+overlord.HostActions.OverlordClient.getID_result.write
+overlord.HostActions.OverlordClient.startRunnable_args.write
+overlord.HostActions.OverlordClient.startRunnable_result.write
+overlord.HostActions.OverlordClient.stopRunnable_args.write
+overlord.HostActions.OverlordClient.stopRunnable_result.write
+overlord.HostActions.ttypes.OverlordException.write" class="py-name" href="#" onclick="return doclink('link-20', 'write', 'link-18');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">"\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">oldlog</tt> <tt class="py-op">=</tt> <tt id="link-21" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-21', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-22', 'logfile', 'link-6');">logfile</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt id="link-23" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-23', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-24', 'logfile', 'link-6');">logfile</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="utils.LogfileParserTest.LogfileParserTest.mocklogfile" class="py-name" href="#" onclick="return doclink('link-25', 'mocklogfile', 'link-16');">mocklogfile</a></tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="LogfileParserTest.tearDown"></a><div id="LogfileParserTest.tearDown-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="LogfileParserTest.tearDown-toggle" onclick="return toggle('LogfileParserTest.tearDown');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileParserTest-class.html#tearDown">tearDown</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileParserTest.tearDown-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="LogfileParserTest.tearDown-expanded"><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt id="link-26" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-26', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-27', 'logfile', 'link-6');">logfile</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">oldlog</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="utils.LogfileParserTest.LogfileParserTest.mocklogfile" class="py-name" href="#" onclick="return doclink('link-28', 'mocklogfile', 'link-16');">mocklogfile</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"> </tt>
+<a name="LogfileParserTest.testReadFullFile"></a><div id="LogfileParserTest.testReadFullFile-def"><a name="L35"></a><tt class="py-lineno">35</tt> <a class="py-toggle" href="#" id="LogfileParserTest.testReadFullFile-toggle" onclick="return toggle('LogfileParserTest.testReadFullFile');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileParserTest-class.html#testReadFullFile">testReadFullFile</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileParserTest.testReadFullFile-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="LogfileParserTest.testReadFullFile-expanded"><a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">entries</tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-29', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Function utils.LogfileParser.parseMachineReadableLogfile()=utils.LogfileParser-module.html#parseMachineReadableLogfile"><a title="utils.LogfileParser.parseMachineReadableLogfile" class="py-name" href="#" onclick="return doclink('link-30', 'parseMachineReadableLogfile', 'link-30');">parseMachineReadableLogfile</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">entries</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-string">"I am a message"</tt><tt class="py-op">,</tt> <tt class="py-name">entries</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">message</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-number">7</tt><tt class="py-op">,</tt> <tt class="py-name">entries</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">entrytime</tt><tt class="py-op">.</tt><tt class="py-name">month</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-string">"yeah"</tt><tt class="py-op">,</tt> <tt class="py-name">entries</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">runnable</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt>
+<a name="LogfileParserTest.testReadOnlyRunnable"></a><div id="LogfileParserTest.testReadOnlyRunnable-def"><a name="L42"></a><tt class="py-lineno">42</tt> <a class="py-toggle" href="#" id="LogfileParserTest.testReadOnlyRunnable-toggle" onclick="return toggle('LogfileParserTest.testReadOnlyRunnable');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.LogfileParserTest.LogfileParserTest-class.html#testReadOnlyRunnable">testReadOnlyRunnable</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LogfileParserTest.testReadOnlyRunnable-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="LogfileParserTest.testReadOnlyRunnable-expanded"><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">entries</tt> <tt class="py-op">=</tt> <tt id="link-31" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-31', 'LogfileParser', 'link-1');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="utils.LogfileParser.parseMachineReadableLogfile" class="py-name" href="#" onclick="return doclink('link-32', 'parseMachineReadableLogfile', 'link-30');">parseMachineReadableLogfile</a></tt><tt class="py-op">(</tt><tt class="py-string">"yeah"</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">entries</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-string">"I am a message"</tt><tt class="py-op">,</tt> <tt class="py-name">entries</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">message</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">    <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">basicConfig</tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-33" class="py-name"><a title="resources.emu_config.logging_config" class="py-name" href="#" onclick="return doclink('link-33', 'logging_config', 'link-4');">logging_config</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">    <tt class="py-name">unittest</tt><tt class="py-op">.</tt><tt class="py-name">main</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

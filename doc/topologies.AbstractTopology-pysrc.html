@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>topologies.AbstractTopology</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="topologies-module.html">Package&nbsp;topologies</a> ::
+        Module&nbsp;AbstractTopology
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="topologies.AbstractTopology-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="topologies.AbstractTopology-module.html">Module topologies.AbstractTopology</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">"""This module defines the abstract base interface for topologies.</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">Topologies implement the addition of Mininet hosts and links between them"""</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">random</tt> </tt>
+<a name="AbstractTopology"></a><div id="AbstractTopology-def"><a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt> <a class="py-toggle" href="#" id="AbstractTopology-toggle" onclick="return toggle('AbstractTopology');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="topologies.AbstractTopology.AbstractTopology-class.html">AbstractTopology</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AbstractTopology-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="AbstractTopology-expanded"><a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line">    <tt class="py-docstring">"""Abstract base class for all topologies. The Topology class encapsulates the layout of the simulated network.</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-docstring">    That is, it defines which nodes exist and how they are interconnected."""</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"> </tt>
+<a name="AbstractTopology.__init__"></a><div id="AbstractTopology.__init__-def"><a name="L11"></a><tt class="py-lineno">11</tt> <a class="py-toggle" href="#" id="AbstractTopology.__init__-toggle" onclick="return toggle('AbstractTopology.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.AbstractTopology.AbstractTopology-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mininet</tt><tt class="py-op">,</tt> <tt class="py-param">probability_of_cpulimitation</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">probability_unreliable_links</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AbstractTopology.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="AbstractTopology.__init__-expanded"><a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line">        <tt class="py-docstring">""":param mininet: Mininet instance to be used for running this topology</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-docstring">        :param probability_of_cpulimitation: How likely it is that a Host will be created as a CPULimitedHost</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-docstring">        :param probability_unreliable_links: How likely it is that any link between a host and switch will have</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-docstring">        some restrictions regarding packet loss and delay"""</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt> <tt class="py-op">=</tt> <tt class="py-name">mininet</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">addController</tt><tt class="py-op">(</tt><tt class="py-string">"controller1"</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_cpulimitation</tt> <tt class="py-op">=</tt> <tt class="py-name">probability_of_cpulimitation</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_unreliable_links</tt> <tt class="py-op">=</tt> <tt class="py-name">probability_unreliable_links</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_nodes</tt> <tt class="py-op">=</tt> <tt class="py-name">set</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-number">0</tt> <tt class="py-op">&lt;=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_cpulimitation</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> \ </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">            <tt class="py-string">"probability_of_cpulimitation must be between 0 and 1: %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_cpulimitation</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-number">0</tt> <tt class="py-op">&lt;=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_unreliable_links</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> \ </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">            <tt class="py-string">"probability_unreliable_links must be between 0 and 1: %d"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_unreliable_links</tt> </tt>
+</div><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="AbstractTopology._addLinkBetweenNodes"></a><div id="AbstractTopology._addLinkBetweenNodes-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="AbstractTopology._addLinkBetweenNodes-toggle" onclick="return toggle('AbstractTopology._addLinkBetweenNodes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.AbstractTopology.AbstractTopology-class.html#_addLinkBetweenNodes">_addLinkBetweenNodes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">node1</tt><tt class="py-op">,</tt> <tt class="py-param">node2</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AbstractTopology._addLinkBetweenNodes-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="AbstractTopology._addLinkBetweenNodes-expanded"><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-docstring">"""Adds a link between the given Mininet nodes and assigns random values for bandwidth, packet loss and delay"""</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">uniform</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">probability_of_unreliable_links</tt><tt class="py-op">:</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">            <tt class="py-name">linkoptions</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'bw'</tt><tt class="py-op">:</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">randint</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-number">100</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-string">'loss'</tt><tt class="py-op">:</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">uniform</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-number">30</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">                           <tt class="py-string">'delay'</tt><tt class="py-op">:</tt> <tt class="py-string">'%dms'</tt> <tt class="py-op">%</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">uniform</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-number">500</tt><tt class="py-op">)</tt><tt class="py-op">}</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">addLink</tt><tt class="py-op">(</tt><tt class="py-name">node1</tt><tt class="py-op">,</tt> <tt class="py-name">node2</tt><tt class="py-op">,</tt> <tt class="py-name">linkoptions</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">addLink</tt><tt class="py-op">(</tt><tt class="py-name">node1</tt><tt class="py-op">,</tt> <tt class="py-name">node2</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">property</tt> </tt>
+<a name="AbstractTopology.nodes"></a><div id="AbstractTopology.nodes-def"><a name="L38"></a><tt class="py-lineno">38</tt> <a class="py-toggle" href="#" id="AbstractTopology.nodes-toggle" onclick="return toggle('AbstractTopology.nodes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.AbstractTopology.AbstractTopology-class.html#nodes">nodes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AbstractTopology.nodes-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="AbstractTopology.nodes-expanded"><a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-docstring">"""Returns a read-only view of the nodes in this topology"""</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">frozenset</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_nodes</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt>
+<a name="AbstractTopology._addHost"></a><div id="AbstractTopology._addHost-def"><a name="L42"></a><tt class="py-lineno">42</tt> <a class="py-toggle" href="#" id="AbstractTopology._addHost-toggle" onclick="return toggle('AbstractTopology._addHost');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.AbstractTopology.AbstractTopology-class.html#_addHost">_addHost</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mnhost</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="AbstractTopology._addHost-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="AbstractTopology._addHost-expanded"><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_nodes</tt><tt class="py-op">.</tt><tt class="py-name">add</tt><tt class="py-op">(</tt><tt class="py-name">mnhost</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

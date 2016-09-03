@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>utils.DotFileWriter</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="utils-module.html">Package&nbsp;utils</a> ::
+        Module&nbsp;DotFileWriter
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="utils.DotFileWriter-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="utils.DotFileWriter-module.html">Module utils.DotFileWriter</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">"""This file defines a Writer that creates PDF and SVG visualizations from BRITE output files."""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">pygraphviz</tt> <tt class="py-keyword">as</tt> <tt class="py-name">pgv</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">string</tt> <tt class="py-keyword">import</tt> <tt class="py-name">lower</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package topologies=topologies-module.html"><a title="topologies" class="py-name" href="#" onclick="return doclink('link-0', 'topologies', 'link-0');">topologies</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module topologies.BriteTopology=topologies.BriteTopology-module.html,Class topologies.BriteTopology.BriteTopology=topologies.BriteTopology.BriteTopology-class.html"><a title="topologies.BriteTopology
+topologies.BriteTopology.BriteTopology" class="py-name" href="#" onclick="return doclink('link-1', 'BriteTopology', 'link-1');">BriteTopology</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class topologies.BriteTopology.BriteGraphAccepter=topologies.BriteTopology.BriteGraphAccepter-class.html"><a title="topologies.BriteTopology.BriteGraphAccepter" class="py-name" href="#" onclick="return doclink('link-2', 'BriteGraphAccepter', 'link-2');">BriteGraphAccepter</a></tt><tt class="py-op">,</tt> <tt id="link-3" class="py-name" targets="Function topologies.BriteTopology.applyBriteFile()=topologies.BriteTopology-module.html#applyBriteFile"><a title="topologies.BriteTopology.applyBriteFile" class="py-name" href="#" onclick="return doclink('link-3', 'applyBriteFile', 'link-3');">applyBriteFile</a></tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable utils.DotFileWriter.nodetype_to_color=utils.DotFileWriter-module.html#nodetype_to_color"><a title="utils.DotFileWriter.nodetype_to_color" class="py-name" href="#" onclick="return doclink('link-4', 'nodetype_to_color', 'link-4');">nodetype_to_color</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'RT_NODE'</tt><tt class="py-op">:</tt> <tt class="py-string">'blue'</tt><tt class="py-op">,</tt> <tt class="py-string">'RT_BORDER'</tt><tt class="py-op">:</tt> <tt class="py-string">'red'</tt><tt class="py-op">}</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable utils.DotFileWriter.edgetype_to_color=utils.DotFileWriter-module.html#edgetype_to_color"><a title="utils.DotFileWriter.edgetype_to_color" class="py-name" href="#" onclick="return doclink('link-5', 'edgetype_to_color', 'link-5');">edgetype_to_color</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-string">'E_RT'</tt><tt class="py-op">:</tt> <tt class="py-string">'blue'</tt><tt class="py-op">,</tt> <tt class="py-string">'E_AS'</tt><tt class="py-op">:</tt> <tt class="py-string">'red'</tt><tt class="py-op">}</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter"></a><div id="DotFileWriter-def"><a name="L16"></a><tt class="py-lineno">16</tt> <a class="py-toggle" href="#" id="DotFileWriter-toggle" onclick="return toggle('DotFileWriter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html">DotFileWriter</a><tt class="py-op">(</tt><tt class="py-base-class">BriteGraphAccepter</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="DotFileWriter-expanded"><a name="DotFileWriter.__init__"></a><div id="DotFileWriter.__init__-def"><a name="L17"></a><tt class="py-lineno">17</tt> <a class="py-toggle" href="#" id="DotFileWriter.__init__-toggle" onclick="return toggle('DotFileWriter.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.__init__-expanded"><a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter.writeHeader"></a><div id="DotFileWriter.writeHeader-def"><a name="L20"></a><tt class="py-lineno">20</tt> <a class="py-toggle" href="#" id="DotFileWriter.writeHeader-toggle" onclick="return toggle('DotFileWriter.writeHeader');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#writeHeader">writeHeader</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">num_nodes</tt><tt class="py-op">,</tt> <tt class="py-param">num_edges</tt><tt class="py-op">,</tt> <tt class="py-param">modelname</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.writeHeader-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.writeHeader-expanded"><a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-6" class="py-name" targets="Module utils.DotFileWriter=utils.DotFileWriter-module.html,Class utils.DotFileWriter.DotFileWriter=utils.DotFileWriter.DotFileWriter-class.html"><a title="utils.DotFileWriter
+utils.DotFileWriter.DotFileWriter" class="py-name" href="#" onclick="return doclink('link-6', 'DotFileWriter', 'link-6');">DotFileWriter</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method topologies.BriteTopology.BriteGraphAccepter.writeHeader()=topologies.BriteTopology.BriteGraphAccepter-class.html#writeHeader,Method topologies.BriteTopology.BriteTopology.writeHeader()=topologies.BriteTopology.BriteTopology-class.html#writeHeader,Method topologies.BriteTopologyTest.MockAccepter.writeHeader()=topologies.BriteTopologyTest.MockAccepter-class.html#writeHeader,Method utils.DotFileWriter.DotFileWriter.writeHeader()=utils.DotFileWriter.DotFileWriter-class.html#writeHeader"><a title="topologies.BriteTopology.BriteGraphAccepter.writeHeader
+topologies.BriteTopology.BriteTopology.writeHeader
+topologies.BriteTopologyTest.MockAccepter.writeHeader
+utils.DotFileWriter.DotFileWriter.writeHeader" class="py-name" href="#" onclick="return doclink('link-7', 'writeHeader', 'link-7');">writeHeader</a></tt><tt class="py-op">(</tt><tt id="link-8" class="py-name" targets="Variable topologies.BriteTopologyTest.MockAccepter.num_nodes=topologies.BriteTopologyTest.MockAccepter-class.html#num_nodes"><a title="topologies.BriteTopologyTest.MockAccepter.num_nodes" class="py-name" href="#" onclick="return doclink('link-8', 'num_nodes', 'link-8');">num_nodes</a></tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name" targets="Variable topologies.BriteTopologyTest.MockAccepter.num_edges=topologies.BriteTopologyTest.MockAccepter-class.html#num_edges"><a title="topologies.BriteTopologyTest.MockAccepter.num_edges" class="py-name" href="#" onclick="return doclink('link-9', 'num_edges', 'link-9');">num_edges</a></tt><tt class="py-op">,</tt> <tt class="py-name">modelname</tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt> <tt class="py-op">=</tt> <tt class="py-name">pgv</tt><tt class="py-op">.</tt><tt class="py-name">AGraph</tt><tt class="py-op">(</tt><tt class="py-name">directed</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">=</tt><tt class="py-name">modelname</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter.addNode"></a><div id="DotFileWriter.addNode-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="DotFileWriter.addNode-toggle" onclick="return toggle('DotFileWriter.addNode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#addNode">addNode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">nodeid</tt><tt class="py-op">,</tt> <tt class="py-param">asid</tt><tt class="py-op">,</tt> <tt class="py-param">nodetype</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.addNode-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.addNode-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-10" class="py-name"><a title="utils.DotFileWriter
+utils.DotFileWriter.DotFileWriter" class="py-name" href="#" onclick="return doclink('link-10', 'DotFileWriter', 'link-6');">DotFileWriter</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Function nat_beispiel.addNode()=nat_beispiel-module.html#addNode,Method topologies.BriteTopology.BriteGraphAccepter.addNode()=topologies.BriteTopology.BriteGraphAccepter-class.html#addNode,Method topologies.BriteTopology.BriteTopology.addNode()=topologies.BriteTopology.BriteTopology-class.html#addNode,Method topologies.BriteTopologyTest.MockAccepter.addNode()=topologies.BriteTopologyTest.MockAccepter-class.html#addNode,Method utils.DotFileWriter.DotFileWriter.addNode()=utils.DotFileWriter.DotFileWriter-class.html#addNode"><a title="nat_beispiel.addNode
+topologies.BriteTopology.BriteGraphAccepter.addNode
+topologies.BriteTopology.BriteTopology.addNode
+topologies.BriteTopologyTest.MockAccepter.addNode
+utils.DotFileWriter.DotFileWriter.addNode" class="py-name" href="#" onclick="return doclink('link-11', 'addNode', 'link-11');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-name">nodeid</tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name" targets="Variable nat_beispiel._AutonomousSystem.asid=nat_beispiel._AutonomousSystem-class.html#asid,Variable topologies.BriteTopology._AutonomousSystem.asid=topologies.BriteTopology._AutonomousSystem-class.html#asid"><a title="nat_beispiel._AutonomousSystem.asid
+topologies.BriteTopology._AutonomousSystem.asid" class="py-name" href="#" onclick="return doclink('link-12', 'asid', 'link-12');">asid</a></tt><tt class="py-op">,</tt> <tt class="py-name">nodetype</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">attributes</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-13" class="py-name"><a title="utils.DotFileWriter.nodetype_to_color" class="py-name" href="#" onclick="return doclink('link-13', 'nodetype_to_color', 'link-4');">nodetype_to_color</a></tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt class="py-name">nodetype</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">            <tt class="py-name">attributes</tt><tt class="py-op">[</tt><tt class="py-string">"color"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="utils.DotFileWriter.nodetype_to_color" class="py-name" href="#" onclick="return doclink('link-14', 'nodetype_to_color', 'link-4');">nodetype_to_color</a></tt><tt class="py-op">[</tt><tt class="py-name">nodetype</tt><tt class="py-op">]</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-name">attributes</tt><tt class="py-op">[</tt><tt class="py-string">"comment"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"AS %d"</tt> <tt class="py-op">%</tt> <tt id="link-15" class="py-name"><a title="nat_beispiel._AutonomousSystem.asid
+topologies.BriteTopology._AutonomousSystem.asid" class="py-name" href="#" onclick="return doclink('link-15', 'asid', 'link-12');">asid</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">attributes</tt><tt class="py-op">[</tt><tt class="py-string">"label"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">nodeid</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">attributes</tt><tt class="py-op">[</tt><tt class="py-string">"group"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="nat_beispiel._AutonomousSystem.asid
+topologies.BriteTopology._AutonomousSystem.asid" class="py-name" href="#" onclick="return doclink('link-16', 'asid', 'link-12');">asid</a></tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">add_node</tt><tt class="py-op">(</tt><tt class="py-name">nodeid</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">attributes</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter.addEdge"></a><div id="DotFileWriter.addEdge-def"><a name="L36"></a><tt class="py-lineno">36</tt> <a class="py-toggle" href="#" id="DotFileWriter.addEdge-toggle" onclick="return toggle('DotFileWriter.addEdge');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#addEdge">addEdge</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">edgeid</tt><tt class="py-op">,</tt> <tt class="py-param">fromNode</tt><tt class="py-op">,</tt> <tt class="py-param">toNode</tt><tt class="py-op">,</tt> <tt class="py-param">communicationDelay</tt><tt class="py-op">,</tt> <tt class="py-param">bandwidth</tt><tt class="py-op">,</tt> <tt class="py-param">fromAS</tt><tt class="py-op">,</tt> <tt class="py-param">toAS</tt><tt class="py-op">,</tt> <tt class="py-param">edgetype</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.addEdge-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.addEdge-expanded"><a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-17" class="py-name"><a title="utils.DotFileWriter
+utils.DotFileWriter.DotFileWriter" class="py-name" href="#" onclick="return doclink('link-17', 'DotFileWriter', 'link-6');">DotFileWriter</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method topologies.BriteTopology.BriteGraphAccepter.addEdge()=topologies.BriteTopology.BriteGraphAccepter-class.html#addEdge,Method topologies.BriteTopology.BriteTopology.addEdge()=topologies.BriteTopology.BriteTopology-class.html#addEdge,Method topologies.BriteTopologyTest.MockAccepter.addEdge()=topologies.BriteTopologyTest.MockAccepter-class.html#addEdge,Method utils.DotFileWriter.DotFileWriter.addEdge()=utils.DotFileWriter.DotFileWriter-class.html#addEdge"><a title="topologies.BriteTopology.BriteGraphAccepter.addEdge
+topologies.BriteTopology.BriteTopology.addEdge
+topologies.BriteTopologyTest.MockAccepter.addEdge
+utils.DotFileWriter.DotFileWriter.addEdge" class="py-name" href="#" onclick="return doclink('link-18', 'addEdge', 'link-18');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-name">edgeid</tt><tt class="py-op">,</tt> <tt class="py-name">fromNode</tt><tt class="py-op">,</tt> <tt class="py-name">toNode</tt><tt class="py-op">,</tt> <tt class="py-name">communicationDelay</tt><tt class="py-op">,</tt> <tt class="py-name">bandwidth</tt><tt class="py-op">,</tt> <tt class="py-name">fromAS</tt><tt class="py-op">,</tt> <tt class="py-name">toAS</tt><tt class="py-op">,</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">                                           <tt class="py-name">edgetype</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">attributes</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-19" class="py-name"><a title="utils.DotFileWriter.edgetype_to_color" class="py-name" href="#" onclick="return doclink('link-19', 'edgetype_to_color', 'link-5');">edgetype_to_color</a></tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt class="py-name">edgetype</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">            <tt class="py-name">attributes</tt><tt class="py-op">[</tt><tt class="py-string">"color"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-20" class="py-name"><a title="utils.DotFileWriter.edgetype_to_color" class="py-name" href="#" onclick="return doclink('link-20', 'edgetype_to_color', 'link-5');">edgetype_to_color</a></tt><tt class="py-op">[</tt><tt class="py-name">edgetype</tt><tt class="py-op">]</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">attributes</tt><tt class="py-op">[</tt><tt class="py-string">"comment"</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-string">"delay %d, bandwidth %d"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">communicationDelay</tt><tt class="py-op">,</tt> <tt class="py-name">bandwidth</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">add_edge</tt><tt class="py-op">(</tt><tt class="py-name">fromNode</tt><tt class="py-op">,</tt> <tt class="py-name">toNode</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">attributes</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter.writeFooter"></a><div id="DotFileWriter.writeFooter-def"><a name="L47"></a><tt class="py-lineno">47</tt> <a class="py-toggle" href="#" id="DotFileWriter.writeFooter-toggle" onclick="return toggle('DotFileWriter.writeFooter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#writeFooter">writeFooter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.writeFooter-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.writeFooter-expanded"><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-21" class="py-name"><a title="utils.DotFileWriter
+utils.DotFileWriter.DotFileWriter" class="py-name" href="#" onclick="return doclink('link-21', 'DotFileWriter', 'link-6');">DotFileWriter</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method topologies.BriteTopology.BriteGraphAccepter.writeFooter()=topologies.BriteTopology.BriteGraphAccepter-class.html#writeFooter,Method topologies.BriteTopology.BriteTopology.writeFooter()=topologies.BriteTopology.BriteTopology-class.html#writeFooter,Method topologies.BriteTopologyTest.MockAccepter.writeFooter()=topologies.BriteTopologyTest.MockAccepter-class.html#writeFooter,Method utils.DotFileWriter.DotFileWriter.writeFooter()=utils.DotFileWriter.DotFileWriter-class.html#writeFooter"><a title="topologies.BriteTopology.BriteGraphAccepter.writeFooter
+topologies.BriteTopology.BriteTopology.writeFooter
+topologies.BriteTopologyTest.MockAccepter.writeFooter
+utils.DotFileWriter.DotFileWriter.writeFooter" class="py-name" href="#" onclick="return doclink('link-22', 'writeFooter', 'link-22');">writeFooter</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">layout</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter.generatePdf"></a><div id="DotFileWriter.generatePdf-def"><a name="L51"></a><tt class="py-lineno">51</tt> <a class="py-toggle" href="#" id="DotFileWriter.generatePdf-toggle" onclick="return toggle('DotFileWriter.generatePdf');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#generatePdf">generatePdf</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">filename</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.generatePdf-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.generatePdf-expanded"><a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">".pdf"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">draw</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">            <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">"Wrote PDF to %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">draw</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt> <tt class="py-op">+</tt> <tt class="py-string">".pdf"</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">            <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">"Wrote PDF to %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">filename</tt> <tt class="py-op">+</tt> <tt class="py-string">".pdf"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt>
+<a name="DotFileWriter.generateSvg"></a><div id="DotFileWriter.generateSvg-def"><a name="L61"></a><tt class="py-lineno">61</tt> <a class="py-toggle" href="#" id="DotFileWriter.generateSvg-toggle" onclick="return toggle('DotFileWriter.generateSvg');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="utils.DotFileWriter.DotFileWriter-class.html#generateSvg">generateSvg</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">filename</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DotFileWriter.generateSvg-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="DotFileWriter.generateSvg-expanded"><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">endswith</tt><tt class="py-op">(</tt><tt class="py-string">".svg"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">draw</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">            <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">"Wrote SVG to %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">filename</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">graph</tt><tt class="py-op">.</tt><tt class="py-name">draw</tt><tt class="py-op">(</tt><tt class="py-name">filename</tt> <tt class="py-op">+</tt> <tt class="py-string">".svg"</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">            <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">info</tt><tt class="py-op">(</tt><tt class="py-string">"Wrote SVG to %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">filename</tt> <tt class="py-op">+</tt> <tt class="py-string">".svg"</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line"> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">4</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">        <tt class="py-name">writer</tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name"><a title="utils.DotFileWriter
+utils.DotFileWriter.DotFileWriter" class="py-name" href="#" onclick="return doclink('link-23', 'DotFileWriter', 'link-6');">DotFileWriter</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">        <tt id="link-24" class="py-name"><a title="topologies.BriteTopology.applyBriteFile" class="py-name" href="#" onclick="return doclink('link-24', 'applyBriteFile', 'link-3');">applyBriteFile</a></tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">writer</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">        <tt class="py-name">writer</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method utils.DotFileWriter.DotFileWriter.generatePdf()=utils.DotFileWriter.DotFileWriter-class.html#generatePdf"><a title="utils.DotFileWriter.DotFileWriter.generatePdf" class="py-name" href="#" onclick="return doclink('link-25', 'generatePdf', 'link-25');">generatePdf</a></tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">        <tt class="py-name">writer</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method utils.DotFileWriter.DotFileWriter.generateSvg()=utils.DotFileWriter.DotFileWriter-class.html#generateSvg"><a title="utils.DotFileWriter.DotFileWriter.generateSvg" class="py-name" href="#" onclick="return doclink('link-26', 'generateSvg', 'link-26');">generateSvg</a></tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">3</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

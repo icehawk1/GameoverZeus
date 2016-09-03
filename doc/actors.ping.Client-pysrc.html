@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>actors.ping.Client</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="actors-module.html">Package&nbsp;actors</a> ::
+        <a href="actors.ping-module.html">Package&nbsp;ping</a> ::
+        Module&nbsp;Client
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="actors.ping.Client-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="actors.ping.Client-module.html">Module actors.ping.Client</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">random</tt><tt class="py-op">,</tt> <tt class="py-name">json</tt><tt class="py-op">,</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package actors=actors-module.html"><a title="actors" class="py-name" href="#" onclick="return doclink('link-0', 'actors', 'link-0');">actors</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module actors.AbstractBot=actors.AbstractBot-module.html"><a title="actors.AbstractBot" class="py-name" href="#" onclick="return doclink('link-1', 'AbstractBot', 'link-1');">AbstractBot</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class actors.AbstractBot.CommandExecutor=actors.AbstractBot.CommandExecutor-class.html"><a title="actors.AbstractBot.CommandExecutor" class="py-name" href="#" onclick="return doclink('link-2', 'CommandExecutor', 'link-2');">CommandExecutor</a></tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="actors" class="py-name" href="#" onclick="return doclink('link-3', 'actors', 'link-0');">actors</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module actors.BotCommands=actors.BotCommands-module.html,Class actors.BotCommands.BotCommands=actors.BotCommands.BotCommands-class.html"><a title="actors.BotCommands
+actors.BotCommands.BotCommands" class="py-name" href="#" onclick="return doclink('link-4', 'BotCommands', 'link-4');">BotCommands</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Function actors.BotCommands.executeCurrentCommand()=actors.BotCommands-module.html#executeCurrentCommand"><a title="actors.BotCommands.executeCurrentCommand" class="py-name" href="#" onclick="return doclink('link-5', 'executeCurrentCommand', 'link-5');">executeCurrentCommand</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name" targets="Function actors.BotCommands.fetchCurrentCommand()=actors.BotCommands-module.html#fetchCurrentCommand"><a title="actors.BotCommands.fetchCurrentCommand" class="py-name" href="#" onclick="return doclink('link-6', 'fetchCurrentCommand', 'link-6');">fetchCurrentCommand</a></tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-7" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-7', 'utils', 'link-7');">utils</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Module utils.LogfileParser=utils.LogfileParser-module.html"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-8', 'LogfileParser', 'link-8');">LogfileParser</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name" targets="Function utils.LogfileParser.writeLogentry()=utils.LogfileParser-module.html#writeLogentry"><a title="utils.LogfileParser.writeLogentry" class="py-name" href="#" onclick="return doclink('link-9', 'writeLogentry', 'link-9');">writeLogentry</a></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"> </tt>
+<a name="Client"></a><div id="Client-def"><a name="L8"></a><tt class="py-lineno"> 8</tt> <a class="py-toggle" href="#" id="Client-toggle" onclick="return toggle('Client');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="actors.ping.Client.Client-class.html">Client</a><tt class="py-op">(</tt><tt class="py-base-class">CommandExecutor</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Client-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Client-expanded"><a name="Client.__init__"></a><div id="Client.__init__-def"><a name="L9"></a><tt class="py-lineno"> 9</tt> <a class="py-toggle" href="#" id="Client.__init__-toggle" onclick="return toggle('Client.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.ping.Client.Client-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">peerlist</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Client.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Client.__init__-expanded"><a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">        <tt class="py-name">super</tt><tt class="py-op">(</tt><tt id="link-10" class="py-name" targets="Module actors.ping.Client=actors.ping.Client-module.html,Class actors.ping.Client.Client=actors.ping.Client.Client-class.html,Class overlord.HostActions.OverlordClient.Client=overlord.HostActions.OverlordClient.Client-class.html"><a title="actors.ping.Client
+actors.ping.Client.Client
+overlord.HostActions.OverlordClient.Client" class="py-name" href="#" onclick="return doclink('link-10', 'Client', 'link-10');">Client</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method Experiment.BriteExperiment.__init__()=Experiment.BriteExperiment-class.html#__init__,Method Experiment.Experiment.__init__()=Experiment.Experiment-class.html#__init__,Method OverbotExperiment.KademliaExperiment.__init__()=OverbotExperiment.KademliaExperiment-class.html#__init__,Method PerformanceExperiment.PerformanceExperiment.__init__()=PerformanceExperiment.PerformanceExperiment-class.html#__init__,Method PingExperiment.PingExperiment.__init__()=PingExperiment.PingExperiment-class.html#__init__,Method ZeusExperiment.ZeusExperiment.__init__()=ZeusExperiment.ZeusExperiment-class.html#__init__,Method actors.AbstractBot.CommandExecutor.__init__()=actors.AbstractBot.CommandExecutor-class.html#__init__,Method actors.AbstractBot.Runnable.__init__()=actors.AbstractBot.Runnable-class.html#__init__,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.__init__()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#__init__,Method actors.RandomTrafficGenerator.RandomTrafficSender.__init__()=actors.RandomTrafficGenerator.RandomTrafficSender-class.html#__init__,Method actors.Sensor.Sensor.__init__()=actors.Sensor.Sensor-class.html#__init__,Method actors.TestRunnable.TestRunnable.__init__()=actors.TestRunnable.TestRunnable-class.html#__init__,Method actors.Victim.Victim.__init__()=actors.Victim.Victim-class.html#__init__,Method actors.nameserver.Nameserver.__init__()=actors.nameserver.Nameserver-class.html#__init__,Method actors.overbot.KademliaBot.KademliaBot.__init__()=actors.overbot.KademliaBot.KademliaBot-class.html#__init__,Method actors.overbot.User.KademliaUser.__init__()=actors.overbot.User.KademliaUser-class.html#__init__,Method actors.ping.Client.Client.__init__()=actors.ping.Client.Client-class.html#__init__,Method actors.ping.Servent.Servent.__init__()=actors.ping.Servent.Servent-class.html#__init__,Method actors.zeus.Bot.Bot.__init__()=actors.zeus.Bot.Bot-class.html#__init__,Method actors.zeus.CnCServer.BotInformation.__init__()=actors.zeus.CnCServer.BotInformation-class.html#__init__,Method actors.zeus.CnCServer.CnCServer.__init__()=actors.zeus.CnCServer.CnCServer-class.html#__init__,Method actors.zeus.Proxy.Proxy.__init__()=actors.zeus.Proxy.Proxy-class.html#__init__,Method overlord.Host.HostActionHandler.__init__()=overlord.Host.HostActionHandler-class.html#__init__,Method overlord.HostActions.OverlordClient.Client.__init__()=overlord.HostActions.OverlordClient.Client-class.html#__init__,Method overlord.HostActions.OverlordClient.Processor.__init__()=overlord.HostActions.OverlordClient.Processor-class.html#__init__,Method overlord.HostActions.OverlordClient.getID_result.__init__()=overlord.HostActions.OverlordClient.getID_result-class.html#__init__,Method overlord.HostActions.OverlordClient.startRunnable_args.__init__()=overlord.HostActions.OverlordClient.startRunnable_args-class.html#__init__,Method overlord.HostActions.OverlordClient.startRunnable_result.__init__()=overlord.HostActions.OverlordClient.startRunnable_result-class.html#__init__,Method overlord.HostActions.OverlordClient.stopRunnable_args.__init__()=overlord.HostActions.OverlordClient.stopRunnable_args-class.html#__init__,Method overlord.HostActions.OverlordClient.stopRunnable_result.__init__()=overlord.HostActions.OverlordClient.stopRunnable_result-class.html#__init__,Method overlord.HostActions.ttypes.OverlordException.__init__()=overlord.HostActions.ttypes.OverlordException-class.html#__init__,Method overlord.Overlord.Overlord.__init__()=overlord.Overlord.Overlord-class.html#__init__,Method overlord.Overlord._HostConnector.__init__()=overlord.Overlord._HostConnector-class.html#__init__,Method topologies.AbstractTopology.AbstractTopology.__init__()=topologies.AbstractTopology.AbstractTopology-class.html#__init__,Method topologies.BriteTopology.BriteTopology.__init__()=topologies.BriteTopology.BriteTopology-class.html#__init__,Method topologies.LayeredTopology.LayeredTopology.__init__()=topologies.LayeredTopology.LayeredTopology-class.html#__init__,Method topologies.LayeredTopology._Layer.__init__()=topologies.LayeredTopology._Layer-class.html#__init__,Method utils.DotFileWriter.DotFileWriter.__init__()=utils.DotFileWriter.DotFileWriter-class.html#__init__,Method utils.LogfileParser.Logentry.__init__()=utils.LogfileParser.Logentry-class.html#__init__,Method utils.MiscUtils.NetworkAddress.__init__()=utils.MiscUtils.NetworkAddress-class.html#__init__,Method utils.TcptraceParser.TcptraceParser.__init__()=utils.TcptraceParser.TcptraceParser-class.html#__init__"><a title="Experiment.BriteExperiment.__init__
+Experiment.Experiment.__init__
+OverbotExperiment.KademliaExperiment.__init__
+PerformanceExperiment.PerformanceExperiment.__init__
+PingExperiment.PingExperiment.__init__
+ZeusExperiment.ZeusExperiment.__init__
+actors.AbstractBot.CommandExecutor.__init__
+actors.AbstractBot.Runnable.__init__
+actors.RandomTrafficGenerator.RandomTrafficReceiver.__init__
+actors.RandomTrafficGenerator.RandomTrafficSender.__init__
+actors.Sensor.Sensor.__init__
+actors.TestRunnable.TestRunnable.__init__
+actors.Victim.Victim.__init__
+actors.nameserver.Nameserver.__init__
+actors.overbot.KademliaBot.KademliaBot.__init__
+actors.overbot.User.KademliaUser.__init__
+actors.ping.Client.Client.__init__
+actors.ping.Servent.Servent.__init__
+actors.zeus.Bot.Bot.__init__
+actors.zeus.CnCServer.BotInformation.__init__
+actors.zeus.CnCServer.CnCServer.__init__
+actors.zeus.Proxy.Proxy.__init__
+overlord.Host.HostActionHandler.__init__
+overlord.HostActions.OverlordClient.Client.__init__
+overlord.HostActions.OverlordClient.Processor.__init__
+overlord.HostActions.OverlordClient.getID_result.__init__
+overlord.HostActions.OverlordClient.startRunnable_args.__init__
+overlord.HostActions.OverlordClient.startRunnable_result.__init__
+overlord.HostActions.OverlordClient.stopRunnable_args.__init__
+overlord.HostActions.OverlordClient.stopRunnable_result.__init__
+overlord.HostActions.ttypes.OverlordException.__init__
+overlord.Overlord.Overlord.__init__
+overlord.Overlord._HostConnector.__init__
+topologies.AbstractTopology.AbstractTopology.__init__
+topologies.BriteTopology.BriteTopology.__init__
+topologies.LayeredTopology.LayeredTopology.__init__
+topologies.LayeredTopology._Layer.__init__
+utils.DotFileWriter.DotFileWriter.__init__
+utils.LogfileParser.Logentry.__init__
+utils.MiscUtils.NetworkAddress.__init__
+utils.TcptraceParser.TcptraceParser.__init__" class="py-name" href="#" onclick="return doclink('link-11', '__init__', 'link-11');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">peerlist</tt> <tt class="py-op">=</tt> <tt class="py-name">peerlist</tt> </tt>
+</div><a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="Client.performDuty"></a><div id="Client.performDuty-def"><a name="L13"></a><tt class="py-lineno">13</tt> <a class="py-toggle" href="#" id="Client.performDuty-toggle" onclick="return toggle('Client.performDuty');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.ping.Client.Client-class.html#performDuty">performDuty</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Client.performDuty-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Client.performDuty-expanded"><a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">        <tt class="py-comment"># If we know at least one servent</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">peerlist</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">                <tt class="py-name">servent</tt> <tt class="py-op">=</tt> <tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">choice</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">peerlist</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">                <tt id="link-12" class="py-name" targets="Variable actors.AbstractBot.CurrentCommandHandler.current_command=actors.AbstractBot.CurrentCommandHandler-class.html#current_command,Method actors.overbot.KademliaBot.KademliaCommandHandler.current_command()=actors.overbot.KademliaBot.KademliaCommandHandler-class.html#current_command,Method actors.ping.Servent.Servent.current_command()=actors.ping.Servent.Servent-class.html#current_command,Method actors.ping.Servent.ServentCommandHandler.current_command()=actors.ping.Servent.ServentCommandHandler-class.html#current_command,Variable actors.zeus.CnCServer.CnCCommandHandler.current_command=actors.zeus.CnCServer.CnCCommandHandler-class.html#current_command"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-12', 'current_command', 'link-12');">current_command</a></tt> <tt class="py-op">=</tt> <tt id="link-13" class="py-name"><a title="actors.BotCommands.fetchCurrentCommand" class="py-name" href="#" onclick="return doclink('link-13', 'fetchCurrentCommand', 'link-6');">fetchCurrentCommand</a></tt><tt class="py-op">(</tt><tt class="py-name">servent</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">                <tt class="py-comment"># Execute old command if no new command was fetched</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-14" class="py-name"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-14', 'current_command', 'link-12');">current_command</a></tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method actors.ping.Client.Client._executeCurrentCommand()=actors.ping.Client.Client-class.html#_executeCurrentCommand,Method actors.zeus.Bot.Bot._executeCurrentCommand()=actors.zeus.Bot.Bot-class.html#_executeCurrentCommand"><a title="actors.ping.Client.Client._executeCurrentCommand
+actors.zeus.Bot.Bot._executeCurrentCommand" class="py-name" href="#" onclick="return doclink('link-15', '_executeCurrentCommand', 'link-15');">_executeCurrentCommand</a></tt><tt class="py-op">(</tt><tt id="link-16" class="py-name"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-16', 'current_command', 'link-12');">current_command</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt> <tt class="py-keyword">as</tt> <tt class="py-name">ex</tt><tt class="py-op">:</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">                <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">warning</tt><tt class="py-op">(</tt><tt class="py-string">"Duty of bot %s failed with %s: %s"</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">type</tt><tt class="py-op">(</tt><tt class="py-name">ex</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt><tt class="py-op">,</tt> <tt class="py-name">ex</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"> </tt>
+<a name="Client._executeCurrentCommand"></a><div id="Client._executeCurrentCommand-def"><a name="L25"></a><tt class="py-lineno">25</tt> <a class="py-toggle" href="#" id="Client._executeCurrentCommand-toggle" onclick="return toggle('Client._executeCurrentCommand');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.ping.Client.Client-class.html#_executeCurrentCommand">_executeCurrentCommand</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">current_command</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Client._executeCurrentCommand-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Client._executeCurrentCommand-expanded"><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-docstring">"""Executes the last command that has been fetched from the Servent"""</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">            <tt id="link-17" class="py-name"><a title="utils.LogfileParser.writeLogentry" class="py-name" href="#" onclick="return doclink('link-17', 'writeLogentry', 'link-9');">writeLogentry</a></tt><tt class="py-op">(</tt><tt class="py-name">runnable</tt><tt class="py-op">=</tt><tt class="py-name">type</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt><tt class="py-op">,</tt> <tt class="py-name">message</tt><tt class="py-op">=</tt><tt class="py-string">"received_command: %s"</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">                                                                <tt class="py-op">%</tt><tt class="py-name">json</tt><tt class="py-op">.</tt><tt class="py-name">dumps</tt><tt class="py-op">(</tt><tt class="py-op">{</tt><tt class="py-string">"bot"</tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-string">"newcmd"</tt><tt class="py-op">:</tt> <tt id="link-18" class="py-name"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-18', 'current_command', 'link-12');">current_command</a></tt><tt class="py-op">}</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">            <tt id="link-19" class="py-name"><a title="actors.BotCommands.executeCurrentCommand" class="py-name" href="#" onclick="return doclink('link-19', 'executeCurrentCommand', 'link-5');">executeCurrentCommand</a></tt><tt class="py-op">(</tt><tt id="link-20" class="py-name"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-20', 'current_command', 'link-12');">current_command</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">TypeError</tt> <tt class="py-keyword">as</tt> <tt class="py-name">ex</tt><tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">            <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">warning</tt><tt class="py-op">(</tt><tt class="py-string">"Command %s got invalid parameters %s: %s"</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">                            <tt class="py-op">%</tt><tt class="py-op">(</tt><tt id="link-21" class="py-name"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-21', 'current_command', 'link-12');">current_command</a></tt><tt class="py-op">[</tt><tt class="py-string">"command"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-22" class="py-name"><a title="actors.AbstractBot.CurrentCommandHandler.current_command
+actors.overbot.KademliaBot.KademliaCommandHandler.current_command
+actors.ping.Servent.Servent.current_command
+actors.ping.Servent.ServentCommandHandler.current_command
+actors.zeus.CnCServer.CnCCommandHandler.current_command" class="py-name" href="#" onclick="return doclink('link-22', 'current_command', 'link-12');">current_command</a></tt><tt class="py-op">[</tt><tt class="py-string">"kwargs"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">ex</tt><tt class="py-op">.</tt><tt class="py-name">message</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

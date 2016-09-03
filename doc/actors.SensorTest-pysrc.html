@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>actors.SensorTest</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="actors-module.html">Package&nbsp;actors</a> ::
+        Module&nbsp;SensorTest
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="actors.SensorTest-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="actors.SensorTest-module.html">Module actors.SensorTest</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/env python2</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">shutil</tt><tt class="py-op">,</tt> <tt class="py-name">unittest</tt><tt class="py-op">,</tt> <tt class="py-name">time</tt><tt class="py-op">,</tt> <tt class="py-name">random</tt><tt class="py-op">,</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt> <tt class="py-name">logging</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">threading</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Thread</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Module actors.Sensor=actors.Sensor-module.html,Class actors.Sensor.Sensor=actors.Sensor.Sensor-class.html"><a title="actors.Sensor
+actors.Sensor.Sensor" class="py-name" href="#" onclick="return doclink('link-0', 'Sensor', 'link-0');">Sensor</a></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Package resources=resources-module.html"><a title="resources" class="py-name" href="#" onclick="return doclink('link-1', 'resources', 'link-1');">resources</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module resources.emu_config=resources.emu_config-module.html"><a title="resources.emu_config" class="py-name" href="#" onclick="return doclink('link-2', 'emu_config', 'link-2');">emu_config</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Variable resources.emu_config.logging_config=resources.emu_config-module.html#logging_config"><a title="resources.emu_config.logging_config" class="py-name" href="#" onclick="return doclink('link-3', 'logging_config', 'link-3');">logging_config</a></tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-4', 'utils', 'link-4');">utils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Module utils.LogfileParser=utils.LogfileParser-module.html"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-5', 'LogfileParser', 'link-5');">LogfileParser</a></tt> </tt>
+<a name="SensorTest"></a><div id="SensorTest-def"><a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt> <a class="py-toggle" href="#" id="SensorTest-toggle" onclick="return toggle('SensorTest');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="actors.SensorTest.SensorTest-class.html">SensorTest</a><tt class="py-op">(</tt><tt class="py-base-class">unittest</tt><tt class="py-op">.</tt><tt class="py-base-class">TestCase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SensorTest-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="SensorTest-expanded"><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">    <tt class="py-docstring">"""NOTE: This testcase requires a working internet connection"""</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">classmethod</tt> </tt>
+<a name="SensorTest.setUpClass"></a><div id="SensorTest.setUpClass-def"><a name="L14"></a><tt class="py-lineno">14</tt> <a class="py-toggle" href="#" id="SensorTest.setUpClass-toggle" onclick="return toggle('SensorTest.setUpClass');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.SensorTest.SensorTest-class.html#setUpClass">setUpClass</a><tt class="py-op">(</tt><tt class="py-param">cls</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SensorTest.setUpClass-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SensorTest.setUpClass-expanded"><a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-comment"># Mock out the http connection</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">        <tt id="link-6" class="py-name"><a title="actors.Sensor
+actors.Sensor.Sensor" class="py-name" href="#" onclick="return doclink('link-6', 'Sensor', 'link-0');">Sensor</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Function actors.Sensor.measureLoadingTime()=actors.Sensor-module.html#measureLoadingTime"><a title="actors.Sensor.measureLoadingTime" class="py-name" href="#" onclick="return doclink('link-7', 'measureLoadingTime', 'link-7');">measureLoadingTime</a></tt> <tt class="py-op">=</tt> <tt class="py-keyword">lambda</tt> <tt class="py-name">url</tt><tt class="py-op">:</tt> <tt class="py-name">round</tt><tt class="py-op">(</tt><tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">uniform</tt><tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">ndigits</tt><tt class="py-op">=</tt><tt class="py-number">3</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="SensorTest.setUp"></a><div id="SensorTest.setUp-def"><a name="L18"></a><tt class="py-lineno">18</tt> <a class="py-toggle" href="#" id="SensorTest.setUp-toggle" onclick="return toggle('SensorTest.setUp');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.SensorTest.SensorTest-class.html#setUp">setUp</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SensorTest.setUp-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SensorTest.setUp-expanded"><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">exists</tt><tt class="py-op">(</tt><tt id="link-8" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-8', 'LogfileParser', 'link-5');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Variable utils.LogfileParser.logfile=utils.LogfileParser-module.html#logfile"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-9', 'logfile', 'link-9');">logfile</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">            <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt id="link-10" class="py-name"><a title="utils.LogfileParser" class="py-name" href="#" onclick="return doclink('link-10', 'LogfileParser', 'link-5');">LogfileParser</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="utils.LogfileParser.logfile" class="py-name" href="#" onclick="return doclink('link-11', 'logfile', 'link-9');">logfile</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt> <tt class="py-op">=</tt> <tt id="link-12" class="py-name"><a title="actors.Sensor
+actors.Sensor.Sensor" class="py-name" href="#" onclick="return doclink('link-12', 'Sensor', 'link-0');">Sensor</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="actors.Sensor
+actors.Sensor.Sensor" class="py-name" href="#" onclick="return doclink('link-13', 'Sensor', 'link-0');">Sensor</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">=</tt><tt class="py-string">"sensor"</tt><tt class="py-op">,</tt> <tt class="py-name">pagesToWatch</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-string">"http://heise.de/tr"</tt><tt class="py-op">,</tt> <tt class="py-string">"https://www.google.com"</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt class="py-name">pauseBetweenDuties</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-name">thread</tt> <tt class="py-op">=</tt> <tt class="py-name">Thread</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">=</tt><tt class="py-string">"Runnable %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">target</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.start()=actors.AbstractBot.CommandExecutor-class.html#start,Method actors.AbstractBot.Runnable.start()=actors.AbstractBot.Runnable-class.html#start,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.start()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#start,Method actors.TestRunnable.TestRunnable.start()=actors.TestRunnable.TestRunnable-class.html#start,Method actors.Victim.Victim.start()=actors.Victim.Victim-class.html#start,Method actors.nameserver.Nameserver.start()=actors.nameserver.Nameserver-class.html#start,Method actors.overbot.KademliaBot.KademliaBot.start()=actors.overbot.KademliaBot.KademliaBot-class.html#start,Method actors.overbot.User.KademliaUser.start()=actors.overbot.User.KademliaUser-class.html#start,Method actors.ping.Servent.Servent.start()=actors.ping.Servent.Servent-class.html#start,Method actors.zeus.CnCServer.CnCServer.start()=actors.zeus.CnCServer.CnCServer-class.html#start,Method actors.zeus.Proxy.Proxy.start()=actors.zeus.Proxy.Proxy-class.html#start,Method topologies.BriteTopology.BriteTopology.start()=topologies.BriteTopology.BriteTopology-class.html#start,Method topologies.LayeredTopology.LayeredTopology.start()=topologies.LayeredTopology.LayeredTopology-class.html#start,Method utils.Floodlight.Controller.start()=utils.Floodlight.Controller-class.html#start"><a title="actors.AbstractBot.CommandExecutor.start
+actors.AbstractBot.Runnable.start
+actors.RandomTrafficGenerator.RandomTrafficReceiver.start
+actors.TestRunnable.TestRunnable.start
+actors.Victim.Victim.start
+actors.nameserver.Nameserver.start
+actors.overbot.KademliaBot.KademliaBot.start
+actors.overbot.User.KademliaUser.start
+actors.ping.Servent.Servent.start
+actors.zeus.CnCServer.CnCServer.start
+actors.zeus.Proxy.Proxy.start
+topologies.BriteTopology.BriteTopology.start
+topologies.LayeredTopology.LayeredTopology.start
+utils.Floodlight.Controller.start" class="py-name" href="#" onclick="return doclink('link-14', 'start', 'link-14');">start</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">shutil</tt><tt class="py-op">.</tt><tt class="py-name">rmtree</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt class="py-name">outputdir</tt><tt class="py-op">,</tt> <tt class="py-name">ignore_errors</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">thread</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="actors.AbstractBot.CommandExecutor.start
+actors.AbstractBot.Runnable.start
+actors.RandomTrafficGenerator.RandomTrafficReceiver.start
+actors.TestRunnable.TestRunnable.start
+actors.Victim.Victim.start
+actors.nameserver.Nameserver.start
+actors.overbot.KademliaBot.KademliaBot.start
+actors.overbot.User.KademliaUser.start
+actors.ping.Servent.Servent.start
+actors.zeus.CnCServer.CnCServer.start
+actors.zeus.Proxy.Proxy.start
+topologies.BriteTopology.BriteTopology.start
+topologies.LayeredTopology.LayeredTopology.start
+utils.Floodlight.Controller.start" class="py-name" href="#" onclick="return doclink('link-15', 'start', 'link-14');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">sleep</tt><tt class="py-op">(</tt><tt class="py-number">2.5</tt><tt class="py-op">)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.stop()=actors.AbstractBot.CommandExecutor-class.html#stop,Method actors.AbstractBot.Runnable.stop()=actors.AbstractBot.Runnable-class.html#stop,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.stop()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#stop,Method actors.Sensor.Sensor.stop()=actors.Sensor.Sensor-class.html#stop,Method actors.TestRunnable.TestRunnable.stop()=actors.TestRunnable.TestRunnable-class.html#stop,Method actors.Victim.Victim.stop()=actors.Victim.Victim-class.html#stop,Method actors.nameserver.Nameserver.stop()=actors.nameserver.Nameserver-class.html#stop,Method actors.overbot.KademliaBot.KademliaBot.stop()=actors.overbot.KademliaBot.KademliaBot-class.html#stop,Method actors.ping.Servent.Servent.stop()=actors.ping.Servent.Servent-class.html#stop,Method actors.zeus.CnCServer.CnCServer.stop()=actors.zeus.CnCServer.CnCServer-class.html#stop,Method actors.zeus.Proxy.Proxy.stop()=actors.zeus.Proxy.Proxy-class.html#stop,Method topologies.BriteTopology.BriteTopology.stop()=topologies.BriteTopology.BriteTopology-class.html#stop,Method topologies.LayeredTopology.LayeredTopology.stop()=topologies.LayeredTopology.LayeredTopology-class.html#stop,Method utils.Floodlight.Controller.stop()=utils.Floodlight.Controller-class.html#stop"><a title="actors.AbstractBot.CommandExecutor.stop
+actors.AbstractBot.Runnable.stop
+actors.RandomTrafficGenerator.RandomTrafficReceiver.stop
+actors.Sensor.Sensor.stop
+actors.TestRunnable.TestRunnable.stop
+actors.Victim.Victim.stop
+actors.nameserver.Nameserver.stop
+actors.overbot.KademliaBot.KademliaBot.stop
+actors.ping.Servent.Servent.stop
+actors.zeus.CnCServer.CnCServer.stop
+actors.zeus.Proxy.Proxy.stop
+topologies.BriteTopology.BriteTopology.stop
+topologies.LayeredTopology.LayeredTopology.stop
+utils.Floodlight.Controller.stop" class="py-name" href="#" onclick="return doclink('link-16', 'stop', 'link-16');">stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="SensorTest.tearDown"></a><div id="SensorTest.tearDown-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="SensorTest.tearDown-toggle" onclick="return toggle('SensorTest.tearDown');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.SensorTest.SensorTest-class.html#tearDown">tearDown</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SensorTest.tearDown-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SensorTest.tearDown-expanded"><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">shutil</tt><tt class="py-op">.</tt><tt class="py-name">rmtree</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt class="py-name">outputdir</tt><tt class="py-op">,</tt> <tt class="py-name">ignore_errors</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">unittest</tt><tt class="py-op">.</tt><tt class="py-name">skip</tt><tt class="py-op">(</tt><tt class="py-string">"Only one of the tests can be run at the same time"</tt><tt class="py-op">)</tt> </tt>
+<a name="SensorTest.testExpectOutputfilesToExist"></a><div id="SensorTest.testExpectOutputfilesToExist-def"><a name="L35"></a><tt class="py-lineno">35</tt> <a class="py-toggle" href="#" id="SensorTest.testExpectOutputfilesToExist-toggle" onclick="return toggle('SensorTest.testExpectOutputfilesToExist');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.SensorTest.SensorTest-class.html#testExpectOutputfilesToExist">testExpectOutputfilesToExist</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SensorTest.testExpectOutputfilesToExist-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SensorTest.testExpectOutputfilesToExist-expanded"><a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">exists</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt class="py-name">outputdir</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">listdir</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt class="py-name">outputdir</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="SensorTest.testIfLoadingTimesAreValid"></a><div id="SensorTest.testIfLoadingTimesAreValid-def"><a name="L39"></a><tt class="py-lineno">39</tt> <a class="py-toggle" href="#" id="SensorTest.testIfLoadingTimesAreValid-toggle" onclick="return toggle('SensorTest.testIfLoadingTimesAreValid');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="actors.SensorTest.SensorTest-class.html#testIfLoadingTimesAreValid">testIfLoadingTimesAreValid</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SensorTest.testIfLoadingTimesAreValid-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SensorTest.testIfLoadingTimesAreValid-expanded"><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">loadingTimesDict</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">sensor</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method actors.Sensor.Sensor._collectLoadingTimes()=actors.Sensor.Sensor-class.html#_collectLoadingTimes"><a title="actors.Sensor.Sensor._collectLoadingTimes" class="py-name" href="#" onclick="return doclink('link-17', '_collectLoadingTimes', 'link-17');">_collectLoadingTimes</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">loadingTimesDict</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">key</tt> <tt class="py-keyword">in</tt> <tt class="py-name">loadingTimesDict</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertEqual</tt><tt class="py-op">(</tt><tt class="py-number">3</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">loadingTimesDict</tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">assertTrue</tt><tt class="py-op">(</tt><tt class="py-number">0</tt> <tt class="py-op">&lt;=</tt> <tt class="py-name">sum</tt><tt class="py-op">(</tt><tt class="py-name">loadingTimesDict</tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;=</tt> <tt class="py-number">3</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">    <tt class="py-name">logging</tt><tt class="py-op">.</tt><tt class="py-name">basicConfig</tt><tt class="py-op">(</tt><tt class="py-op">**</tt><tt id="link-18" class="py-name"><a title="resources.emu_config.logging_config" class="py-name" href="#" onclick="return doclink('link-18', 'logging_config', 'link-3');">logging_config</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">    <tt class="py-name">unittest</tt><tt class="py-op">.</tt><tt class="py-name">main</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

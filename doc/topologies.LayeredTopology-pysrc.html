@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>topologies.LayeredTopology</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="topologies-module.html">Package&nbsp;topologies</a> ::
+        Module&nbsp;LayeredTopology
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="topologies.LayeredTopology-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="topologies.LayeredTopology-module.html">Module topologies.LayeredTopology</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#!/usr/bin/python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># coding=UTF-8</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">"""This file defines a layered Topology.</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">The LayeredTopology which structures the nodes into layers where each layer has its own switch and the switches are connected linearly.</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">The LayeredTopology is not used in the currently implemented experiments, but is an earlier attempt in implementing the Gameover Zeus</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">experiment that has been kept because it might be helpful for testing purposes."""</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">random</tt><tt class="py-op">,</tt> <tt class="py-name">time</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">net</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Mininet</tt><tt class="py-op">,</tt> <tt id="link-0" class="py-name" targets="Class utils.Floodlight.Controller=utils.Floodlight.Controller-class.html"><a title="utils.Floodlight.Controller" class="py-name" href="#" onclick="return doclink('link-0', 'Controller', 'link-0');">Controller</a></tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-1" class="py-name" targets="Module topologies.AbstractTopology=topologies.AbstractTopology-module.html,Class topologies.AbstractTopology.AbstractTopology=topologies.AbstractTopology.AbstractTopology-class.html"><a title="topologies.AbstractTopology
+topologies.AbstractTopology.AbstractTopology" class="py-name" href="#" onclick="return doclink('link-1', 'AbstractTopology', 'link-1');">AbstractTopology</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name"><a title="topologies.AbstractTopology
+topologies.AbstractTopology.AbstractTopology" class="py-name" href="#" onclick="return doclink('link-2', 'AbstractTopology', 'link-1');">AbstractTopology</a></tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name" targets="Package utils=utils-module.html"><a title="utils" class="py-name" href="#" onclick="return doclink('link-3', 'utils', 'link-3');">utils</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module utils.Floodlight=utils.Floodlight-module.html"><a title="utils.Floodlight" class="py-name" href="#" onclick="return doclink('link-4', 'Floodlight', 'link-4');">Floodlight</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="utils.Floodlight.Controller" class="py-name" href="#" onclick="return doclink('link-5', 'Controller', 'link-0');">Controller</a></tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="utils" class="py-name" href="#" onclick="return doclink('link-6', 'utils', 'link-3');">utils</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module utils.MiscUtils=utils.MiscUtils-module.html"><a title="utils.MiscUtils" class="py-name" href="#" onclick="return doclink('link-7', 'MiscUtils', 'link-7');">MiscUtils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Function utils.MiscUtils.createRandomDPID()=utils.MiscUtils-module.html#createRandomDPID"><a title="utils.MiscUtils.createRandomDPID" class="py-name" href="#" onclick="return doclink('link-8', 'createRandomDPID', 'link-8');">createRandomDPID</a></tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="LayeredTopology"></a><div id="LayeredTopology-def"><a name="L17"></a><tt class="py-lineno"> 17</tt> <a class="py-toggle" href="#" id="LayeredTopology-toggle" onclick="return toggle('LayeredTopology');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="topologies.LayeredTopology.LayeredTopology-class.html">LayeredTopology</a><tt class="py-op">(</tt><tt class="py-base-class">AbstractTopology</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LayeredTopology-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="LayeredTopology-expanded"><a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">    <tt class="py-docstring">"""This class defines a base Topology where the botnet is separated into layers. Each layer has its own external_switch and the</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-docstring">    switches are connected serially from the first to the last layer. Therefore all traffic from a layer n host to a</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-docstring">    layer n+k host has to go to all the switches for the inbetween layers.</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-docstring">    The Topology allows an arbitrary number of named layers with an arbitrary number of clients each.</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">    It will also run some command on all hosts in each layer. All hosts of one layer will run the same command but it may</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">     differ between layers.</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring">    To use the class, first add a few layers and then call start(). Not the other way around."""</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"> </tt>
+<a name="LayeredTopology.__init__"></a><div id="LayeredTopology.__init__-def"><a name="L27"></a><tt class="py-lineno"> 27</tt> <a class="py-toggle" href="#" id="LayeredTopology.__init__-toggle" onclick="return toggle('LayeredTopology.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology.LayeredTopology-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mininet</tt><tt class="py-op">=</tt><tt class="py-name">Mininet</tt><tt class="py-op">(</tt><tt class="py-name">controller</tt><tt class="py-op">=</tt><tt id="link-9" class="py-name"><a title="utils.Floodlight.Controller" class="py-name" href="#" onclick="return doclink('link-9', 'Controller', 'link-0');">Controller</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LayeredTopology.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LayeredTopology.__init__-expanded"><a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-docstring">        Initialises the LayeredTopology, so that layers can be added.</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-docstring">        :type mininet: Mininet</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt id="link-10" class="py-name"><a title="topologies.AbstractTopology
+topologies.AbstractTopology.AbstractTopology" class="py-name" href="#" onclick="return doclink('link-10', 'AbstractTopology', 'link-1');">AbstractTopology</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method Experiment.BriteExperiment.__init__()=Experiment.BriteExperiment-class.html#__init__,Method Experiment.Experiment.__init__()=Experiment.Experiment-class.html#__init__,Method OverbotExperiment.KademliaExperiment.__init__()=OverbotExperiment.KademliaExperiment-class.html#__init__,Method PerformanceExperiment.PerformanceExperiment.__init__()=PerformanceExperiment.PerformanceExperiment-class.html#__init__,Method PingExperiment.PingExperiment.__init__()=PingExperiment.PingExperiment-class.html#__init__,Method ZeusExperiment.ZeusExperiment.__init__()=ZeusExperiment.ZeusExperiment-class.html#__init__,Method actors.AbstractBot.CommandExecutor.__init__()=actors.AbstractBot.CommandExecutor-class.html#__init__,Method actors.AbstractBot.Runnable.__init__()=actors.AbstractBot.Runnable-class.html#__init__,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.__init__()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#__init__,Method actors.RandomTrafficGenerator.RandomTrafficSender.__init__()=actors.RandomTrafficGenerator.RandomTrafficSender-class.html#__init__,Method actors.Sensor.Sensor.__init__()=actors.Sensor.Sensor-class.html#__init__,Method actors.TestRunnable.TestRunnable.__init__()=actors.TestRunnable.TestRunnable-class.html#__init__,Method actors.Victim.Victim.__init__()=actors.Victim.Victim-class.html#__init__,Method actors.nameserver.Nameserver.__init__()=actors.nameserver.Nameserver-class.html#__init__,Method actors.overbot.KademliaBot.KademliaBot.__init__()=actors.overbot.KademliaBot.KademliaBot-class.html#__init__,Method actors.overbot.User.KademliaUser.__init__()=actors.overbot.User.KademliaUser-class.html#__init__,Method actors.ping.Client.Client.__init__()=actors.ping.Client.Client-class.html#__init__,Method actors.ping.Servent.Servent.__init__()=actors.ping.Servent.Servent-class.html#__init__,Method actors.zeus.Bot.Bot.__init__()=actors.zeus.Bot.Bot-class.html#__init__,Method actors.zeus.CnCServer.BotInformation.__init__()=actors.zeus.CnCServer.BotInformation-class.html#__init__,Method actors.zeus.CnCServer.CnCServer.__init__()=actors.zeus.CnCServer.CnCServer-class.html#__init__,Method actors.zeus.Proxy.Proxy.__init__()=actors.zeus.Proxy.Proxy-class.html#__init__,Method overlord.Host.HostActionHandler.__init__()=overlord.Host.HostActionHandler-class.html#__init__,Method overlord.HostActions.OverlordClient.Client.__init__()=overlord.HostActions.OverlordClient.Client-class.html#__init__,Method overlord.HostActions.OverlordClient.Processor.__init__()=overlord.HostActions.OverlordClient.Processor-class.html#__init__,Method overlord.HostActions.OverlordClient.getID_result.__init__()=overlord.HostActions.OverlordClient.getID_result-class.html#__init__,Method overlord.HostActions.OverlordClient.startRunnable_args.__init__()=overlord.HostActions.OverlordClient.startRunnable_args-class.html#__init__,Method overlord.HostActions.OverlordClient.startRunnable_result.__init__()=overlord.HostActions.OverlordClient.startRunnable_result-class.html#__init__,Method overlord.HostActions.OverlordClient.stopRunnable_args.__init__()=overlord.HostActions.OverlordClient.stopRunnable_args-class.html#__init__,Method overlord.HostActions.OverlordClient.stopRunnable_result.__init__()=overlord.HostActions.OverlordClient.stopRunnable_result-class.html#__init__,Method overlord.HostActions.ttypes.OverlordException.__init__()=overlord.HostActions.ttypes.OverlordException-class.html#__init__,Method overlord.Overlord.Overlord.__init__()=overlord.Overlord.Overlord-class.html#__init__,Method overlord.Overlord._HostConnector.__init__()=overlord.Overlord._HostConnector-class.html#__init__,Method topologies.AbstractTopology.AbstractTopology.__init__()=topologies.AbstractTopology.AbstractTopology-class.html#__init__,Method topologies.BriteTopology.BriteTopology.__init__()=topologies.BriteTopology.BriteTopology-class.html#__init__,Method topologies.LayeredTopology.LayeredTopology.__init__()=topologies.LayeredTopology.LayeredTopology-class.html#__init__,Method topologies.LayeredTopology._Layer.__init__()=topologies.LayeredTopology._Layer-class.html#__init__,Method utils.DotFileWriter.DotFileWriter.__init__()=utils.DotFileWriter.DotFileWriter-class.html#__init__,Method utils.LogfileParser.Logentry.__init__()=utils.LogfileParser.Logentry-class.html#__init__,Method utils.MiscUtils.NetworkAddress.__init__()=utils.MiscUtils.NetworkAddress-class.html#__init__,Method utils.TcptraceParser.TcptraceParser.__init__()=utils.TcptraceParser.TcptraceParser-class.html#__init__"><a title="Experiment.BriteExperiment.__init__
+Experiment.Experiment.__init__
+OverbotExperiment.KademliaExperiment.__init__
+PerformanceExperiment.PerformanceExperiment.__init__
+PingExperiment.PingExperiment.__init__
+ZeusExperiment.ZeusExperiment.__init__
+actors.AbstractBot.CommandExecutor.__init__
+actors.AbstractBot.Runnable.__init__
+actors.RandomTrafficGenerator.RandomTrafficReceiver.__init__
+actors.RandomTrafficGenerator.RandomTrafficSender.__init__
+actors.Sensor.Sensor.__init__
+actors.TestRunnable.TestRunnable.__init__
+actors.Victim.Victim.__init__
+actors.nameserver.Nameserver.__init__
+actors.overbot.KademliaBot.KademliaBot.__init__
+actors.overbot.User.KademliaUser.__init__
+actors.ping.Client.Client.__init__
+actors.ping.Servent.Servent.__init__
+actors.zeus.Bot.Bot.__init__
+actors.zeus.CnCServer.BotInformation.__init__
+actors.zeus.CnCServer.CnCServer.__init__
+actors.zeus.Proxy.Proxy.__init__
+overlord.Host.HostActionHandler.__init__
+overlord.HostActions.OverlordClient.Client.__init__
+overlord.HostActions.OverlordClient.Processor.__init__
+overlord.HostActions.OverlordClient.getID_result.__init__
+overlord.HostActions.OverlordClient.startRunnable_args.__init__
+overlord.HostActions.OverlordClient.startRunnable_result.__init__
+overlord.HostActions.OverlordClient.stopRunnable_args.__init__
+overlord.HostActions.OverlordClient.stopRunnable_result.__init__
+overlord.HostActions.ttypes.OverlordException.__init__
+overlord.Overlord.Overlord.__init__
+overlord.Overlord._HostConnector.__init__
+topologies.AbstractTopology.AbstractTopology.__init__
+topologies.BriteTopology.BriteTopology.__init__
+topologies.LayeredTopology.LayeredTopology.__init__
+topologies.LayeredTopology._Layer.__init__
+utils.DotFileWriter.DotFileWriter.__init__
+utils.LogfileParser.Logentry.__init__
+utils.MiscUtils.NetworkAddress.__init__
+utils.TcptraceParser.TcptraceParser.__init__" class="py-name" href="#" onclick="return doclink('link-11', '__init__', 'link-11');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">mininet</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt> <tt class="py-op">=</tt> <tt class="py-name">dict</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">started</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+</div><a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="LayeredTopology.addLayer"></a><div id="LayeredTopology.addLayer-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="LayeredTopology.addLayer-toggle" onclick="return toggle('LayeredTopology.addLayer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology.LayeredTopology-class.html#addLayer">addLayer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">layername</tt><tt class="py-op">,</tt> <tt class="py-param">num_bots</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">command</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">opts</tt><tt class="py-op">=</tt><tt class="py-op">{</tt><tt class="py-op">}</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LayeredTopology.addLayer-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LayeredTopology.addLayer-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-docstring">"""Adds a layer to the topology.</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">        :param layername: The name of this layer. Used to give the mn hosts some meaningful names. Should not be long.</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">        :param num_bots: The number of clients in this layer.</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">        :param command: The command to run on each bot in this layer</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">        :param opts: Some additional options to give to Mininet.addHost() and Mininet.addSwitch()</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">        :type command: str</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">        :type opts: dict"""</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-keyword">assert</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">started</tt><tt class="py-op">,</tt> <tt class="py-string">"You can't add new layers after the network has been started"</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">current_layer</tt> <tt class="py-op">=</tt> <tt id="link-12" class="py-name" targets="Class topologies.LayeredTopology._Layer=topologies.LayeredTopology._Layer-class.html"><a title="topologies.LayeredTopology._Layer" class="py-name" href="#" onclick="return doclink('link-12', '_Layer', 'link-12');">_Layer</a></tt><tt class="py-op">(</tt><tt class="py-name">layername</tt><tt class="py-op">,</tt> <tt class="py-name">num_bots</tt><tt class="py-op">,</tt> <tt class="py-name">command</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-name">layername</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">current_layer</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-name">current_layer</tt><tt class="py-op">.</tt><tt class="py-name">switchname</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt id="link-13" class="py-name" targets="Variable topologies.BriteTopology._AutonomousSystem.switch=topologies.BriteTopology._AutonomousSystem-class.html#switch"><a title="topologies.BriteTopology._AutonomousSystem.switch" class="py-name" href="#" onclick="return doclink('link-13', 'switch', 'link-13');">switch</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">addSwitch</tt><tt class="py-op">(</tt><tt class="py-name">current_layer</tt><tt class="py-op">.</tt><tt class="py-name">switchname</tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name" targets="Variable utils.MiscUtils.NetworkAddressSchema.opts=utils.MiscUtils.NetworkAddressSchema-class.html#opts"><a title="utils.MiscUtils.NetworkAddressSchema.opts" class="py-name" href="#" onclick="return doclink('link-14', 'opts', 'link-14');">opts</a></tt><tt class="py-op">=</tt><tt id="link-15" class="py-name"><a title="utils.MiscUtils.NetworkAddressSchema.opts" class="py-name" href="#" onclick="return doclink('link-15', 'opts', 'link-14');">opts</a></tt><tt class="py-op">,</tt> <tt class="py-name">dpid</tt><tt class="py-op">=</tt><tt id="link-16" class="py-name"><a title="utils.MiscUtils.createRandomDPID" class="py-name" href="#" onclick="return doclink('link-16', 'createRandomDPID', 'link-8');">createRandomDPID</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-name">num_bots</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">            <tt class="py-name">botname</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name" targets="Function topologies.LayeredTopology._constructNameOfBot()=topologies.LayeredTopology-module.html#_constructNameOfBot"><a title="topologies.LayeredTopology._constructNameOfBot" class="py-name" href="#" onclick="return doclink('link-17', '_constructNameOfBot', 'link-17');">_constructNameOfBot</a></tt><tt class="py-op">(</tt><tt class="py-name">current_layer</tt><tt class="py-op">.</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method overlord.Overlord.Overlord.addHost()=overlord.Overlord.Overlord-class.html#addHost"><a title="overlord.Overlord.Overlord.addHost" class="py-name" href="#" onclick="return doclink('link-18', 'addHost', 'link-18');">addHost</a></tt><tt class="py-op">(</tt><tt class="py-name">botname</tt><tt class="py-op">,</tt> <tt id="link-19" class="py-name"><a title="utils.MiscUtils.NetworkAddressSchema.opts" class="py-name" href="#" onclick="return doclink('link-19', 'opts', 'link-14');">opts</a></tt><tt class="py-op">=</tt><tt id="link-20" class="py-name"><a title="utils.MiscUtils.NetworkAddressSchema.opts" class="py-name" href="#" onclick="return doclink('link-20', 'opts', 'link-14');">opts</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">addLink</tt><tt class="py-op">(</tt><tt class="py-name">botname</tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name"><a title="topologies.BriteTopology._AutonomousSystem.switch" class="py-name" href="#" onclick="return doclink('link-21', 'switch', 'link-13');">switch</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-name">layername</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">botlist</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">getNodeByName</tt><tt class="py-op">(</tt><tt class="py-name">botname</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"> </tt>
+<a name="LayeredTopology._connectSwitches"></a><div id="LayeredTopology._connectSwitches-def"><a name="L58"></a><tt class="py-lineno"> 58</tt> <a class="py-toggle" href="#" id="LayeredTopology._connectSwitches-toggle" onclick="return toggle('LayeredTopology._connectSwitches');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology.LayeredTopology-class.html#_connectSwitches">_connectSwitches</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LayeredTopology._connectSwitches-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LayeredTopology._connectSwitches-expanded"><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-docstring">"""Connects the switches in the different layers with each other, so that clients on different switches can talk to each other."""</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-name">switchnames</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">layer</tt><tt class="py-op">.</tt><tt class="py-name">switchname</tt> <tt class="py-keyword">for</tt> <tt class="py-name">layer</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt><tt class="py-op">.</tt><tt class="py-name">values</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-comment"># Important: The switches should NOT be connected in a ring. Mininet doesn't like that!</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">switchnames</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt class="py-name">addLink</tt><tt class="py-op">(</tt><tt class="py-name">switchnames</tt><tt class="py-op">[</tt><tt class="py-name">i</tt> <tt class="py-op">-</tt> <tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">switchnames</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"> </tt>
+<a name="LayeredTopology.start"></a><div id="LayeredTopology.start-def"><a name="L65"></a><tt class="py-lineno"> 65</tt> <a class="py-toggle" href="#" id="LayeredTopology.start-toggle" onclick="return toggle('LayeredTopology.start');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology.LayeredTopology-class.html#start">start</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LayeredTopology.start-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LayeredTopology.start-expanded"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-docstring">"""Starts operation of the defined Topology. It will also start the command for each of the layers."""</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">started</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method topologies.LayeredTopology.LayeredTopology._connectSwitches()=topologies.LayeredTopology.LayeredTopology-class.html#_connectSwitches"><a title="topologies.LayeredTopology.LayeredTopology._connectSwitches" class="py-name" href="#" onclick="return doclink('link-22', '_connectSwitches', 'link-22');">_connectSwitches</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.start()=actors.AbstractBot.CommandExecutor-class.html#start,Method actors.AbstractBot.Runnable.start()=actors.AbstractBot.Runnable-class.html#start,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.start()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#start,Method actors.TestRunnable.TestRunnable.start()=actors.TestRunnable.TestRunnable-class.html#start,Method actors.Victim.Victim.start()=actors.Victim.Victim-class.html#start,Method actors.nameserver.Nameserver.start()=actors.nameserver.Nameserver-class.html#start,Method actors.overbot.KademliaBot.KademliaBot.start()=actors.overbot.KademliaBot.KademliaBot-class.html#start,Method actors.overbot.User.KademliaUser.start()=actors.overbot.User.KademliaUser-class.html#start,Method actors.ping.Servent.Servent.start()=actors.ping.Servent.Servent-class.html#start,Method actors.zeus.CnCServer.CnCServer.start()=actors.zeus.CnCServer.CnCServer-class.html#start,Method actors.zeus.Proxy.Proxy.start()=actors.zeus.Proxy.Proxy-class.html#start,Method topologies.BriteTopology.BriteTopology.start()=topologies.BriteTopology.BriteTopology-class.html#start,Method topologies.LayeredTopology.LayeredTopology.start()=topologies.LayeredTopology.LayeredTopology-class.html#start,Method utils.Floodlight.Controller.start()=utils.Floodlight.Controller-class.html#start"><a title="actors.AbstractBot.CommandExecutor.start
+actors.AbstractBot.Runnable.start
+actors.RandomTrafficGenerator.RandomTrafficReceiver.start
+actors.TestRunnable.TestRunnable.start
+actors.Victim.Victim.start
+actors.nameserver.Nameserver.start
+actors.overbot.KademliaBot.KademliaBot.start
+actors.overbot.User.KademliaUser.start
+actors.ping.Servent.Servent.start
+actors.zeus.CnCServer.CnCServer.start
+actors.zeus.Proxy.Proxy.start
+topologies.BriteTopology.BriteTopology.start
+topologies.LayeredTopology.LayeredTopology.start
+utils.Floodlight.Controller.start" class="py-name" href="#" onclick="return doclink('link-23', 'start', 'link-23');">start</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">layer</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">layers</tt><tt class="py-op">.</tt><tt class="py-name">values</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">bot</tt> <tt class="py-keyword">in</tt> <tt class="py-name">layer</tt><tt class="py-op">.</tt><tt class="py-name">botlist</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">                <tt class="py-name">bot</tt><tt class="py-op">.</tt><tt class="py-name">cmd</tt><tt class="py-op">(</tt><tt class="py-string">"%s &amp;"</tt> <tt class="py-op">%</tt> <tt class="py-name">layer</tt><tt class="py-op">.</tt><tt class="py-name">command</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-name">time</tt><tt class="py-op">.</tt><tt class="py-name">sleep</tt><tt class="py-op">(</tt><tt class="py-number">5</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"> </tt>
+<a name="LayeredTopology.stop"></a><div id="LayeredTopology.stop-def"><a name="L76"></a><tt class="py-lineno"> 76</tt> <a class="py-toggle" href="#" id="LayeredTopology.stop-toggle" onclick="return toggle('LayeredTopology.stop');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology.LayeredTopology-class.html#stop">stop</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="LayeredTopology.stop-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="LayeredTopology.stop-expanded"><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mininet</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method actors.AbstractBot.CommandExecutor.stop()=actors.AbstractBot.CommandExecutor-class.html#stop,Method actors.AbstractBot.Runnable.stop()=actors.AbstractBot.Runnable-class.html#stop,Method actors.RandomTrafficGenerator.RandomTrafficReceiver.stop()=actors.RandomTrafficGenerator.RandomTrafficReceiver-class.html#stop,Method actors.Sensor.Sensor.stop()=actors.Sensor.Sensor-class.html#stop,Method actors.TestRunnable.TestRunnable.stop()=actors.TestRunnable.TestRunnable-class.html#stop,Method actors.Victim.Victim.stop()=actors.Victim.Victim-class.html#stop,Method actors.nameserver.Nameserver.stop()=actors.nameserver.Nameserver-class.html#stop,Method actors.overbot.KademliaBot.KademliaBot.stop()=actors.overbot.KademliaBot.KademliaBot-class.html#stop,Method actors.ping.Servent.Servent.stop()=actors.ping.Servent.Servent-class.html#stop,Method actors.zeus.CnCServer.CnCServer.stop()=actors.zeus.CnCServer.CnCServer-class.html#stop,Method actors.zeus.Proxy.Proxy.stop()=actors.zeus.Proxy.Proxy-class.html#stop,Method topologies.BriteTopology.BriteTopology.stop()=topologies.BriteTopology.BriteTopology-class.html#stop,Method topologies.LayeredTopology.LayeredTopology.stop()=topologies.LayeredTopology.LayeredTopology-class.html#stop,Method utils.Floodlight.Controller.stop()=utils.Floodlight.Controller-class.html#stop"><a title="actors.AbstractBot.CommandExecutor.stop
+actors.AbstractBot.Runnable.stop
+actors.RandomTrafficGenerator.RandomTrafficReceiver.stop
+actors.Sensor.Sensor.stop
+actors.TestRunnable.TestRunnable.stop
+actors.Victim.Victim.stop
+actors.nameserver.Nameserver.stop
+actors.overbot.KademliaBot.KademliaBot.stop
+actors.ping.Servent.Servent.stop
+actors.zeus.CnCServer.CnCServer.stop
+actors.zeus.Proxy.Proxy.stop
+topologies.BriteTopology.BriteTopology.stop
+topologies.LayeredTopology.LayeredTopology.stop
+utils.Floodlight.Controller.stop" class="py-name" href="#" onclick="return doclink('link-24', 'stop', 'link-24');">stop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="_Layer"></a><div id="_Layer-def"><a name="L80"></a><tt class="py-lineno"> 80</tt> <a class="py-toggle" href="#" id="_Layer-toggle" onclick="return toggle('_Layer');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="topologies.LayeredTopology._Layer-class.html">_Layer</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Layer-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_Layer-expanded"><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-docstring">"""Base class for value objects that each describe one _Layer in the layered topology."""</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"> </tt>
+<a name="_Layer.__init__"></a><div id="_Layer.__init__-def"><a name="L83"></a><tt class="py-lineno"> 83</tt> <a class="py-toggle" href="#" id="_Layer.__init__-toggle" onclick="return toggle('_Layer.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology._Layer-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">num_bots</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">command</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">opts</tt><tt class="py-op">=</tt><tt class="py-op">{</tt><tt class="py-op">}</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_Layer.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="_Layer.__init__-expanded"><a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt> <tt class="py-op">=</tt> <tt class="py-name">name</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">num_bots</tt> <tt class="py-op">=</tt> <tt class="py-name">num_bots</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">command</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">command</tt> <tt class="py-op">=</tt> <tt class="py-name">command</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">command</tt> <tt class="py-op">=</tt> <tt class="py-string">"echo %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">name</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="utils.MiscUtils.NetworkAddressSchema.opts" class="py-name" href="#" onclick="return doclink('link-25', 'opts', 'link-14');">opts</a></tt> <tt class="py-op">=</tt> <tt id="link-26" class="py-name"><a title="utils.MiscUtils.NetworkAddressSchema.opts" class="py-name" href="#" onclick="return doclink('link-26', 'opts', 'link-14');">opts</a></tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">botlist</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">switchname</tt> <tt class="py-op">=</tt> <tt id="link-27" class="py-name" targets="Function topologies.LayeredTopology._constructNameOfSwitch()=topologies.LayeredTopology-module.html#_constructNameOfSwitch"><a title="topologies.LayeredTopology._constructNameOfSwitch" class="py-name" href="#" onclick="return doclink('link-27', '_constructNameOfSwitch', 'link-27');">_constructNameOfSwitch</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="_constructNameOfSwitch"></a><div id="_constructNameOfSwitch-def"><a name="L96"></a><tt class="py-lineno"> 96</tt> <a class="py-toggle" href="#" id="_constructNameOfSwitch-toggle" onclick="return toggle('_constructNameOfSwitch');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology-module.html#_constructNameOfSwitch">_constructNameOfSwitch</a><tt class="py-op">(</tt><tt class="py-param">layername</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_constructNameOfSwitch-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_constructNameOfSwitch-expanded"><a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">    <tt class="py-docstring">"""Constructs the name of a bot from the name of the layer it is in."""</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt class="py-comment"># Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-string">"sw%s"</tt> <tt class="py-op">%</tt> <tt class="py-name">layername</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-number">8</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="_constructNameOfBot"></a><div id="_constructNameOfBot-def"><a name="L102"></a><tt class="py-lineno">102</tt> <a class="py-toggle" href="#" id="_constructNameOfBot-toggle" onclick="return toggle('_constructNameOfBot');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="topologies.LayeredTopology-module.html#_constructNameOfBot">_constructNameOfBot</a><tt class="py-op">(</tt><tt class="py-param">layername</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="_constructNameOfBot-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="_constructNameOfBot-expanded"><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-docstring">"""Constructs the name of a bot from the name of the layer it is in.</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring">    Note: This function will generate a different name each time it is run."""</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">    <tt class="py-comment"># Please Note: Mininet (or more precisely the OS) can't cope with interface names longer than a few characters -.-</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-string">"b%s-%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">random</tt><tt class="py-op">.</tt><tt class="py-name">randint</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-number">999</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">layername</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-number">5</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

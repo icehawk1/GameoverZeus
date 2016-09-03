@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>topologies.BriteTopology.BriteTopology</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="topologies-module.html">Package&nbsp;topologies</a> ::
+        <a href="topologies.BriteTopology-module.html">Module&nbsp;BriteTopology</a> ::
+        Class&nbsp;BriteTopology
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="topologies.BriteTopology.BriteTopology-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class BriteTopology</h1><p class="nomargin-top"><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+                       object --+    
+                                |    
+<a href="topologies.AbstractTopology.AbstractTopology-class.html">AbstractTopology.AbstractTopology</a> --+
+                                    |
+                       object --+   |
+                                |   |
+               <a href="topologies.BriteTopology.BriteGraphAccepter-class.html">BriteGraphAccepter</a> --+
+                                    |
+                                   <strong class="uidshort">BriteTopology</strong>
+</pre>
+
+<hr />
+<p>The mn topology created from the given BRITE output file. It will have
+  a number of interconnected autonomous systems and each AS will have one 
+  external_switch and a number of hosts. Each host in an AS is connected to
+  that external_switch.</p>
+
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Nested Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-NestedClasses"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html">BriteGraphAccepter</a></code></b>:
+      <code><a href="abc.ABCMeta-class.html">__metaclass__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mininet</span>,
+        <span class="summary-sig-arg">opts</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Initialises the LayeredTopology, so that layers can be added.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#writeHeader" class="summary-sig-name">writeHeader</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">num_nodes</span>,
+        <span class="summary-sig-arg">num_edges</span>,
+        <span class="summary-sig-arg">modelname</span>)</span><br />
+      Invoked when starting to read the BRITE output file</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.writeHeader">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#addNode" class="summary-sig-name">addNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">nodeid</span>,
+        <span class="summary-sig-arg">asid</span>,
+        <span class="summary-sig-arg">nodetype</span>)</span><br />
+      Converts a node in the BRITE output file to a mn host.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.addNode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#_addHost" class="summary-sig-name" onclick="show_private();">_addHost</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">nodeid</span>)</span><br />
+      Adds a mininet host to the topology</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology._addHost">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#addEdge" class="summary-sig-name">addEdge</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">edgeid</span>,
+        <span class="summary-sig-arg">fromNode</span>,
+        <span class="summary-sig-arg">toNode</span>,
+        <span class="summary-sig-arg">communicationDelay</span>,
+        <span class="summary-sig-arg">bandwidth</span>,
+        <span class="summary-sig-arg">fromAS</span>,
+        <span class="summary-sig-arg">toAS</span>,
+        <span class="summary-sig-arg">edgetype</span>)</span><br />
+      Invoked for every edge in the BRITE output file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.addEdge">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#writeFooter" class="summary-sig-name">writeFooter</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Invoked after fully reading the BRITE output file</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.writeFooter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#start" class="summary-sig-name">start</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Starts operation of the defined Topology.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.start">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="topologies.BriteTopology.BriteTopology-class.html#stop" class="summary-sig-name">stop</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Stops the operation of this topology.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.stop">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_connectSwitchesToSwitches"></a><span class="summary-sig-name">_connectSwitchesToSwitches</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Connects all the switches to each other.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology._connectSwitchesToSwitches">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_connectASNodesToSwitches"></a><span class="summary-sig-name">_connectASNodesToSwitches</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Connects the nodes in a common autonomous system to their 
+      external_switch</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology._connectASNodesToSwitches">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="topologies.AbstractTopology.AbstractTopology-class.html">AbstractTopology.AbstractTopology</a></code></b> (private):
+      <code><a href="topologies.AbstractTopology.AbstractTopology-class.html#_addLinkBetweenNodes" onclick="show_private();">_addLinkBetweenNodes</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__abstractmethods__"></a><span class="summary-name">__abstractmethods__</span> = <code title="frozenset([])"><code class="variable-group">frozenset([</code><code class="variable-group">])</code></code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html">BriteGraphAccepter</a></code></b>:
+      <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html#wroteHeader">wroteHeader</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html">BriteGraphAccepter</a></code></b> (private):
+      <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html#_abc_cache" onclick="show_private();">_abc_cache</a></code>,
+      <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html#_abc_negative_cache" onclick="show_private();">_abc_negative_cache</a></code>,
+      <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html#_abc_negative_cache_version" onclick="show_private();">_abc_negative_cache_version</a></code>,
+      <code><a href="topologies.BriteTopology.BriteGraphAccepter-class.html#_abc_registry" onclick="show_private();">_abc_registry</a></code>
+      </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="topologies.AbstractTopology.AbstractTopology-class.html">AbstractTopology.AbstractTopology</a></code></b>:
+      <code><a href="topologies.AbstractTopology.AbstractTopology-class.html#nodes">nodes</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mininet</span>,
+        <span class="sig-arg">opts</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialises the LayeredTopology, so that layers can be added. :type 
+  mininet: Mininet :param kwargs: A number of keyword arguments to be given
+  to AbstractTopology.__init__()</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="writeHeader"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">writeHeader</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">num_nodes</span>,
+        <span class="sig-arg">num_edges</span>,
+        <span class="sig-arg">modelname</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.writeHeader">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Invoked when starting to read the BRITE output file</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="topologies.BriteTopology.BriteGraphAccepter-class.html#writeHeader">BriteGraphAccepter.writeHeader</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addNode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">nodeid</span>,
+        <span class="sig-arg">asid</span>,
+        <span class="sig-arg">nodetype</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.addNode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Converts a node in the BRITE output file to a mn host. Invoked for 
+  every node in the BRITE output file.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="topologies.BriteTopology.BriteGraphAccepter-class.html#addNode">BriteGraphAccepter.addNode</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_addHost"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_addHost</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">nodeid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology._addHost">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adds a mininet host to the topology</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="topologies.AbstractTopology.AbstractTopology-class.html#_addHost" onclick="show_private();">AbstractTopology.AbstractTopology._addHost</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addEdge"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addEdge</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">edgeid</span>,
+        <span class="sig-arg">fromNode</span>,
+        <span class="sig-arg">toNode</span>,
+        <span class="sig-arg">communicationDelay</span>,
+        <span class="sig-arg">bandwidth</span>,
+        <span class="sig-arg">fromAS</span>,
+        <span class="sig-arg">toAS</span>,
+        <span class="sig-arg">edgetype</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.addEdge">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Invoked for every edge in the BRITE output file. Converts that edge 
+  into a connection between two mn hosts.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="topologies.BriteTopology.BriteGraphAccepter-class.html#addEdge">BriteGraphAccepter.addEdge</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="writeFooter"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">writeFooter</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.writeFooter">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Invoked after fully reading the BRITE output file</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="topologies.BriteTopology.BriteGraphAccepter-class.html#writeFooter">BriteGraphAccepter.writeFooter</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="start"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">start</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.start">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Starts operation of the defined Topology. It will also start the 
+  command for each of the layers.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="stop"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">stop</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="topologies.BriteTopology-pysrc.html#BriteTopology.stop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Stops the operation of this topology. Usually called when the 
+  experiment is over.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Botnet Emulator</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Sep  3 13:57:56 2016
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
